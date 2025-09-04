@@ -1,0 +1,13 @@
+
+.task-container{
+  margin: auto;
+  width: 100%;
+  display: block;
+  text-align: center;
+  height: auto;
+}
+
+.task-container:hover{
+  background-color: rgb(215, 213, 213);
+  cursor: pointer;
+}
