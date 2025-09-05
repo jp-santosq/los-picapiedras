@@ -1,5 +1,5 @@
 import React from "react";
-import Task from "./Task";
+import Task from "./Task.tsx";
 import "../styles/components/canva.css";
 
 function Canva({ state, tasks, updateTaskState }) {

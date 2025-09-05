@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Canva from "./Canva";
+import Canva from "./Canva.tsx";
 import "../styles/components/board.css"
 
 function Board() {
