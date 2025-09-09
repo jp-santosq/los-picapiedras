@@ -3,16 +3,33 @@ Ultima modificacion Pedro Sanchez
 3/9/2025
 */
 
+import { AuthProvider } from "./context/AuthContext.tsx";
+import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
+import "./styles/index.css";
+import { useAuth } from "./context/AuthContext.tsx";
 
-import "./styles/index.css"
+function AppContent() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Login />;
+  }
+
+  return (
+    <>
+      <NavBar />
+      
+    </>
+  );
+}
 
 function App() {
-
-  return(
-  <>
-    <NavBar/>
-  </>
-  )
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
+
 export default App;

@@ -1,7 +1,23 @@
-.navbar{
+.navbar-container {
   display: flex;
+  justify-content: end;
   width: 100%;
   min-height: 20%;
   background-color: black;
-  padding: 20px;
+  padding: 40px;
+}
+
+.navbar{
+  width: 100%;
+  margin-right: 65px;
+}
+
+a{
+  text-decoration: none;
+  color: whitesmoke;
+  padding: 10px;
+}
+
+a:hover{
+  color: rgb(173, 55, 55);
 }
