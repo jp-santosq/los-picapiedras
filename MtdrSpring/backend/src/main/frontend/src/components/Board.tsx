@@ -3,34 +3,11 @@ import Canva from "./Canva.tsx";
 import "../styles/components/board.css";
 import { TaskDescription, Task } from "./TaskDescription.tsx";
 import { TaskStatus } from "./enums.tsx";
-import mockTasks from "../mockData/mockTasks.json";
+import { useTasks } from "../context/TaskContext.tsx";
 
 function Board() {
-  const [tasks, setTasks] = useState<Task[]>(
-    mockTasks.map((task) => ({
-      ...task,
-      status:
-        task.status === "To Do"
-          ? TaskStatus.TODO
-          : task.status === "Doing"
-          ? TaskStatus.DOING
-          : task.status === "Revision"
-          ? TaskStatus.REVISION
-          : task.status === "Done"
-          ? TaskStatus.DONE
-          : TaskStatus.TODO,
-    }))
-  );
-
+  const { tasks, updateTaskState } = useTasks();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
-  function updateTaskState(taskId: number, newState: TaskStatus) {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, status: newState } : task
-      )
-    );
-  }
 
   function handleTaskClick(task: Task) {
     setSelectedTask(task);
@@ -61,7 +38,6 @@ function Board() {
         ))}
       </div>
 
-      {/* Modal */}
       {selectedTask && (
         <div className="modal-overlay" onClick={closeModal}>
           <div

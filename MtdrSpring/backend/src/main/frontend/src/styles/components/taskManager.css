@@ -48,9 +48,10 @@
 .task-form textarea {
   width: 100%;
   margin: 6px 0;
-  padding: 8px;
+  padding: 4px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  
 }
 
 .modal-actions {
