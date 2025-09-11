@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
-import "../styles/components/navbar.css"
+import "../styles/components/navbar.css";
 
 function NavBar() {
   const HomePage = () => {
@@ -18,13 +18,15 @@ function NavBar() {
   return (
     <>
       <BrowserRouter>
-        <div className="navbar">
-          <nav>
-            <Link to={"/"}>Home Page</Link>
-            <Link to={"/Dashboard"}>Board</Link>
-            <Link to={"/About-page"}>About Page</Link>
-            <Link to={"/Contact"}>Contact Page</Link>
-          </nav>
+        <div className="navbar-container">
+          <div>
+            <nav className="navbar">
+              <Link to={"/"}>Home Page</Link>
+              <Link to={"/Dashboard"}>Board</Link>
+              <Link to={"/About-page"}>About Page</Link>
+              <Link to={"/Contact"}>Contact Page</Link>
+            </nav>
+          </div>
         </div>
 
         <Routes>
