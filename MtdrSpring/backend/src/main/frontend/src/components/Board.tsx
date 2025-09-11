@@ -1,53 +1,80 @@
 import React, { useState } from "react";
 import Canva from "./Canva.tsx";
-import "../styles/components/board.css"
+import "../styles/components/board.css";
+import { TaskDescription, Task } from "./TaskDescription.tsx";
+import { TaskStatus } from "./enums.tsx";
+import mockTasks from "../mockData/mockTasks.json";
 
 function Board() {
-  const [tasks, setTasks] = useState([
-    { id: 1, name: "Task 1", state: "to_do" },
-    { id: 2, name: "Task 2", state: "doing" },
-    { id: 3, name: "Task 3", state: "revision" },
-    { id: 4, name: "Task 4", state: "done" },
-    { id: 5, name: "Task 5", state: "to_do" },
-    { id: 6, name: "Task 6", state: "doing" },
-    { id: 7, name: "Task 7", state: "revision" },
-    { id: 8, name: "Task 8", state: "done" },
-    { id: 9, name: "Task 9", state: "to_do" },
-    { id: 10, name: "Task 10", state: "doing" },
-    { id: 11, name: "Task 11", state: "revision" },
-    { id: 12, name: "Task 12", state: "done" },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(
+    mockTasks.map((task) => ({
+      ...task,
+      status:
+        task.status === "To Do"
+          ? TaskStatus.TODO
+          : task.status === "Doing"
+          ? TaskStatus.DOING
+          : task.status === "Revision"
+          ? TaskStatus.REVISION
+          : task.status === "Done"
+          ? TaskStatus.DONE
+          : TaskStatus.TODO,
+    }))
+  );
 
-  function updateTaskState(taskId, newState) {
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  function updateTaskState(taskId: number, newState: TaskStatus) {
     setTasks((prev) =>
       prev.map((task) =>
-        task.id === taskId ? { ...task, state: newState } : task
+        task.id === taskId ? { ...task, status: newState } : task
       )
     );
   }
 
+  function handleTaskClick(task: Task) {
+    setSelectedTask(task);
+  }
+
+  function closeModal() {
+    setSelectedTask(null);
+  }
+
+  const columns = [
+    TaskStatus.TODO,
+    TaskStatus.DOING,
+    TaskStatus.REVISION,
+    TaskStatus.DONE,
+  ];
+
   return (
     <div className="board-container">
-      <Canva
-        state="to_do"
-        tasks={tasks.filter((t) => t.state === "to_do")}
-        updateTaskState={updateTaskState}
-      />
-      <Canva
-        state="doing"
-        tasks={tasks.filter((t) => t.state === "doing")}
-        updateTaskState={updateTaskState}
-      />
-      <Canva
-        state="revision"
-        tasks={tasks.filter((t) => t.state === "revision")}
-        updateTaskState={updateTaskState}
-      />
-      <Canva
-        state="done"
-        tasks={tasks.filter((t) => t.state === "done")}
-        updateTaskState={updateTaskState}
-      />
+      <div className="board-columns">
+        {columns.map((status) => (
+          <Canva
+            key={status}
+            state={status}
+            tasks={tasks.filter((t) => t.status === status)}
+            updateTaskState={updateTaskState}
+            onTaskClick={handleTaskClick}
+          />
+        ))}
+      </div>
+
+      {/* Modal */}
+      {selectedTask && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()} 
+          >
+            <button className="modal-close-btn" onClick={closeModal}>
+              ×
+            </button>
+            <TaskDescription task={selectedTask} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

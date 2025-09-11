@@ -1,0 +1,14 @@
+.task-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.task-status {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.status-active { color: green; }
+.status-in\ progress { color: orange; }
+.status-completed { color: blue; }
+.status-blocked { color: red; }

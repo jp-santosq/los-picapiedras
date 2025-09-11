@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
 import "../styles/components/navbar.css";
 
+
 function NavBar() {
   const HomePage = () => {
     return <h1> Home </h1>;
@@ -17,11 +18,13 @@ function NavBar() {
 
   return (
     <>
+
       <BrowserRouter>
         <div className="navbar-container">
+          <img src="../images/oracle.png" alt="" />
           <div>
             <nav className="navbar">
-              <Link to={"/"}>Home Page</Link>
+              <Link to={"/Dashboard"}>Home Page</Link>
               <Link to={"/Dashboard"}>Board</Link>
               <Link to={"/About-page"}>About Page</Link>
               <Link to={"/Contact"}>Contact Page</Link>
