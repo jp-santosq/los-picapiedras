@@ -20,7 +20,8 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       estimatedDate: "2025-09-20",
       storyPoints: 5,
       project: "los-picapiedras #13",
-      description: "Implementar pantalla y lógica de autenticación para usuarios.",
+      description:
+        "Implementar pantalla y lógica de autenticación para usuarios.",
     },
     {
       id: 2,
@@ -30,14 +31,51 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       estimatedDate: "2025-09-22",
       storyPoints: 8,
       project: "los-picapiedras #7",
-      description: "Permitir la creación de nuevos proyectos dentro de la plataforma.",
+      description:
+        "Permitir la creación de nuevos proyectos dentro de la plataforma.",
+    },
+    {
+      id: 3,
+      name: "HU07: Creación de Sprint y asignación de tareas",
+      status: TaskStatus.TODO,
+      responsible: "Scrum Master",
+      estimatedDate: "2025-09-25",
+      storyPoints: 13,
+      project: "los-picapiedras",
+      description:
+        "Funcionalidad para crear sprints y asignar tareas a los desarrolladores.",
+    },
+    {
+      id: 4,
+      name: "HU06: Gestión de tareas desarrollador",
+      status: TaskStatus.TODO,
+      responsible: "Equipo Fullstack",
+      estimatedDate: "2025-09-23",
+      storyPoints: 8,
+      project: "los-picapiedras",
+      description:
+        "Permitir que los desarrolladores gestionen sus propias tareas (crear, actualizar, marcar completadas).",
+    },
+    {
+      id: 5,
+      name: "HU01: Visualización de KPIs Manager",
+      status: TaskStatus.TODO,
+      responsible: "Equipo Data",
+      estimatedDate: "2025-09-28",
+      storyPoints: 5,
+      project: "los-picapiedras",
+      description:
+        "El manager podrá visualizar KPIs clave sobre el desempeño del equipo.",
     },
   ]);
 
   function addTask(task: Omit<Task, "id">) {
     setTasks((prev) => [
       ...prev,
-      { id: prev.length + 1, ...task } // genera id simple
+      {
+        id: Math.max(0, ...prev.map((t) => t.id)) + 1, // Genera ID único
+        ...task,
+      },
     ]);
   }
 

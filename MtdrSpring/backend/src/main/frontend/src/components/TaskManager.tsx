@@ -18,7 +18,10 @@ export function TaskManager() {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
-    setNewTask((prev) => ({ ...prev, [name]: value }));
+    setNewTask((prev) => ({ 
+      ...prev, 
+      [name]: name === "storyPoints" ? parseInt(value) || 0 : value 
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -46,14 +49,14 @@ export function TaskManager() {
       </div>
 
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Crear Nueva Tarea</h3>
             <form onSubmit={handleSubmit} className="task-form">
               <input type="text" name="name" placeholder="Nombre de la tarea" value={newTask.name} onChange={handleChange} required />
               <input type="text" name="responsible" placeholder="Responsable" value={newTask.responsible} onChange={handleChange} required />
               <input type="date" name="estimatedDate" value={newTask.estimatedDate} onChange={handleChange} required />
-              <input type="number" name="storyPoints" placeholder="Story Points" value={newTask.storyPoints} onChange={handleChange} required />
+              <input type="number" name="storyPoints" placeholder="Story Points" value={newTask.storyPoints} onChange={handleChange} required min="0" />
               <textarea name="description" placeholder="Descripción" value={newTask.description} onChange={handleChange} />
 
               <div className="modal-actions">

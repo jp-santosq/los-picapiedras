@@ -19,7 +19,6 @@ function AppContent() {
   return (
     <>
       <NavBar />
-      
     </>
   );
 }
