@@ -2,7 +2,7 @@ import React from "react";
 import Task from "./Task.tsx";
 import "../styles/components/canva.css";
 
-function Canva({ state, tasks, updateTaskState }) {
+function Canva({ state, tasks, updateTaskState, onTaskClick }) {
   function handleOnDragOver(e) {
     e.preventDefault();
   }
@@ -10,7 +10,7 @@ function Canva({ state, tasks, updateTaskState }) {
   function handleOnDrop(e) {
     const taskId = Number(e.dataTransfer.getData("id"));
     if (taskId) {
-      updateTaskState(taskId, state); // actualiza el estado de la tarea
+      updateTaskState(taskId, state);
     }
   }
 
@@ -28,6 +28,7 @@ function Canva({ state, tasks, updateTaskState }) {
             id={task.id}
             name={task.name}
             state={task.state}
+            onClick={() => onTaskClick(task)}
           />
         ))}
     </div>

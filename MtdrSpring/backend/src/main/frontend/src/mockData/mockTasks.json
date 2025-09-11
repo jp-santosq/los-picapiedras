@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "HU03: Login",
+    "status": "To Do",
+    "responsible": "Equipo Frontend",
+    "estimatedDate": "2025-09-20",
+    "storyPoints": 5,
+    "project": "los-picapiedras",
+    "description": "Implementar pantalla y lógica de autenticación para usuarios."
+  },
+  {
+    "id": 2,
+    "name": "HU05: Creación de proyectos",
+    "status": "To Do",
+    "responsible": "Equipo Backend",
+    "estimatedDate": "2025-09-22",
+    "storyPoints": 8,
+    "project": "los-picapiedras",
+    "description": "Permitir la creación de nuevos proyectos dentro de la plataforma."
+  },
+  {
+    "id": 3,
+    "name": "HU07: Creación de Sprint y asignación de tareas",
+    "status": "To Do",
+    "responsible": "Scrum Master",
+    "estimatedDate": "2025-09-25",
+    "storyPoints": 13,
+    "project": "los-picapiedras",
+    "description": "Funcionalidad para crear sprints y asignar tareas a los desarrolladores."
+  },
+  {
+    "id": 4,
+    "name": "HU06: Gestión de tareas desarrollador",
+    "status": "To Do",
+    "responsible": "Equipo Fullstack",
+    "estimatedDate": "2025-09-23",
+    "storyPoints": 8,
+    "project": "los-picapiedras",
+    "description": "Permitir que los desarrolladores gestionen sus propias tareas (crear, actualizar, marcar completadas)."
+  },
+  {
+    "id": 5,
+    "name": "HU01: Visualización de KPIs Manager",
+    "status": "To Do",
+    "responsible": "Equipo Data",
+    "estimatedDate": "2025-09-28",
+    "storyPoints": 5,
+    "project": "los-picapiedras",
+    "description": "El manager podrá visualizar KPIs clave sobre el desempeño del equipo."
+  }
+]
