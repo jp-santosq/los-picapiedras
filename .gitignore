@@ -24,6 +24,7 @@ MtdrSpring/backend/wallet
 MtdrSpring/backend/buildImgContainer.bat
 MtdrSpring/backend/minikube/win-todolistapp-springboot.yaml
 MtdrSpring/backend/minikube/status.sh
+MtdrSpring/backend/src/main/resources/todolistapp-springboot.yaml
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 *~
