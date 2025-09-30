@@ -1,6 +1,10 @@
 package com.springboot.MyTodoList.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 
 @Entity
@@ -30,7 +34,13 @@ public class Tarea {
 
     @ManyToOne
     @JoinColumn(name = "id_sprint", nullable = false)
+    @JsonBackReference
     private Sprint sprint;
+
+    @ManyToOne
+    @JoinColumn(name = "id_desarrollador", nullable = false)
+    @JsonBackReference(value="desarrollador-tareas")
+    private Usuario desarrollador;   
 
     // Constructor sin argumentos
     public Tarea() {
@@ -102,6 +112,14 @@ public class Tarea {
 
     public void setSprint(Sprint sprint) {
         this.sprint = sprint;
+    }
+
+    public Usuario getDesarrollador() {
+        return desarrollador;
+    }
+
+    public void setDesarrollador(Usuario desarrollador) {
+        this.desarrollador = desarrollador;
     }
 
     // toString opcional

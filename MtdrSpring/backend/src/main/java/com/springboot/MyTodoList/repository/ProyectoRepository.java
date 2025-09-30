@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 @Repository
@@ -13,5 +15,6 @@ import javax.transaction.Transactional;
 @EnableTransactionManagement
 public interface ProyectoRepository extends JpaRepository<Proyecto,Long> {
 
+    List<Proyecto> findByAdministradorId(Long idAdministrador);
 
 }

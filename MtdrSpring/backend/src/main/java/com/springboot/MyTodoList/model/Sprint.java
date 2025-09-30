@@ -1,6 +1,10 @@
 package com.springboot.MyTodoList.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -27,6 +31,7 @@ public class Sprint {
     private Proyecto proyecto;
 
     @OneToMany(mappedBy = "sprint")
+    @JsonManagedReference
     private List<Tarea> tareas = new ArrayList<>();
 
     // Constructor sin argumentos

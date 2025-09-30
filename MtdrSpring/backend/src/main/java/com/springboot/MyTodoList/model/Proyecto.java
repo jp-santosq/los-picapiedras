@@ -1,6 +1,9 @@
 package com.springboot.MyTodoList.model;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 
 @Entity
@@ -20,6 +23,7 @@ public class Proyecto {
     private Usuario administrador;
 
     @OneToMany(mappedBy = "proyecto")
+    @JsonIgnore
     private List<Sprint> sprints = new ArrayList<>();
 
     // Constructor sin argumentos
