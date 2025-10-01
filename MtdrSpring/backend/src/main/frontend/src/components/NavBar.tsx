@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
+import Sprints from "../pages/Sprints.tsx";
 import "../styles/components/navbar.css";
 
 
@@ -26,6 +27,7 @@ function NavBar() {
             <nav className="navbar">
               <Link to={"/Dashboard"}>Home Page</Link>
               <Link to={"/Dashboard"}>Board</Link>
+              <Link to={"/Sprints"}>Sprints</Link>
               <Link to={"/About-page"}>About Page</Link>
               <Link to={"/Contact"}>Contact Page</Link>
             </nav>
@@ -35,6 +37,7 @@ function NavBar() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/Dashboard" element={<Dashboard />} />
+          <Route path="/Sprints" element={<Sprints />} />
           <Route path="/About-page" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
         </Routes>
