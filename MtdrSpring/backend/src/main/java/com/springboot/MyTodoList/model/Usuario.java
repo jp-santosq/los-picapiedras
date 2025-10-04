@@ -34,6 +34,12 @@ public class Usuario {
     @Column(nullable = false, length = 30)
     private String modalidad;
 
+    @Column(name="correo",nullable = false, length=60)
+    private String correo;
+
+    @Column(name="contrasena",nullable = false,length=60)
+    private String contrasena;
+
     @ManyToOne
     @JoinColumn(name = "id_rol", nullable = false)
     private Rol rol;
@@ -51,6 +57,8 @@ public class Usuario {
         this.correo = correo;
         this.password = password;
         this.modalidad = modalidad;
+        this.correo=correo;
+        this.contrasena=contrasena;
         this.rol = rol;
     }
 
@@ -61,6 +69,22 @@ public class Usuario {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCorreo(){
+        return correo;
+    }
+
+    public void setCorreo(String correo){
+        this.correo=correo;
+    }
+
+    public String getContrasena(){
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena){
+        this.contrasena=contrasena;
     }
 
     public String getNombreUsuario() {
