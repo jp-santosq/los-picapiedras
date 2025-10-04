@@ -2,6 +2,7 @@ package com.springboot.MyTodoList.model;
 
 import jakarta.persistence.*;
 import java.util.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "proyecto")

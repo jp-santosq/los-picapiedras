@@ -16,9 +16,6 @@ public class Usuario {
     @Column(name = "nombre_usuario", nullable = false, length = 60)
     private String nombreUsuario;
 
-    @Column(nullable = false, length = 100)
-    private String correo;
-
     @Column(nullable = false, length = 20)
     private String password;
 
@@ -27,9 +24,6 @@ public class Usuario {
 
     @Column(name="correo",nullable = false, length=60)
     private String correo;
-
-    @Column(name="contrasena",nullable = false,length=60)
-    private String contrasena;
 
     @ManyToOne
     @JoinColumn(name = "id_rol", nullable = false)
@@ -48,8 +42,6 @@ public class Usuario {
         this.correo = correo;
         this.password = password;
         this.modalidad = modalidad;
-        this.correo=correo;
-        this.contrasena=contrasena;
         this.rol = rol;
     }
 
@@ -70,28 +62,12 @@ public class Usuario {
         this.correo=correo;
     }
 
-    public String getContrasena(){
-        return contrasena;
-    }
-
-    public void setContrasena(String contrasena){
-        this.contrasena=contrasena;
-    }
-
     public String getNombreUsuario() {
         return nombreUsuario;
     }
 
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
     }
 
     public String getPassword() {
