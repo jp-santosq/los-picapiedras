@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../../oracle-sans/OracleSans-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}

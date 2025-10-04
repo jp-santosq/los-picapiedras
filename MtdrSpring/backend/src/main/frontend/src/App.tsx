@@ -1,13 +1,16 @@
 /*
-Ultima modificacion Pedro Sanchez
-3/9/2025
+-- Modificaciones -- 
+Pedro Sanchez 3/9/2025
+Ale Teran 2/10/2025
 */
 
 import { AuthProvider } from "./context/AuthContext.tsx";
 import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
 import "./styles/index.css";
+import "./styles/fonts.css";
 import { useAuth } from "./context/AuthContext.tsx";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function AppContent() {
   const { user } = useAuth();
@@ -23,11 +26,19 @@ function AppContent() {
   );
 }
 
+const theme = createTheme({
+  typography: {
+    fontFamily: '"Oracle Sans", sans-serif',
+  },
+});
+
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
