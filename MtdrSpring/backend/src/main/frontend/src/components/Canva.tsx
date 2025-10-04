@@ -1,8 +1,10 @@
 import React from "react";
 import Task from "./Task.tsx";
 import "../styles/components/canva.css";
+import { useAuth } from "../context/AuthContext.tsx";
 
 function Canva({ state, tasks, updateTaskState, onTaskClick }) {
+  const { user } = useAuth();
   function handleOnDragOver(e) {
     e.preventDefault();
   }
@@ -22,15 +24,21 @@ function Canva({ state, tasks, updateTaskState, onTaskClick }) {
     >
       <h3>{state}</h3>
       {Array.isArray(tasks) &&
-        tasks.map((task) => (
-          <Task
-            key={task.id}
-            id={task.id}
-            name={task.name}
-            state={task.state}
-            onClick={() => onTaskClick(task)}
-          />
-        ))}
+        tasks
+          .filter((task) => {
+            console.log("Comparando", task.responsibleId, user?.id);
+            return user && Number(task.responsibleId) === Number(user.id);
+          })
+          .map((task) => (
+            <Task
+              key={task.id}
+              id={task.id}
+              responsibleId={task.responsibleId}
+              name={task.name}
+              state=""
+              onClick={() => onTaskClick(task)}
+            />
+          ))}
     </div>
   );
 }

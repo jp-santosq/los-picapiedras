@@ -1,9 +1,9 @@
 import React from "react";
 import "../styles/components/task.css";
 
-function Task({ id, name, state, onClick }) {
+function Task({ id ,responsibleId,name, state, onClick }) {
   function handleOnDrag(e) {
-    e.dataTransfer.setData("id", id); // solo mandamos el id
+    e.dataTransfer.setData("id", id);
   }
 
   return (
