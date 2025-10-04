@@ -1,14 +1,9 @@
 package com.springboot.MyTodoList.model;
 
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
 /*
     representation of the TODOITEM table that exists already
