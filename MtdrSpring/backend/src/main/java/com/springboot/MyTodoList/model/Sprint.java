@@ -2,7 +2,12 @@ package com.springboot.MyTodoList.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 @Entity
 @Table(name = "sprint")
@@ -24,9 +29,11 @@ public class Sprint {
 
     @ManyToOne
     @JoinColumn(name = "id_proyecto", nullable = false)
+    @JsonBackReference
     private Proyecto proyecto;
 
     @OneToMany(mappedBy = "sprint")
+    @JsonManagedReference
     private List<Tarea> tareas = new ArrayList<>();
 
     // Constructor sin argumentos

@@ -1,18 +1,14 @@
 package com.springboot.MyTodoList.repository;
 
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.springboot.MyTodoList.model.DependenciaTarea;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.springboot.MyTodoList.model.ToDoItem;
-
 import jakarta.transaction.Transactional;
 
-@Repository
+
 @Transactional
 @EnableTransactionManagement
-public interface ToDoItemRepository extends JpaRepository<ToDoItem,Integer> {
-
-
+@Repository
+public interface DependenciaTareaRepository extends JpaRepository<DependenciaTarea, Long> {
 }

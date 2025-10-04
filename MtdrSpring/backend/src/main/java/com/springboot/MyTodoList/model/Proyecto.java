@@ -20,6 +20,7 @@ public class Proyecto {
     private Usuario administrador;
 
     @OneToMany(mappedBy = "proyecto")
+    @JsonManagedReference
     private List<Sprint> sprints = new ArrayList<>();
 
     // Constructor sin argumentos

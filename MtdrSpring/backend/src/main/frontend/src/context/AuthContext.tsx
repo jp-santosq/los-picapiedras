@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-export type User = { id: string; name: string; email: string; isAdmin: boolean } | null;
+export type User = { id: number; name: string; email: string; isAdmin: boolean } | null;
 
 type AuthContextType = {
   user: User;
@@ -17,7 +17,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let tries = 0;
     while (tries < 3) {
       if (mail === "prueba@oracle.com" && password === "12345") {
-        const fakeUser: User = { id: "1", name: "Juan Pérez", email: mail, isAdmin: true };
+        const fakeUser: User = { id: 3, name: "Juan Pérez", email: mail, isAdmin: true };
         setUser(fakeUser);
         return true;
       } else {

@@ -5,6 +5,7 @@ export interface Task {
   id: number;
   name: string;
   responsible: string;
+  responsibleId: number;
   estimatedDate: string;
   storyPoints: number;
   project: string;

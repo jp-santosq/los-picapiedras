@@ -1,6 +1,8 @@
 package com.springboot.MyTodoList.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -14,7 +16,13 @@ public class Usuario {
     @Column(name = "nombre_usuario", nullable = false, length = 60)
     private String nombreUsuario;
 
-    @Column(name = "modalidad", nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
+    private String correo;
+
+    @Column(nullable = false, length = 20)
+    private String password;
+
+    @Column(nullable = false, length = 30)
     private String modalidad;
 
     @Column(name="correo",nullable = false, length=60)
@@ -27,14 +35,18 @@ public class Usuario {
     @JoinColumn(name = "id_rol", nullable = false)
     private Rol rol;
 
+
     // Constructor sin argumentos
     public Usuario() {
     }
 
     // Constructor con todos los campos
-    public Usuario(Long id, String nombreUsuario, String modalidad,String correo, String contrasena, Rol rol) {
+    public Usuario(Long id, String nombreUsuario, String correo, String password,
+                   String modalidad, Rol rol, List<Proyecto> proyectosAdministrados) {
         this.id = id;
         this.nombreUsuario = nombreUsuario;
+        this.correo = correo;
+        this.password = password;
         this.modalidad = modalidad;
         this.correo=correo;
         this.contrasena=contrasena;
@@ -74,6 +86,22 @@ public class Usuario {
         this.nombreUsuario = nombreUsuario;
     }
 
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getModalidad() {
         return modalidad;
     }
@@ -90,14 +118,16 @@ public class Usuario {
         this.rol = rol;
     }
 
+
     // toString opcional
     @Override
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
                 ", nombreUsuario='" + nombreUsuario + '\'' +
+                ", correo='" + correo + '\'' +
                 ", modalidad='" + modalidad + '\'' +
-                ", rol=" + rol +
+                ", rol=" + (rol != null ? rol.getId() : null) +
                 '}';
     }
 }
