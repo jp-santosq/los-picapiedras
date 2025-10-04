@@ -9,6 +9,7 @@ export function TaskManager() {
   const [newTask, setNewTask] = useState({
     name: "",
     responsible: "",
+    responsibleId:0,
     estimatedDate: "",
     storyPoints: 0,
     description: "",
@@ -31,6 +32,7 @@ export function TaskManager() {
     setNewTask({
       name: "",
       responsible: "",
+      responsibleId:0,
       estimatedDate: "",
       storyPoints: 0,
       description: "",

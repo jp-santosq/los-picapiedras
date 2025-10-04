@@ -1,16 +1,25 @@
 package com.springboot.MyTodoList.service;
 
+import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.springboot.MyTodoList.model.EstadoTarea;
 import com.springboot.MyTodoList.repository.EstadoTareaRepository;
+
 
 @Service
 public class EstadoTareaService {
 
     @Autowired
     private EstadoTareaRepository estadoTareaRepository;
+
+    public List<EstadoTarea> findAll(){
+        List<EstadoTarea> estados = estadoTareaRepository.findAll();
+        return estados;
+    }
 
     // Metodo para crear estado para una tarea
     public EstadoTarea addEstadoTarea(EstadoTarea newEstadoTarea) {
