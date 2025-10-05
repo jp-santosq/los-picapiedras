@@ -31,7 +31,9 @@ function Board() {
           <Canva
             key={status}
             state={status}
-            tasks={tasks.filter((t) => t.status === status)}
+            tasks={tasks.filter((t) => 
+              t.status === status
+            )}
             updateTaskState={updateTaskState}
             onTaskClick={handleTaskClick}
           />
