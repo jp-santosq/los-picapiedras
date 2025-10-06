@@ -3,6 +3,7 @@ package com.springboot.MyTodoList.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import com.springboot.MyTodoList.repository.ProyectoRepository;
 import com.springboot.MyTodoList.repository.SprintRepository;
 import com.springboot.MyTodoList.repository.TareaRepository;
 import com.springboot.MyTodoList.repository.UsuarioRepository;
+import com.springboot.MyTodoList.service.TareaService;
 
 @RestController
 @RequestMapping("/tarea")
@@ -33,6 +35,9 @@ public class TareaController {
 
     @Autowired
     private TareaRepository tareaRepository;
+
+    @Autowired
+    private TareaService tareaService;
 
     @Autowired
     private EstadoTareaRepository estadoTareaRepository;
@@ -158,5 +163,19 @@ public class TareaController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // Obtener tareas por id de sprint
+    @GetMapping("sprint/{id}")
+    public ResponseEntity<List<Tarea>> getTareasBySprintId(@PathVariable Long idSprint){
+        List<Tarea> tareas = tareaService.getTareasBySprintId(idSprint);
+        return new ResponseEntity<>(tareas, HttpStatus.OK);
+    }
+
+    // Obtener tareas por id de usurio
+    @GetMapping("usuario/{id}")
+    public ResponseEntity<List<Tarea>> getTareasByUsuarioId(@PathVariable Long idUsuario){
+        List<Tarea> tareas = tareaService.getTareasByUsuarioId(idUsuario);
+        return new ResponseEntity<>(tareas, HttpStatus.OK);
     }
 }

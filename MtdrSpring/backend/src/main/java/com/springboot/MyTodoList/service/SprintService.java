@@ -28,6 +28,7 @@ public class SprintService {
     public Optional<Sprint> getSprintById(Long id) {
         return sprintRepository.findById(id);
     }
+    
     // Obtener sprints por id de proyecto
     public List<Sprint> getSprintsByProyectoId(Long idProyecto) {
         return sprintRepository.findByProyectoId(idProyecto);
