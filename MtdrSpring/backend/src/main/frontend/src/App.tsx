@@ -6,6 +6,7 @@ Christel Gomez 5/10/2025
 */
 
 import { AuthProvider } from "./context/AuthContext.tsx";
+import { TasksProvider } from "./context/TaskContext.tsx";
 import { SprintsProvider } from './context/SprintContext';
 import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
@@ -38,9 +39,11 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
-        <SprintsProvider> 
-          <AppContent />
-        </SprintsProvider>
+        <TasksProvider>    
+          <SprintsProvider> 
+            <AppContent />
+          </SprintsProvider>
+        </TasksProvider> 
       </AuthProvider>
     </ThemeProvider>
   );
