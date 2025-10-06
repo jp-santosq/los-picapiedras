@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { useSprints } from '../context/SprintContext';
-import SprintCard from '../components/Sprint/SprintCard';
-import CreateSprintModal from '../components/Sprint/CreateSprintModal';
-import SprintDetailsModal from '../components/Sprint/SprintDetailsModal';
+import { useSprints } from '../context/SprintContext.tsx';
+import SprintCard from '../components/Sprint/SprintCard.tsx';
+import CreateSprintModal from '../components/Sprint/CreateSprintModal.tsx';
+import SprintDetailsModal from '../components/Sprint/SprintDetailsModal.tsx';
 import '../styles/components/sprints.css';
 
 const Sprints: React.FC = () => {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSprints } from '../../context/SprintContext';
+import { useSprints } from '../../context/SprintContext.tsx';
 import '../../styles/components/modal.css';
 
 interface CreateSprintModalProps {

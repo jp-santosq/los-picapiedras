@@ -15,16 +15,25 @@ interface TasksContextProps {
   updateTaskState: (taskId: number, newState: TaskStatus) => void;
 }
 
-const normalizarEstado = (nombre: string) => {
-  switch (nombre.toLowerCase()) {
+// Mapeo para enviar al backend
+const estadoMapBackend = {
+  [TaskStatus.TODO]: 1,
+  [TaskStatus.DOING]: 2,
+  [TaskStatus.REVISION]: 3,
+  [TaskStatus.DONE]: 4,
+};
+
+// Normaliza el estado del backend a TaskStatus
+const normalizeStatus = (nombre: string): TaskStatus => {
+  switch (nombre?.toLowerCase()) {
     case "todo":
+    case "to do":
       return TaskStatus.TODO;
     case "doing":
-    case "process":
     case "en progreso":
       return TaskStatus.DOING;
-    case "en revision":
     case "revision":
+    case "en revision":
       return TaskStatus.REVISION;
     case "done":
     case "terminado":
@@ -41,47 +50,53 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-    const fetchTareas = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/tarea");
-        let tareasBackend: any = response.data;
-        if (typeof tareasBackend === "string") {
-          tareasBackend = JSON.parse(tareasBackend);
-        }
+  const fetchTareas = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/tarea");
+      const tareasBackend = response.data as any[];
 
-        const tareasMapeadas: Task[] = tareasBackend.map((tarea: any) => ({
-          id: tarea.id,
-          name: tarea.titulo,
-          description: tarea.descripcion,
-          responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
-          responsibleId: tarea.desarrollador?.id || 0,
-          estimatedDate: tarea.fechaFinEstimada,
-          storyPoints: tarea.prioridad,
-          project: tarea.proyecto?.nombreProyecto || "Sin proyecto",
-          status: normalizarEstado(tarea.estadoTarea?.nombreEstado || "TODO"),
-        }));
+      const estadoMapFrontend: Record<number, TaskStatus> = {
+        1: TaskStatus.TODO,
+        2: TaskStatus.DOING,
+        3: TaskStatus.REVISION,
+        4: TaskStatus.DONE,
+      };
 
-        setTasks(tareasMapeadas);
-        console.log("Tareas cargadas:", tareasMapeadas);
-      } catch (error) {
-        console.error("Error al obtener las tareas:", error);
-      }
-    };
+      const tareasMapeadas: Task[] = tareasBackend.map((tarea) => ({
+        id: tarea.id,
+        name: tarea.titulo,
+        description: tarea.descripcion,
+        responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
+        responsibleId: tarea.desarrollador?.id || 0,
+        estimatedDate: tarea.fechaFinEstimada,
+        storyPoints: tarea.prioridad,
+        project: tarea.proyecto?.nombreProyecto || "Sin proyecto",
+        status: tarea.estadoTarea
+          ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
+          : TaskStatus.TODO,
+      }));
 
-    fetchTareas();
-  }, []);
+      setTasks(tareasMapeadas);
+      console.log("Tareas cargadas:", tareasMapeadas);
+    } catch (error) {
+      console.error("Error al obtener las tareas:", error);
+    }
+  };
 
-  // 🔹 Nuevo método que guarda en backend
+  fetchTareas();
+}, []);
+
+
   const addTask = async (task: Omit<Task, "id">) => {
     try {
       const dto = {
         titulo: task.name,
         descripcion: task.description,
-        fechaInicio: new Date().toISOString().split("T")[0], // hoy
+        fechaInicio: new Date().toISOString().split("T")[0],
         fechaFinEstimada: task.estimatedDate,
         fechaFinReal: null,
         prioridad: task.storyPoints,
-        estadoTareaId: 1,
+        estadoTareaId: estadoMapBackend[TaskStatus.TODO], 
         proyectoId: 1,
         sprintId: 1,
         desarrolladorId: task.responsibleId || 1,
@@ -89,7 +104,6 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       };
 
       const response = await axios.post("http://localhost:8080/tarea", dto);
-
       const tareaCreada = response.data;
 
       const nuevaTask: Task = {
@@ -101,7 +115,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         estimatedDate: tareaCreada.fechaFinEstimada,
         storyPoints: tareaCreada.prioridad,
         project: tareaCreada.proyecto?.nombreProyecto || "Sin proyecto",
-        status: normalizarEstado(tareaCreada.estadoTarea?.nombreEstado || "TODO"),
+        status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado),
       };
 
       setTasks((prev) => [...prev, nuevaTask]);
@@ -112,12 +126,27 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateTaskState = (taskId: number, newState: TaskStatus) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, status: newState } : task
-      )
-    );
+  // Actualizar solo el estado de la tarea
+  const updateTaskState = async (taskId: number, newState: TaskStatus) => {
+    const estadoTareaId = estadoMapBackend[newState];
+
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/tarea/${taskId}/estado/${estadoTareaId}`
+      );
+
+      if (response.status === 200) {
+        setTasks((prev) =>
+          prev.map((task) =>
+            task.id === taskId ? { ...task, status: newState } : task
+          )
+        );
+        console.log(`Estado de tarea ${taskId} actualizado a ${newState}`);
+      }
+    } catch (error) {
+      console.error("Error al actualizar estado:", error);
+      alert("No se pudo actualizar el estado de la tarea.");
+    }
   };
 
   return (

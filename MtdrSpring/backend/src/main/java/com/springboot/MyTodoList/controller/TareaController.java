@@ -111,43 +111,18 @@ public class TareaController {
     }
 
     // Actualizar tarea
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateTarea(@PathVariable Long id, @RequestBody TareaDTO dto) {
+    @PutMapping("/{id}/estado/{estadoId}")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Long id,
+            @PathVariable Long estadoId) {
         return tareaRepository.findById(id)
-                .map(t -> {
-                    t.setTitulo(dto.titulo);
-                    t.setDescripcion(dto.descripcion);
-                    t.setFechaInicio(dto.fechaInicio);
-                    t.setFechaFinEstimada(dto.fechaFinEstimada);
-                    t.setFechaFinReal(dto.fechaFinReal);
-                    t.setPrioridad(dto.prioridad);
-
-                    estadoTareaRepository.findById(dto.estadoTareaId)
-                            .ifPresent(t::setEstadoTarea);
-
-                    proyectoRepository.findById(dto.proyectoId)
-                            .ifPresent(t::setProyecto);
-
-                    if (dto.sprintId != null) {
-                        sprintRepository.findById(dto.sprintId).ifPresent(t::setSprint);
-                    } else {
-                        t.setSprint(null);
-                    }
-
-                    if (dto.desarrolladorId != null) {
-                        usuarioRepository.findById(dto.desarrolladorId).ifPresent(t::setDesarrollador);
-                    } else {
-                        t.setDesarrollador(null);
-                    }
-
-                    if (dto.historiaUsuarioId != null) {
-                        historiaUsuarioRepository.findById(dto.historiaUsuarioId)
-                                .ifPresent(t::setHistoriaUsuario);
-                    }
-
-                    return ResponseEntity.ok(tareaRepository.save(t));
-                })
-                .orElse(ResponseEntity.notFound().build());
+            .map(t -> {
+                estadoTareaRepository.findById(estadoId)
+                    .ifPresent(t::setEstadoTarea);
+                tareaRepository.save(t);
+                return ResponseEntity.ok(t);
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 
     // Eliminar tarea
