@@ -141,10 +141,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
             task.id === taskId ? { ...task, status: newState } : task
           )
         );
-        console.log(`✅ Estado de tarea ${taskId} actualizado a ${newState}`);
+        console.log(`Estado de tarea ${taskId} actualizado a ${newState}`);
       }
     } catch (error) {
-      console.error("❌ Error al actualizar estado:", error);
+      console.error("Error al actualizar estado:", error);
       alert("No se pudo actualizar el estado de la tarea.");
     }
   };
