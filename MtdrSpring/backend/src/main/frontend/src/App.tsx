@@ -37,15 +37,15 @@ const theme = createTheme({
 
 function App() {
   return (
-    <TasksProvider>
-      <ThemeProvider theme={theme}>
-        <AuthProvider>
-          <SprintsProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <TasksProvider>    
+          <SprintsProvider> 
             <AppContent />
           </SprintsProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </TasksProvider>
+        </TasksProvider> 
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
