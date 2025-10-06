@@ -1,34 +1,149 @@
 .sprint-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
-  margin: 0.5rem 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .sprint-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #4a90e2;
+}
+
+.sprint-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .sprint-info {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .sprint-title {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-.sprint-info p {
-  margin: 0.2rem 0;
+.sprint-status {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-active {
+  background-color: #cce5ff;
+  color: #004085;
+}
+
+.status-upcoming {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-overdue {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.sprint-duration {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.duration-text {
   font-size: 0.9rem;
-  color: #555;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.sprint-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.date-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  font-size: 0.95rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.date-separator {
+  color: #adb5bd;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.sprint-tasks-info {
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.tasks-count {
+  font-size: 0.9rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .sprint-card {
+    padding: 16px;
+  }
+
+  .sprint-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .date-info {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .date-separator {
+    transform: rotate(90deg);
+  }
 }

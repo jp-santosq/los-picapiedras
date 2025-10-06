@@ -2,9 +2,11 @@
 -- Modificaciones -- 
 Pedro Sanchez 3/9/2025
 Ale Teran 2/10/2025
+Christel Gomez 5/10/2025
 */
 
 import { AuthProvider } from "./context/AuthContext.tsx";
+import { SprintsProvider } from './context/SprintContext';
 import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
 import "./styles/index.css";
@@ -38,7 +40,9 @@ function App() {
     <TasksProvider>
       <ThemeProvider theme={theme}>
         <AuthProvider>
+          <SprintsProvider> 
           <AppContent />
+        </SprintsProvider>
         </AuthProvider>
       </ThemeProvider>
     </TasksProvider>
