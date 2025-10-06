@@ -81,7 +81,7 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
       await addSprint({
         fechaInicio: formData.fechaInicio,
         fechaFinEstimada: formData.fechaFinEstimada,
-        proyecto: { id: formData.proyectoId }
+        proyectoId: formData.proyectoId
       });
       
       setFormData({

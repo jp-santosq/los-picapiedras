@@ -1,9 +1,9 @@
 import React, {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    ReactNode,
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
 } from "react";
 import axios from "axios";
 
@@ -19,11 +19,18 @@ export interface Sprint {
   tareas?: any[];
 }
 
+export interface CreateSprintDTO {
+  fechaInicio: string;
+  fechaFinEstimada: string;
+  fechaFinReal?: string;
+  proyectoId: number;
+}
+
 interface SprintsContextProps {
   sprints: Sprint[];
   loading: boolean;
   error: string | null;
-  addSprint: (sprint: Omit<Sprint, "id">) => Promise<void>;
+  addSprint: (sprint: CreateSprintDTO) => Promise<void>;
   updateSprint: (id: number, sprintData: Partial<Sprint>) => Promise<void>;
   deleteSprint: (id: number) => Promise<void>;
   completeSprint: (id: number) => Promise<void>;
@@ -62,10 +69,10 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
     fetchSprints();
   }, []);
 
-  const addSprint = async (sprint: Omit<Sprint, "id">) => {
+  const addSprint = async (sprintDTO: CreateSprintDTO) => {
     try {
-      const response = await axios.post("http://localhost:8080/sprint/add", sprint);
-      await fetchSprints(); // Recargar la lista
+      const response = await axios.post("http://localhost:8080/sprint/add", sprintDTO);
+      await fetchSprints();
       console.log("Sprint creado:", response.data);
     } catch (error) {
       console.error("Error al crear sprint:", error);
@@ -79,7 +86,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
         `http://localhost:8080/sprint/update/${id}`,
         sprintData
       );
-      await fetchSprints(); // Recargar la lista
+      await fetchSprints();
       console.log("Sprint actualizado:", response.data);
     } catch (error) {
       console.error("Error al actualizar sprint:", error);
@@ -90,7 +97,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
   const deleteSprint = async (id: number) => {
     try {
       await axios.delete(`http://localhost:8080/sprint/${id}`);
-      await fetchSprints(); // Recargar la lista
+      await fetchSprints();
       console.log("Sprint eliminado:", id);
     } catch (error) {
       console.error("Error al eliminar sprint:", error);
@@ -101,7 +108,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
   const completeSprint = async (id: number) => {
     try {
       const response = await axios.put(`http://localhost:8080/sprint/${id}/complete`);
-      await fetchSprints(); // Recargar la lista
+      await fetchSprints();
       console.log("Sprint completado:", response.data);
     } catch (error) {
       console.error("Error al completar sprint:", error);
