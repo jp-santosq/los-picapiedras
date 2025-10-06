@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "../styles/components/taskManager.css"; // 👈 reutilizamos el mismo CSS
-import mockSprints from "../mockData/mockSprints.json";
+import "../styles/components/taskManager.css"; 
+import mockSprints from "../../mockData/mockSprints.json";
 import SprintCard from "./SprintCard.tsx";
 
 interface Sprint {
