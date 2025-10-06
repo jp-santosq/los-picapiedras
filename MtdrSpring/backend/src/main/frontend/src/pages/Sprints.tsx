@@ -1,5 +1,5 @@
 import React from "react";
-import SprintManager from "../components/SprintManager.tsx";
+import SprintManager from "../components/Sprint/SprintManager.tsx";
 
 const Sprints: React.FC = () => {
   return (
