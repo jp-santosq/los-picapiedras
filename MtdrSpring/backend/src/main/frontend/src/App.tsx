@@ -6,7 +6,7 @@ Christel Gomez 5/10/2025
 */
 
 import { AuthProvider } from "./context/AuthContext.tsx";
-import { SprintsProvider } from './context/SprintContext';
+import { SprintsProvider } from "./context/SprintContext.tsx";
 import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
 import "./styles/index.css";
@@ -40,9 +40,9 @@ function App() {
     <TasksProvider>
       <ThemeProvider theme={theme}>
         <AuthProvider>
-          <SprintsProvider> 
-          <AppContent />
-        </SprintsProvider>
+          <SprintsProvider>
+            <AppContent />
+          </SprintsProvider>
         </AuthProvider>
       </ThemeProvider>
     </TasksProvider>
