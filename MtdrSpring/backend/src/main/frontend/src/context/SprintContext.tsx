@@ -1,0 +1,140 @@
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+} from "react";
+import axios from "axios";
+
+export interface Sprint {
+  id: number;
+  fechaInicio: string;
+  fechaFinEstimada: string;
+  fechaFinReal?: string;
+  proyecto: {
+    id: number;
+    nombreProyecto?: string;
+  };
+  tareas?: any[];
+}
+
+interface SprintsContextProps {
+  sprints: Sprint[];
+  loading: boolean;
+  error: string | null;
+  addSprint: (sprint: Omit<Sprint, "id">) => Promise<void>;
+  updateSprint: (id: number, sprintData: Partial<Sprint>) => Promise<void>;
+  deleteSprint: (id: number) => Promise<void>;
+  completeSprint: (id: number) => Promise<void>;
+  refreshSprints: () => Promise<void>;
+}
+
+const SprintsContext = createContext<SprintsContextProps | undefined>(undefined);
+
+export function SprintsProvider({ children }: { children: ReactNode }) {
+  const [sprints, setSprints] = useState<Sprint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSprints = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get("http://localhost:8080/sprint/all");
+      let sprintsBackend: any = response.data;
+      
+      if (typeof sprintsBackend === "string") {
+        sprintsBackend = JSON.parse(sprintsBackend);
+      }
+
+      setSprints(sprintsBackend);
+      console.log("Sprints cargados:", sprintsBackend);
+    } catch (error) {
+      console.error("Error al obtener los sprints:", error);
+      setError("Error al cargar los sprints");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSprints();
+  }, []);
+
+  const addSprint = async (sprint: Omit<Sprint, "id">) => {
+    try {
+      const response = await axios.post("http://localhost:8080/sprint/add", sprint);
+      await fetchSprints(); // Recargar la lista
+      console.log("Sprint creado:", response.data);
+    } catch (error) {
+      console.error("Error al crear sprint:", error);
+      throw error;
+    }
+  };
+
+  const updateSprint = async (id: number, sprintData: Partial<Sprint>) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/sprint/update/${id}`,
+        sprintData
+      );
+      await fetchSprints(); // Recargar la lista
+      console.log("Sprint actualizado:", response.data);
+    } catch (error) {
+      console.error("Error al actualizar sprint:", error);
+      throw error;
+    }
+  };
+
+  const deleteSprint = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:8080/sprint/${id}`);
+      await fetchSprints(); // Recargar la lista
+      console.log("Sprint eliminado:", id);
+    } catch (error) {
+      console.error("Error al eliminar sprint:", error);
+      throw error;
+    }
+  };
+
+  const completeSprint = async (id: number) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/sprint/${id}/complete`);
+      await fetchSprints(); // Recargar la lista
+      console.log("Sprint completado:", response.data);
+    } catch (error) {
+      console.error("Error al completar sprint:", error);
+      throw error;
+    }
+  };
+
+  const refreshSprints = async () => {
+    await fetchSprints();
+  };
+
+  return (
+    <SprintsContext.Provider
+      value={{
+        sprints,
+        loading,
+        error,
+        addSprint,
+        updateSprint,
+        deleteSprint,
+        completeSprint,
+        refreshSprints,
+      }}
+    >
+      {children}
+    </SprintsContext.Provider>
+  );
+}
+
+export function useSprints() {
+  const context = useContext(SprintsContext);
+  if (!context) {
+    throw new Error("useSprints debe usarse dentro de un SprintsProvider");
+  }
+  return context;
+}
