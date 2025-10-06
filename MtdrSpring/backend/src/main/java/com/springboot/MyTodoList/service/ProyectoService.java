@@ -1,5 +1,7 @@
 package com.springboot.MyTodoList.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.springboot.MyTodoList.model.Proyecto;
@@ -12,5 +14,9 @@ public class ProyectoService {
 
     public Proyecto addProyecto(Proyecto newProyecto){
         return proyectoRepository.save(newProyecto);
+    }
+
+    public Optional<Proyecto> getProyectoById(Long id) {
+        return proyectoRepository.findById(id);
     }
 }
