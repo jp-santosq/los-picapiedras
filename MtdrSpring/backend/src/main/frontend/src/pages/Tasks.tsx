@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { useTasks } from '../context/TaskContext';
-import { useSprints } from '../context/SprintContext';
+import { useTasks } from '../context/TaskContext.tsx';
+import { useSprints } from '../context/SprintContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
 import '../styles/components/tasks.css';
@@ -27,8 +27,7 @@ const Tasks: React.FC = () => {
       const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            task.responsible.toLowerCase().includes(searchTerm.toLowerCase());
       
-      // Nota: necesitarás agregar sprintId a la interfaz Task para que esto funcione
-      const matchesSprint = selectedSprintFilter === 'all'; // Por ahora solo "all"
+      const matchesSprint = selectedSprintFilter === 'all';
       
       return matchesSearch && matchesSprint;
     });
@@ -45,6 +44,13 @@ const Tasks: React.FC = () => {
     doing: tasks.filter(t => t.status === TaskStatus.DOING).length,
     done: tasks.filter(t => t.status === TaskStatus.DONE).length,
   }), [tasks]);
+
+  // Función para manejar cuando se crea una tarea
+  const handleTaskCreated = () => {
+    // La recarga se maneja automáticamente en el TaskContext
+    // Aquí puedes agregar lógica adicional si necesitas
+    console.log('Tarea creada exitosamente');
+  };
 
   return (
     <div className="tasks-page">
@@ -169,7 +175,7 @@ const Tasks: React.FC = () => {
                     <td className="task-id">#{task.id}</td>
                     <td className="task-name">{task.name}</td>
                     <td className="task-responsible">{task.responsible}</td>
-                    <td className="task-project">{task.project}</td>
+                    <td className="task-project">{/*task.project*/}Oracle Java Bot</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
                         {task.status}
@@ -191,7 +197,7 @@ const Tasks: React.FC = () => {
       <CreateTaskModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onTaskCreated={() => {}}
+        onTaskCreated={handleTaskCreated}
       />
 
       <TaskDetailsModal

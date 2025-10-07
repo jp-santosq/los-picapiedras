@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
+import { useSprints } from '../context/SprintContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
 
@@ -15,15 +17,15 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onTaskCreated
 }) => {
   const { addTask } = useTasks();
+  const { sprints } = useSprints();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
-    responsible: '',
-    responsibleId: 0,
     estimatedDate: '',
     storyPoints: 0,
     description: '',
-    project: 'los-picapiedras #X',
+    sprintId: 0,
     status: TaskStatus.TODO
   });
   
@@ -33,7 +35,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'storyPoints' || name === 'responsibleId') {
+    if (name === 'storyPoints' || name === 'sprintId') {
       setFormData(prev => ({
         ...prev,
         [name]: parseInt(value) || 0
@@ -51,8 +53,12 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       setError('El nombre de la tarea es requerido');
       return false;
     }
-    if (!formData.responsible.trim()) {
-      setError('El responsable es requerido');
+    if (!user) {
+      setError('Debes iniciar sesión para crear tareas');
+      return false;
+    }
+    if (formData.sprintId === 0) {
+      setError('Debes seleccionar un sprint');
       return false;
     }
     if (!formData.estimatedDate) {
@@ -77,24 +83,31 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     setLoading(true);
     
     try {
-      addTask(formData);
+      // Agregar datos del usuario autenticado
+      const taskData = {
+        ...formData,
+        responsible: user!.name,
+        responsibleId: user!.id,
+        project: '' // Se obtendrá del backend
+      };
+
+      await addTask(taskData);
       
       // Resetear formulario
       setFormData({
         name: '',
-        responsible: '',
-        responsibleId: 0,
         estimatedDate: '',
         storyPoints: 0,
         description: '',
-        project: 'los-picapiedras #X',
+        sprintId: 0,
         status: TaskStatus.TODO
       });
       
       onTaskCreated();
       onClose();
     } catch (err: any) {
-      setError('Error al crear la tarea');
+      setError(err.message || 'Error al crear la tarea');
+      console.error('Error en handleSubmit:', err);
     } finally {
       setLoading(false);
     }
@@ -104,12 +117,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     setError(null);
     setFormData({
       name: '',
-      responsible: '',
-      responsibleId: 0,
       estimatedDate: '',
       storyPoints: 0,
       description: '',
-      project: 'los-picapiedras #X',
+      sprintId: 0,
       status: TaskStatus.TODO
     });
     onClose();
@@ -134,6 +145,19 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           )}
 
+          {/* Mostrar usuario asignado */}
+          <div className="form-group">
+            <label>Responsable Asignado</label>
+            <div className="assigned-user">
+              <span className="user-badge">
+                👤 {user?.name || 'No autenticado'}
+              </span>
+              <small className="form-hint">
+                Esta tarea será asignada a tu usuario
+              </small>
+            </div>
+          </div>
+
           <div className="form-group">
             <label htmlFor="name">
               Nombre de la Tarea <span className="required">*</span>
@@ -151,19 +175,24 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="responsible">
-              Responsable <span className="required">*</span>
+            <label htmlFor="sprintId">
+              Sprint <span className="required">*</span>
             </label>
-            <input
-              type="text"
-              id="responsible"
-              name="responsible"
-              value={formData.responsible}
+            <select
+              id="sprintId"
+              name="sprintId"
+              value={formData.sprintId}
               onChange={handleChange}
               required
               className="form-input"
-              placeholder="Nombre del responsable"
-            />
+            >
+              <option value={0}>Selecciona un sprint</option>
+              {sprints.map(sprint => (
+                <option key={sprint.id} value={sprint.id}>
+                  Sprint #{sprint.id} 
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-row">
@@ -245,7 +274,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading}
+              disabled={loading || !user}
             >
               {loading ? 'Creando...' : 'Crear Tarea'}
             </button>

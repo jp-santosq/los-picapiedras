@@ -66,7 +66,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               </div>
               <div className="detail-item">
                 <span className="detail-label">Proyecto:</span>
-                <span className="detail-value">{task.project}</span>
+                <span className="detail-value">{/*task.project*/}Oracle Java Bot</span>
               </div>
             </div>
           </div>

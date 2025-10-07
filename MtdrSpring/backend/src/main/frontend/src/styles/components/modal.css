@@ -332,6 +332,45 @@
   border-radius: 6px;
 }
 
+/* Agregar estos estilos a tu archivo modal.css existente */
+
+/* Usuario asignado */
+.assigned-user {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.form-hint {
+  display: block;
+  color: #666;
+  font-size: 12px;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* Mejoras para el formulario */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+
 @media (max-width: 768px) {
   .modal-content {
     max-width: 100%;
@@ -364,5 +403,9 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 }
