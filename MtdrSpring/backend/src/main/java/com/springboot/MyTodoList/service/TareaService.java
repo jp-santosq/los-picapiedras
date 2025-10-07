@@ -26,11 +26,11 @@ public class TareaService {
 
     // Servicio para obtener tareas por id de sprint
     public List<Tarea> getTareasBySprintId(Long idSprint){
-        return tareaRepository.findBySprintId(idSprint);
+        return tareaRepository.findBySprint_Id(idSprint);
     }
 
     // Servicio para obtener tareas por id de usuario
-    public List<Tarea> getTareasByUsuarioId(Long idUsuario){
-        return tareaRepository.findByUsuarioId(idUsuario);
+    public List<Tarea> getTareasByDesarrolladorId(Long idDesarrollador){
+        return tareaRepository.findByDesarrolladorId(idDesarrollador);
     }
 }

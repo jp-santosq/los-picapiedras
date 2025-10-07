@@ -1,6 +1,7 @@
 package com.springboot.MyTodoList.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -116,7 +117,7 @@ public class TareaController {
     }
 
     // Actualizar tarea
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> updateTarea(@PathVariable Long id, @RequestBody TareaDTO dto) {
         return tareaRepository.findById(id)
                 .map(t -> {
@@ -155,27 +156,71 @@ public class TareaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Eliminar tarea
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTarea(@PathVariable Long id) {
-        if (tareaRepository.existsById(id)) {
+    // Eliminar Tarea
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteTarea(@PathVariable Long id) {
+        try {
+            if (!tareaRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Tarea con id " + id + " no encontrada");
+            }
+        
             tareaRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Tarea eliminada exitosamente");
+        
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar tarea: " + e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
     // Obtener tareas por id de sprint
-    @GetMapping("sprint/{id}")
-    public ResponseEntity<List<Tarea>> getTareasBySprintId(@PathVariable Long idSprint){
-        List<Tarea> tareas = tareaService.getTareasBySprintId(idSprint);
-        return new ResponseEntity<>(tareas, HttpStatus.OK);
+    @GetMapping("/sprint/{id}")
+    public ResponseEntity<List<TareaDTO>> getTareasBySprintId(@PathVariable Long id){
+        List<Tarea> tareas = tareaService.getTareasBySprintId(id);
+        List<TareaDTO> tareasDTO = tareas.stream()
+            .map(tarea -> {
+                TareaDTO dto = new TareaDTO();
+                dto.titulo = tarea.getTitulo();
+                dto.descripcion = tarea.getDescripcion();
+                dto.fechaInicio = tarea.getFechaInicio();
+                dto.fechaFinEstimada = tarea.getFechaFinEstimada();
+                dto.fechaFinReal = tarea.getFechaFinReal();
+                dto.prioridad = tarea.getPrioridad();
+                dto.estadoTareaId = tarea.getEstadoTarea() != null ? tarea.getEstadoTarea().getId() : null;
+                dto.proyectoId = tarea.getProyecto() != null ? tarea.getProyecto().getId() : null;
+                dto.sprintId = tarea.getSprint() != null ? tarea.getSprint().getId() : null;
+                dto.desarrolladorId = tarea.getDesarrollador() != null ? tarea.getDesarrollador().getId() : null;
+                dto.historiaUsuarioId = tarea.getHistoriaUsuario() != null ? tarea.getHistoriaUsuario().getId() : null;
+                return dto;
+            })
+            .collect(Collectors.toList());
+        
+        return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
     }
 
-    // Obtener tareas por id de usurio
-    @GetMapping("usuario/{id}")
-    public ResponseEntity<List<Tarea>> getTareasByUsuarioId(@PathVariable Long idUsuario){
-        List<Tarea> tareas = tareaService.getTareasByUsuarioId(idUsuario);
-        return new ResponseEntity<>(tareas, HttpStatus.OK);
+    // Obtener tareas por id de usuario
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<List<TareaDTO>> getTareasByDesarrolladorId(@PathVariable Long id){
+        List<Tarea> tareas = tareaService.getTareasByDesarrolladorId(id);
+        List<TareaDTO> tareasDTO = tareas.stream()
+            .map(tarea -> {
+                TareaDTO dto = new TareaDTO();
+                dto.titulo = tarea.getTitulo();
+                dto.descripcion = tarea.getDescripcion();
+                dto.fechaInicio = tarea.getFechaInicio();
+                dto.fechaFinEstimada = tarea.getFechaFinEstimada();
+                dto.fechaFinReal = tarea.getFechaFinReal();
+                dto.prioridad = tarea.getPrioridad();
+                dto.estadoTareaId = tarea.getEstadoTarea() != null ? tarea.getEstadoTarea().getId() : null;
+                dto.proyectoId = tarea.getProyecto() != null ? tarea.getProyecto().getId() : null;
+                dto.sprintId = tarea.getSprint() != null ? tarea.getSprint().getId() : null;
+                dto.desarrolladorId = tarea.getDesarrollador() != null ? tarea.getDesarrollador().getId() : null;
+                dto.historiaUsuarioId = tarea.getHistoriaUsuario() != null ? tarea.getHistoriaUsuario().getId() : null;
+                return dto;
+            })
+            .collect(Collectors.toList());
+        
+        return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
     }
 }

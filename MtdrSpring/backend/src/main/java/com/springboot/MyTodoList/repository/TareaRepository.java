@@ -15,6 +15,6 @@ import jakarta.transaction.Transactional;
 @Transactional
 @EnableTransactionManagement
 public interface TareaRepository extends JpaRepository<Tarea,Long> {
-    List<Tarea> findBySprintId(Long idSprint);
-    List<Tarea> findByUsuarioId(Long idUsuario);
+    List<Tarea> findBySprint_Id(Long idSprint);
+    List<Tarea> findByDesarrolladorId(Long idDesarrollador);
 }

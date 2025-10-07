@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/usuario")
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
@@ -31,7 +32,7 @@ public class UsuarioController {
     }
 
     // Obtener usuarios por tipo de rol
-    @GetMapping("/{id}")
+    @GetMapping("/rol/{idRol}")
     public ResponseEntity<List<Usuario>> getUsuarioByRolId(@PathVariable Long idRol){
         List<Usuario> usuarios = usuarioService.getUsuariosByIdRol(idRol);
         return new ResponseEntity<>(usuarios,HttpStatus.OK);

@@ -3,7 +3,7 @@ spring:
     driver_class_name: oracle.jdbc.OracleDriver
     password: PeterSong123
     url: jdbc:oracle:thin:@petertestdb_medium?TNS_ADMIN=/Users/psong/Downloads/Wallet_petertestDB
-    username: TODOUSER
+    username: LOSPICAPIEDRA
   jpa:
     database: ORACLE
     database-platform: org.hibernate.dialect.Oracle12cDialect
