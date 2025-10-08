@@ -1,6 +1,8 @@
 package com.springboot.MyTodoList.service;
 
 import org.springframework.stereotype.Service;
+
+import com.springboot.MyTodoList.model.Sprint;
 import com.springboot.MyTodoList.model.Usuario;
 import com.springboot.MyTodoList.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +23,10 @@ public class UsuarioService {
     // Añadir Usuario
     public Usuario addUsuario(Usuario newUsuario){
         return usuarioRepository.save(newUsuario);
+    }
+
+    // Obtener usuarios por id de rol
+    public List<Usuario> getUsuariosByIdRol(Long idRol){
+        return usuarioRepository.findByRolId(idRol);
     }
 }

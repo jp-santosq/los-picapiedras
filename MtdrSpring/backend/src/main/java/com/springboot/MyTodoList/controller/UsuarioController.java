@@ -10,15 +10,18 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/usuario")
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+    // Obtener todos los usuarios
     @GetMapping(value="/usuarios")
     public List<Usuario> getAllUsers(){
         return usuarioService.findAll();
     }
 
+    // Añadir un usuario
     @PostMapping("/addusuario")
     public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario newUsuario) throws Exception {
         Usuario dbUsuario = usuarioService.addUsuario(newUsuario);
@@ -26,6 +29,13 @@ public class UsuarioController {
         responseHeaders.set("location", "" + dbUsuario.getId());
         responseHeaders.set("Access-Control-Expose-Headers", "location");
         return new ResponseEntity<>(dbUsuario, responseHeaders, HttpStatus.CREATED);
+    }
+
+    // Obtener usuarios por tipo de rol
+    @GetMapping("/rol/{idRol}")
+    public ResponseEntity<List<Usuario>> getUsuarioByRolId(@PathVariable Long idRol){
+        List<Usuario> usuarios = usuarioService.getUsuariosByIdRol(idRol);
+        return new ResponseEntity<>(usuarios,HttpStatus.OK);
     }
 
 }
