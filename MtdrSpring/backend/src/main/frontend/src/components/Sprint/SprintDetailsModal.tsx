@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Sprint } from '../../context/SprintContext.tsx';
+import { Task } from '../TaskDescription.tsx';
+import { useTasks } from '../../context/TaskContext.tsx';
+import TaskReadOnlyModal from '../TaskReadOnlyModal.tsx';
 import '../../styles/components/modal.css';
+import { TaskStatus } from "../enums.tsx";
 
 interface SprintDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  sprint: any | null;
+  sprint: Sprint | null;
 }
 
 const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
@@ -12,183 +17,197 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
   onClose,
   sprint
 }) => {
+  const { tasks } = useTasks();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+
   if (!isOpen || !sprint) return null;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
       day: '2-digit',
       month: 'long',
       year: 'numeric'
     });
   };
 
-  const calculateProgress = () => {
-    const today = new Date();
-    const start = new Date(sprint.fechaInicio);
-    const end = new Date(sprint.fechaFinEstimada);
+  // Determinar el estado del sprint basado en las fechas
+  const getSprintStatus = () => {
+    const now = new Date();
+    const startDate = new Date(sprint.fechaInicio);
+    const endDate = new Date(sprint.fechaFinEstimada);
     
-    if (today < start) return 0;
-    if (today > end) return 100;
-    
-    const total = end.getTime() - start.getTime();
-    const current = today.getTime() - start.getTime();
-    return Math.round((current / total) * 100);
-  };
-
-  const calculateDaysRemaining = () => {
-    const today = new Date();
-    const end = new Date(sprint.fechaFinEstimada);
-    const diffTime = end.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) return `${Math.abs(diffDays)} días de retraso`;
-    if (diffDays === 0) return 'Último día';
-    if (diffDays === 1) return '1 día restante';
-    return `${diffDays} días restantes`;
-  };
-
-  const getStatusInfo = () => {
-    const today = new Date();
-    const start = new Date(sprint.fechaInicio);
-    const end = new Date(sprint.fechaFinEstimada);
-
     if (sprint.fechaFinReal) {
-      return {
-        label: 'Completado',
-        className: 'status-completed',
-        icon: '✓'
-      };
-    } else if (today < start) {
-      return {
-        label: 'Por iniciar',
-        className: 'status-upcoming',
-        icon: '📅'
-      };
-    } else if (today >= start && today <= end) {
-      return {
-        label: 'En progreso',
-        className: 'status-active',
-        icon: '🚀'
-      };
+      return 'Completado';
+    } else if (now < startDate) {
+      return 'Planificado';
+    } else if (now >= startDate && now <= endDate) {
+      return 'En Progreso';
     } else {
-      return {
-        label: 'Atrasado',
-        className: 'status-overdue',
-        icon: '⚠️'
-      };
+      return 'Retrasado';
     }
   };
 
-  const progress = calculateProgress();
-  const status = getStatusInfo();
+  const sprintStatus = getSprintStatus();
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Planificado': return { bg: '#fff3cd', color: '#856404' };
+      case 'En Progreso': return { bg: '#cce5ff', color: '#004085' };
+      case 'Completado': return { bg: '#d4edda', color: '#155724' };
+      case 'Retrasado': return { bg: '#f8d7da', color: '#721c24' };
+      default: return { bg: '#f8f9fa', color: '#495057' };
+    }
+  };
+
+  // Filtrar tareas que pertenecen a este sprint
+  const sprintTasks = sprint.tareas || [];
+
+  // Nota: Necesitarías agregar sprintId al tipo Task para que esto funcione
+  // Por ahora, mostramos todas las tareas como ejemplo
+
+  const handleTaskClick = (taskId: number) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setSelectedTask(task);
+      setIsTaskModalOpen(true);
+    }
+  };
+
+  const handleCloseTaskModal = () => {
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
+  };
+
+  const statusStyle = getStatusColor(sprintStatus);
+
+  const taskStats = {
+    total: sprintTasks.length,
+    todo: sprintTasks.filter(t => t.status === TaskStatus.TODO).length,
+    doing: sprintTasks.filter(t => t.status === TaskStatus.DOING).length,
+    revision: sprintTasks.filter(t => t.status === TaskStatus.REVISION).length,
+    done: sprintTasks.filter(t => t.status === TaskStatus.DONE).length,
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <div className="modal-title-group">
-            <h2>Sprint #{sprint.id}</h2>
-            <span className={`sprint-status ${status.className}`}>
-              {status.icon} {status.label}
-            </span>
-          </div>
-          <button className="modal-close-btn" onClick={onClose}>
-            ×
-          </button>
-        </div>
-
-        <div className="modal-body">
-          {!sprint.fechaFinReal && (
-            <div className="progress-section">
-              <div className="progress-header">
-                <span className="progress-label">Progreso del Sprint</span>
-                <span className="progress-percentage">{progress}%</span>
-              </div>
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <div className="progress-info">
-                {calculateDaysRemaining()}
-              </div>
+    <>
+      <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <div className="modal-title-group">
+              <h2>Sprint #{sprint.id}</h2>
+              <span 
+                className="sprint-status"
+                style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
+              >
+                {sprintStatus}
+              </span>
             </div>
-          )}
-
-          <div className="details-section">
-            <h3 className="section-title">📅 Fechas</h3>
-            <div className="details-grid">
-              <div className="detail-item">
-                <span className="detail-label">Fecha de inicio:</span>
-                <span className="detail-value">{formatDate(sprint.fechaInicio)}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Fecha de fin estimada:</span>
-                <span className="detail-value">{formatDate(sprint.fechaFinEstimada)}</span>
-              </div>
-              {sprint.fechaFinReal && (
-                <div className="detail-item">
-                  <span className="detail-label">Fecha de fin real:</span>
-                  <span className="detail-value highlight">{formatDate(sprint.fechaFinReal)}</span>
-                </div>
-              )}
-            </div>
+            <button className="modal-close-btn" onClick={onClose}>
+              ×
+            </button>
           </div>
 
-          {sprint.proyecto && (
+          <div className="modal-body">
+            {/* Información del Sprint */}
             <div className="details-section">
-              <h3 className="section-title">📁 Proyecto</h3>
-              <div className="detail-item">
-                <span className="detail-label">ID del proyecto:</span>
-                <span className="detail-value">{sprint.proyecto.id}</span>
-              </div>
-              {sprint.proyecto.nombreProyecto && (
+              <h3 className="section-title">📅 Información del Sprint</h3>
+              <div className="details-grid">
                 <div className="detail-item">
-                  <span className="detail-label">Nombre:</span>
-                  <span className="detail-value">{sprint.proyecto.nombreProyecto}</span>
+                  <span className="detail-label">Fecha de Inicio:</span>
+                  <span className="detail-value">{formatDate(sprint.fechaInicio)}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Fecha de Fin:</span>
+                  <span className="detail-value">{sprint?.fechaFinReal ? formatDate(sprint.fechaFinReal) : 'No ha terminado'}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Objetivo:</span>
+                  <span className="detail-value">{formatDate(sprint.fechaFinEstimada)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Estadísticas de Tareas */}
+            <div className="details-section">
+              <h3 className="section-title">📊 Estadísticas de Tareas</h3>
+              <div className="sprint-task-stats">
+                <div className="stat-item">
+                  <span className="stat-number">{taskStats.total}</span>
+                  <span className="stat-label">Total</span>
+                </div>
+                <div className="stat-item stat-todo">
+                  <span className="stat-number">{taskStats.todo}</span>
+                  <span className="stat-label">TODO</span>
+                </div>
+                <div className="stat-item stat-doing">
+                  <span className="stat-number">{taskStats.doing}</span>
+                  <span className="stat-label">DOING</span>
+                </div>
+                <div className="stat-item stat-revision">
+                  <span className="stat-number">{taskStats.revision}</span>
+                  <span className="stat-label">REVISION</span>
+                </div>
+                <div className="stat-item stat-done">
+                  <span className="stat-number">{taskStats.done}</span>
+                  <span className="stat-label">DONE</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Lista de Tareas */}
+            <div className="details-section">
+              <h3 className="section-title">📋 Tareas del Sprint ({sprintTasks.length})</h3>
+              {sprintTasks.length === 0 ? (
+                <div className="empty-tasks">
+                  <p>No hay tareas asignadas a este sprint</p>
+                </div>
+              ) : (
+                <div className="tasks-list">
+                  {sprintTasks.map(task => (
+                    <div 
+                      key={task.id} 
+                      className="task-item"
+                      onClick={() => handleTaskClick(task.id)}
+                    >
+                      <div className="task-item-header">
+                        <span className="task-item-id">#{task.id}</span>
+                        <span className={`task-item-status status-${task.estadoTarea?.nombreEstado.toLowerCase().replace(" ", "-")}`}>
+                          {task.estadoTarea?.nombreEstado || "Sin estado"}
+                        </span>
+                      </div>
+                      <h4 className="task-item-title">{task.titulo}</h4>
+                      <div className="task-item-footer">
+                        <span className="task-item-responsible">
+                          👤 {task.desarrollador.nombreUsuario || "Sin responsable"}
+                        </span>
+                        <span className="task-item-points">
+                          {task.prioridad ?? 0} pts
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          )}
-
-          <div className="details-section">
-            <h3 className="section-title">
-              📋 Tareas 
-              {sprint.tareas && sprint.tareas.length > 0 && (
-                <span className="count-badge">{sprint.tareas.length}</span>
-              )}
-            </h3>
-            {sprint.tareas && sprint.tareas.length > 0 ? (
-              <div className="tasks-list">
-                {sprint.tareas.map((tarea: any, index: number) => (
-                  <div key={index} className="task-item">
-                    <span className="task-title">
-                      {tarea.titulo || `Tarea #${tarea.id}`}
-                    </span>
-                    {tarea.estadoTarea && (
-                      <span className="task-status">
-                        {tarea.estadoTarea.nombre}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="empty-state">No hay tareas asignadas a este sprint</p>
-            )}
           </div>
-        </div>
 
-        <div className="modal-footer">
-          <button onClick={onClose} className="btn btn-secondary">
-            Cerrar
-          </button>
+          <div className="modal-footer">
+            <button onClick={onClose} className="btn btn-secondary">
+              Cerrar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Modal de Tarea (Solo Lectura) */}
+      <TaskReadOnlyModal
+        isOpen={isTaskModalOpen}
+        onClose={handleCloseTaskModal}
+        task={selectedTask}
+      />
+    </>
   );
 };
 
