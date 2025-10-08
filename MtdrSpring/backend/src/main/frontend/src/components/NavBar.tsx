@@ -43,7 +43,7 @@ function NavBar() {
         </div>
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/Sprints" element={<Sprints />} />
           <Route path="/Tasks" element={<Tasks />} />

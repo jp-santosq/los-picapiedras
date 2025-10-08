@@ -22,7 +22,7 @@ function Canva({ state, tasks, updateTaskState, onTaskClick }) {
       onDragOver={handleOnDragOver}
       onDrop={handleOnDrop}
     >
-      <h3>{state}</h3>
+      
       {Array.isArray(tasks) &&
         tasks
           .filter((task) => {

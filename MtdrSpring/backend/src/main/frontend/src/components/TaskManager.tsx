@@ -55,6 +55,7 @@ export function TaskManager() {
     <div className="task-manager">
       <div className="task-bar">
         <h2 className="project-title">Proyecto: Los Picapiedras</h2>
+        <h2 className="kanban-title">TABLERO KANBAN</h2>
         <button className="create-task-btn" onClick={() => setIsModalOpen(true)}>
           + Crear Tarea
         </button>
