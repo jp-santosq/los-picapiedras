@@ -11,7 +11,7 @@ import { TaskStatus } from "../components/enums.tsx";
 
 interface TasksContextProps {
   tasks: Task[];
-  addTask: (task: Omit<Task, "id">) => Promise<void>;
+  addTask: (task: Omit<Task, "id"> & { sprintId?: number }) => Promise<void>;
   updateTaskState: (taskId: number, newState: TaskStatus) => void;
 }
 
@@ -50,44 +50,43 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   useEffect(() => {
-  const fetchTareas = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/tarea");
-      const tareasBackend = response.data as any[];
+    const fetchTareas = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/tarea");
+        const tareasBackend = response.data as any[];
 
-      const estadoMapFrontend: Record<number, TaskStatus> = {
-        1: TaskStatus.TODO,
-        2: TaskStatus.DOING,
-        3: TaskStatus.REVISION,
-        4: TaskStatus.DONE,
-      };
+        const estadoMapFrontend: Record<number, TaskStatus> = {
+          1: TaskStatus.TODO,
+          2: TaskStatus.DOING,
+          3: TaskStatus.REVISION,
+          4: TaskStatus.DONE,
+        };
 
-      const tareasMapeadas: Task[] = tareasBackend.map((tarea) => ({
-        id: tarea.id,
-        name: tarea.titulo,
-        description: tarea.descripcion,
-        responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
-        responsibleId: tarea.desarrollador?.id || 0,
-        estimatedDate: tarea.fechaFinEstimada,
-        storyPoints: tarea.prioridad,
-        project: tarea.proyecto?.nombreProyecto || "Sin proyecto",
-        status: tarea.estadoTarea
-          ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
-          : TaskStatus.TODO,
-      }));
+        const tareasMapeadas: Task[] = tareasBackend.map((tarea) => ({
+          id: tarea.id,
+          name: tarea.titulo,
+          description: tarea.descripcion,
+          responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
+          responsibleId: tarea.desarrollador?.id || 0,
+          estimatedDate: tarea.fechaFinEstimada,
+          storyPoints: tarea.prioridad,
+          project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
+          status: tarea.estadoTarea
+            ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
+            : TaskStatus.TODO,
+        }));
 
-      setTasks(tareasMapeadas);
-      console.log("Tareas cargadas:", tareasMapeadas);
-    } catch (error) {
-      console.error("Error al obtener las tareas:", error);
-    }
-  };
+        setTasks(tareasMapeadas);
+        console.log("Tareas cargadas:", tareasMapeadas);
+      } catch (error) {
+        console.error("Error al obtener las tareas:", error);
+      }
+    };
 
-  fetchTareas();
-}, []);
+    fetchTareas();
+  }, []);
 
-
-  const addTask = async (task: Omit<Task, "id">) => {
+  const addTask = async (task: Omit<Task, "id"> & { sprintId?: number }) => {
     try {
       const dto = {
         titulo: task.name,
@@ -96,12 +95,14 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         fechaFinEstimada: task.estimatedDate,
         fechaFinReal: null,
         prioridad: task.storyPoints,
-        estadoTareaId: estadoMapBackend[TaskStatus.TODO], 
-        proyectoId: 1,
-        sprintId: 1,
+        estadoTareaId: estadoMapBackend[task.status] || estadoMapBackend[TaskStatus.TODO],
+        proyectoId: 1, // Puedes hacerlo dinámico si lo necesitas
+        sprintId: task.sprintId || 1,
         desarrolladorId: task.responsibleId || 1,
-        historiaUsuarioId: 1,
+        historiaUsuarioId: 1, // Puedes hacerlo dinámico si lo necesitas
       };
+
+      console.log("Enviando DTO al backend:", dto);
 
       const response = await axios.post("http://localhost:8080/tarea", dto);
       const tareaCreada = response.data;
@@ -122,7 +123,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       console.log("Tarea creada:", nuevaTask);
     } catch (error) {
       console.error("Error al crear tarea:", error);
-      alert("Error al crear tarea. Ver consola para más detalles.");
+      throw new Error("Error al crear tarea. Ver consola para más detalles.");
     }
   };
 
@@ -145,7 +146,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("Error al actualizar estado:", error);
-      alert("No se pudo actualizar el estado de la tarea.");
+      throw new Error("No se pudo actualizar el estado de la tarea.");
     }
   };
 
