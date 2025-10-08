@@ -223,4 +223,32 @@ public class TareaController {
         
         return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
     }
+
+    @PutMapping("/{id}/estado/{estadoId}")
+    public ResponseEntity<?> cambiarEstadoTarea(
+            @PathVariable Long id, 
+            @PathVariable Long estadoId) {
+        try {
+        // Buscar la tarea
+            Tarea tarea = tareaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Tarea con id " + id + " no encontrada"));
+        
+            // Buscar el nuevo estado
+            EstadoTarea nuevoEstado = estadoTareaRepository.findById(estadoId)
+                    .orElseThrow(() -> new RuntimeException("EstadoTarea con id " + estadoId + " no existe"));
+        
+            // Cambiar el estado
+            tarea.setEstadoTarea(nuevoEstado);
+        
+            // Guardar y retornar
+            Tarea tareaActualizada = tareaRepository.save(tarea);
+            return ResponseEntity.ok(tareaActualizada);
+        
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al cambiar el estado: " + e.getMessage());
+        }
+    }
 }
