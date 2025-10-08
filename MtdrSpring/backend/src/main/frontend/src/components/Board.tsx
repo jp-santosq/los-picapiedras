@@ -4,14 +4,22 @@ import "../styles/components/board.css";
 import { TaskDescription, Task } from "./TaskDescription.tsx";
 import { TaskStatus } from "./enums.tsx";
 import { useTasks } from "../context/TaskContext.tsx";
+import TaskReadOnlyModal from './TaskReadOnlyModal.tsx';
 
 function Board() {
   const { tasks, updateTaskState } = useTasks();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   function handleTaskClick(task: Task) {
     setSelectedTask(task);
+    setIsTaskModalOpen(true);
   }
+
+  const handleCloseTaskModal = () => {
+    setIsTaskModalOpen(false);
+    setSelectedTask(null);
+  };
 
   function closeModal() {
     setSelectedTask(null);
@@ -40,19 +48,12 @@ function Board() {
         ))}
       </div>
 
-      {selectedTask && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div
-            className="modal-content"
-            onClick={(e) => e.stopPropagation()} 
-          >
-            <button className="modal-close-btn" onClick={closeModal}>
-              ×
-            </button>
-            <TaskDescription task={selectedTask} />
-          </div>
-        </div>
-      )}
+      {/* Modal de Tarea (Solo Lectura) */}
+      <TaskReadOnlyModal
+        isOpen={isTaskModalOpen}
+        onClose={handleCloseTaskModal}
+        task={selectedTask}
+      />
     </div>
   );
 }
