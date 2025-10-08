@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Task } from './TaskDescription';
+import { useTasks } from '../context/TaskContext.tsx';
+import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
 
 interface TaskDetailsModalProps {
@@ -13,6 +15,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onClose,
   task
 }) => {
+  const { updateTaskState } = useTasks();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (!isOpen || !task) return null;
 
   const formatDate = (dateString: string) => {
@@ -32,6 +38,22 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       case 'REVISION': return { bg: '#d1ecf1', color: '#0c5460' };
       case 'DONE': return { bg: '#d4edda', color: '#155724' };
       default: return { bg: '#f8f9fa', color: '#495057' };
+    }
+  };
+
+  const handleStatusChange = async (newStatus: TaskStatus) => {
+    setIsUpdating(true);
+    setError(null);
+    
+    try {
+      await updateTaskState(task.id, newStatus);
+      console.log(`Tarea ${task.id} actualizada a ${newStatus}`);
+      // El modal se actualiza automáticamente porque task viene del contexto
+    } catch (err: any) {
+      setError('Error al actualizar el estado de la tarea');
+      console.error(err);
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -56,6 +78,47 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         </div>
 
         <div className="modal-body">
+          {error && (
+            <div className="alert alert-error" style={{ marginBottom: '20px' }}>
+              {error}
+            </div>
+          )}
+
+          {/* Cambiar Estado */}
+          <div className="details-section">
+            <h3 className="section-title">🔄 Cambiar Estado</h3>
+            <div className="status-buttons">
+              <button
+                className={`status-btn status-btn-todo ${task.status === TaskStatus.TODO ? 'active' : ''}`}
+                onClick={() => handleStatusChange(TaskStatus.TODO)}
+                disabled={isUpdating || task.status === TaskStatus.TODO}
+              >
+                {isUpdating && task.status !== TaskStatus.TODO ? '⏳' : '📝'} TODO
+              </button>
+              <button
+                className={`status-btn status-btn-doing ${task.status === TaskStatus.DOING ? 'active' : ''}`}
+                onClick={() => handleStatusChange(TaskStatus.DOING)}
+                disabled={isUpdating || task.status === TaskStatus.DOING}
+              >
+                {isUpdating && task.status !== TaskStatus.DOING ? '⏳' : '⚙️'} DOING
+              </button>
+              <button
+                className={`status-btn status-btn-revision ${task.status === TaskStatus.REVISION ? 'active' : ''}`}
+                onClick={() => handleStatusChange(TaskStatus.REVISION)}
+                disabled={isUpdating || task.status === TaskStatus.REVISION}
+              >
+                {isUpdating && task.status !== TaskStatus.REVISION ? '⏳' : '👀'} REVISION
+              </button>
+              <button
+                className={`status-btn status-btn-done ${task.status === TaskStatus.DONE ? 'active' : ''}`}
+                onClick={() => handleStatusChange(TaskStatus.DONE)}
+                disabled={isUpdating || task.status === TaskStatus.DONE}
+              >
+                {isUpdating && task.status !== TaskStatus.DONE ? '⏳' : '✅'} DONE
+              </button>
+            </div>
+          </div>
+
           {/* Información General */}
           <div className="details-section">
             <h3 className="section-title">📋 Información General</h3>
@@ -66,7 +129,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               </div>
               <div className="detail-item">
                 <span className="detail-label">Proyecto:</span>
-                <span className="detail-value">{/*task.project*/}Oracle Java Bot</span>
+                <span className="detail-value">{task.project}</span>
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
 import '../styles/components/tasks.css';
@@ -9,6 +10,7 @@ import { TaskStatus } from '../components/enums.tsx';
 const Tasks: React.FC = () => {
   const { tasks } = useTasks();
   const { sprints } = useSprints();
+  const { user } = useAuth();
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -21,9 +23,15 @@ const Tasks: React.FC = () => {
     setIsDetailsModalOpen(true);
   };
 
+  // Filtrar tareas del usuario actual
+  const userTasks = useMemo(() => {
+    if (!user) return [];
+    return tasks.filter(task => task.responsibleId === user.id);
+  }, [tasks, user]);
+
   // Filtrar tareas
   const filteredTasks = useMemo(() => {
-    return tasks.filter(task => {
+    return userTasks.filter(task => {
       const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            task.responsible.toLowerCase().includes(searchTerm.toLowerCase());
       
@@ -31,19 +39,30 @@ const Tasks: React.FC = () => {
       
       return matchesSearch && matchesSprint;
     });
-  }, [tasks, searchTerm, selectedSprintFilter]);
+  }, [userTasks, searchTerm, selectedSprintFilter]);
 
   const selectedTask = selectedTaskId 
     ? tasks.find(t => t.id === selectedTaskId) || null
     : null;
 
-  // Estadísticas
+
+  /*/ Estadísticas generales
   const stats = useMemo(() => ({
     total: tasks.length,
     todo: tasks.filter(t => t.status === TaskStatus.TODO).length,
     doing: tasks.filter(t => t.status === TaskStatus.DOING).length,
     done: tasks.filter(t => t.status === TaskStatus.DONE).length,
   }), [tasks]);
+  */
+
+  // Estadísticas (solo del usuario)
+  const stats = useMemo(() => ({
+    total: userTasks.length,
+    todo: userTasks.filter(t => t.status === TaskStatus.TODO).length,
+    doing: userTasks.filter(t => t.status === TaskStatus.DOING).length,
+    done: userTasks.filter(t => t.status === TaskStatus.DONE).length,
+  }), [userTasks]);
+
 
   // Función para manejar cuando se crea una tarea
   const handleTaskCreated = () => {
@@ -52,6 +71,8 @@ const Tasks: React.FC = () => {
     console.log('Tarea creada exitosamente');
   };
 
+  
+
   return (
     <div className="tasks-page">
       {/* Header */}
@@ -59,7 +80,8 @@ const Tasks: React.FC = () => {
         <div className="header-content">
           <h1 className="page-title">Gestión de Tareas</h1>
           <p className="page-subtitle">
-            Administra y visualiza todas las tareas del proyecto
+            {/*Administra y visualiza todas las tareas del proyecto*/}
+            Tareas asignadas a {user?.name || 'ti mismo'}
           </p>
         </div>
         <button
@@ -107,7 +129,7 @@ const Tasks: React.FC = () => {
         <div className="search-box">
           <input
             type="text"
-            placeholder="Buscar por nombre o responsable..."
+            placeholder="Buscar por nombre..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -175,7 +197,7 @@ const Tasks: React.FC = () => {
                     <td className="task-id">#{task.id}</td>
                     <td className="task-name">{task.name}</td>
                     <td className="task-responsible">{task.responsible}</td>
-                    <td className="task-project">{/*task.project*/}Oracle Java Bot</td>
+                    <td className="task-project">{task.project || 'Oracle Java Bot'}</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
                         {task.status}

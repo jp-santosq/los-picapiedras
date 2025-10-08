@@ -70,7 +70,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
           responsibleId: tarea.desarrollador?.id || 0,
           estimatedDate: tarea.fechaFinEstimada,
           storyPoints: tarea.prioridad,
-          project: tarea.proyecto?.nombreProyecto || "Sin proyecto",
+          project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
           status: tarea.estadoTarea
             ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
             : TaskStatus.TODO,
