@@ -48,7 +48,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get("http://localhost:8080/sprint/all");
+      const response = await axios.get("/sprint/all");
       let sprintsBackend: any = response.data;
       
       if (typeof sprintsBackend === "string") {
@@ -71,7 +71,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
 
   const addSprint = async (sprintDTO: CreateSprintDTO) => {
     try {
-      const response = await axios.post("http://localhost:8080/sprint/add", sprintDTO);
+      const response = await axios.post("/sprint/add", sprintDTO);
       await fetchSprints();
       console.log("Sprint creado:", response.data);
     } catch (error) {
@@ -83,7 +83,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
   const updateSprint = async (id: number, sprintData: Partial<Sprint>) => {
     try {
       const response = await axios.put(
-        `http://localhost:8080/sprint/update/${id}`,
+        `/sprint/update/${id}`,
         sprintData
       );
       await fetchSprints();
@@ -96,7 +96,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
 
   const deleteSprint = async (id: number) => {
     try {
-      await axios.delete(`http://localhost:8080/sprint/${id}`);
+      await axios.delete(`/sprint/${id}`);
       await fetchSprints();
       console.log("Sprint eliminado:", id);
     } catch (error) {
@@ -107,7 +107,7 @@ export function SprintsProvider({ children }: { children: ReactNode }) {
 
   const completeSprint = async (id: number) => {
     try {
-      const response = await axios.put(`http://localhost:8080/sprint/${id}/complete`);
+      const response = await axios.put(`/sprint/${id}/complete`);
       await fetchSprints();
       console.log("Sprint completado:", response.data);
     } catch (error) {
