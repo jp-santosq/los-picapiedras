@@ -52,7 +52,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchTareas = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/tarea");
+        const response = await axios.get("/tarea");
         const tareasBackend = response.data as any[];
 
         const estadoMapFrontend: Record<number, TaskStatus> = {
@@ -104,7 +104,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
       console.log("Enviando DTO al backend:", dto);
 
-      const response = await axios.post("http://localhost:8080/tarea", dto);
+      const response = await axios.post("/tarea", dto);
       const tareaCreada = response.data;
 
       const nuevaTask: Task = {
@@ -133,7 +133,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/tarea/${taskId}/estado/${estadoTareaId}`
+        `/tarea/${taskId}/estado/${estadoTareaId}`
       );
 
       if (response.status === 200) {
