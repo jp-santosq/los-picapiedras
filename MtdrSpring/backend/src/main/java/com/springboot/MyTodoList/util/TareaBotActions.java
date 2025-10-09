@@ -4,6 +4,7 @@ import com.springboot.MyTodoList.model.Tarea;
 import com.springboot.MyTodoList.model.EstadoTarea;
 import com.springboot.MyTodoList.model.Proyecto;
 import com.springboot.MyTodoList.model.HistoriaUsuario;
+import com.springboot.MyTodoList.model.Usuario;
 import com.springboot.MyTodoList.service.TareaService;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -237,6 +238,10 @@ public class TareaBotActions {
             HistoriaUsuario historia = new HistoriaUsuario();
             historia.setId(1L);
             newTarea.setHistoriaUsuario(historia);
+
+	    Usuario usuario = new Usuario();
+	    usuario.setId(3L);
+	    newTarea.setDesarrollador(usuario);
 
             tareaService.addTarea(newTarea);
             sendMessage(BotMessages.NEW_ITEM_ADDED.getMessage());
