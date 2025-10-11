@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Snackbar, Alert } from "@mui/material";
+import axios from "axios";
 
 export type User = { id: number; name: string; email: string; isAdmin: boolean } | null;
 
@@ -17,16 +18,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = useCallback(async (mail: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: mail, password: password }),
+      const response = await axios.post("/auth/login", {
+        email: mail,
+        password: password
       });
 
-      if (response.ok) {
-        const userData = await response.json();
+      if (response.status === 200) {
+        const userData = response.data;
         setUser({
           id: userData.id,
           name: userData.name,
@@ -35,10 +33,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         setShowWelcome(true);
         return true;
-      }
+      } 
       return false;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Error during login:", error);
       return false;
     }
   }, []);
@@ -56,25 +54,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [user, login, logout]
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-      <Snackbar
-        open={showWelcome}
-        autoHideDuration={6000}
-        onClose={() => setShowWelcome(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+  return <AuthContext.Provider value={value}>
+    {children}
+    <Snackbar
+      open= {showWelcome}
+      autoHideDuration= {4000}
+      onClose = {()=> setShowWelcome(false)}
+      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
       >
-        <Alert 
-          onClose={() => setShowWelcome(false)} 
-          severity="success" 
-          sx={{ width: '100%' }}
-        >
-          {`¡Bienvenido, ${user?.name}!`}
+        <Alert
+          onClose={() => setShowWelcome(false)}
+          severity="success"
+          sx={{ width: '100%'  }}
+          >
+            {`¡Bienvenido, ${user?.name}!`}
         </Alert>
       </Snackbar>
-    </AuthContext.Provider>
-  );
+    </AuthContext.Provider>;
 };
 
 export const useAuth = () => {
