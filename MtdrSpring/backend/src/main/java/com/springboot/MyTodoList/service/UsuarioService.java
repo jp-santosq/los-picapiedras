@@ -8,12 +8,22 @@ import com.springboot.MyTodoList.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    // Autenticar usuario
+    public Usuario authenticateUser(String email, String password) {
+        Optional<Usuario> usuario = usuarioRepository.findByCorreo(email);
+        if (usuario.isPresent() && usuario.get().getPassword().equals(password)) {
+            return usuario.get();
+        }
+        return null;
+    }
 
     // Mostrar todos los usuarios
     public List<Usuario> findAll(){

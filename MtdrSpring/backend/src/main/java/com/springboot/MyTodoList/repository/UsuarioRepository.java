@@ -2,6 +2,7 @@ package com.springboot.MyTodoList.repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,5 @@ import jakarta.transaction.Transactional;
 @EnableTransactionManagement
 public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
      List<Usuario> findByRolId(Long idRol);
+     Optional<Usuario> findByCorreo(String correo);
 }
