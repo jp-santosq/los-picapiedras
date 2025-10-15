@@ -3,6 +3,7 @@
 Pedro Sanchez 3/9/2025
 Ale Teran 2/10/2025
 Christel Gomez 5/10/2025
+David Martinez 15/10/2025
 */
 
 import { AuthProvider } from "./context/AuthContext.tsx";
@@ -14,12 +15,18 @@ import "./styles/fonts.css";
 import { useAuth } from "./context/AuthContext.tsx";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TasksProvider } from "./context/TaskContext.tsx";
+import SuperAdmin from "./components/SuperAdmin.tsx";
+
 
 function AppContent() {
   const { user } = useAuth();
 
   if (!user) {
     return <Login />;
+  }
+
+  if(user.id==1){
+    return <SuperAdmin/>
   }
 
   return (

@@ -1,12 +1,17 @@
 package com.springboot.MyTodoList.controller;
+import com.springboot.MyTodoList.dto.UsuarioDTO;
 import com.springboot.MyTodoList.model.Usuario;
 import com.springboot.MyTodoList.service.UsuarioService;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.stream.Collectors;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -16,9 +21,12 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     // Obtener todos los usuarios
-    @GetMapping(value="/usuarios")
-    public List<Usuario> getAllUsers(){
-        return usuarioService.findAll();
+    @GetMapping("/usuarios")
+    public List<UsuarioDTO> getAllUsers() {
+        return usuarioService.findAll()
+                            .stream()
+                            .map(UsuarioDTO::fromEntity)
+                            .collect(Collectors.toList());
     }
 
     // Añadir un usuario
@@ -33,9 +41,12 @@ public class UsuarioController {
 
     // Obtener usuarios por tipo de rol
     @GetMapping("/rol/{idRol}")
-    public ResponseEntity<List<Usuario>> getUsuarioByRolId(@PathVariable Long idRol){
-        List<Usuario> usuarios = usuarioService.getUsuariosByIdRol(idRol);
-        return new ResponseEntity<>(usuarios,HttpStatus.OK);
+    public ResponseEntity<List<UsuarioDTO>> getUsuarioByRolId(@PathVariable Long idRol){
+        List<UsuarioDTO> usuariosDTO = usuarioService.getUsuariosByIdRol(idRol)
+                                                    .stream()
+                                                    .map(UsuarioDTO::fromEntity)
+                                                    .collect(Collectors.toList());
+        return new ResponseEntity<>(usuariosDTO, HttpStatus.OK);
     }
 
 }
