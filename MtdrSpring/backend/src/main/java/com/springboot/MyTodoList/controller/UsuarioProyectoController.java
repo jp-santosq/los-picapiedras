@@ -14,6 +14,7 @@ import com.springboot.MyTodoList.model.Usuario;
 import com.springboot.MyTodoList.model.UsuarioProyecto;
 import com.springboot.MyTodoList.service.UsuarioProyectoService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/usuarioProyecto")
 public class UsuarioProyectoController {

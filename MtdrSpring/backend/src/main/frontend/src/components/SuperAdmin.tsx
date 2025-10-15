@@ -27,6 +27,7 @@ import AddIcon from '@mui/icons-material/Add';
 import FolderIcon from '@mui/icons-material/Folder';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import axios from "axios";
 
 type Usuario = {
@@ -62,21 +63,26 @@ function SuperAdmin() {
   const { user } = useAuth();
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [administradores, setAdministradores] = useState<Usuario[]>([]);
+  const [desarrolladores, setDesarrolladores] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false);
   const [selectedProyecto, setSelectedProyecto] = useState<Proyecto | null>(null);
   const [miembrosProyecto, setMiembrosProyecto] = useState<UsuarioProyecto[]>([]);
   const [loadingMiembros, setLoadingMiembros] = useState(false);
+  const [selectedDesarrollador, setSelectedDesarrollador] = useState("");
   const [nuevoProyecto, setNuevoProyecto] = useState({
     nombreProyecto: "",
     administradorId: ""
   });
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     fetchProyectos();
     fetchAdministradores();
+    fetchDesarrolladores();
   }, []);
 
   const fetchProyectos = async () => {
@@ -100,10 +106,21 @@ function SuperAdmin() {
     }
   };
 
+  const fetchDesarrolladores = async () => {
+    try {
+      // Obtener usuarios con rol ID 3 (desarrolladores)
+      const response = await axios.get("/usuario/rol/22");
+      setDesarrolladores(response.data);
+    } catch (error) {
+      console.error("Error al cargar desarrolladores:", error);
+    }
+  };
+
   const fetchMiembrosProyecto = async (proyectoId: number) => {
     try {
       setLoadingMiembros(true);
       const response = await axios.get(`/usuarioProyecto/proyecto/${proyectoId}`);
+      console.log("Miembros recibidos:", response.data);
       setMiembrosProyecto(response.data);
     } catch (error) {
       console.error("Error al cargar miembros:", error);
@@ -134,6 +151,43 @@ function SuperAdmin() {
     setOpenDetailDialog(false);
     setSelectedProyecto(null);
     setMiembrosProyecto([]);
+    setSuccessMessage("");
+  };
+
+  const handleOpenAddMemberDialog = () => {
+    setOpenAddMemberDialog(true);
+    setSelectedDesarrollador("");
+    setError("");
+  };
+
+  const handleCloseAddMemberDialog = () => {
+    setOpenAddMemberDialog(false);
+    setSelectedDesarrollador("");
+    setError("");
+  };
+
+  const handleAddMember = async () => {
+    if (!selectedDesarrollador || !selectedProyecto) {
+      setError("Debes seleccionar un desarrollador");
+      return;
+    }
+
+    try {
+      await axios.post("/usuarioProyecto/add", {
+        idUsuario: parseInt(selectedDesarrollador),
+        idProyecto: selectedProyecto.id
+      });
+
+      setSuccessMessage("Desarrollador agregado exitosamente");
+      handleCloseAddMemberDialog();
+      fetchMiembrosProyecto(selectedProyecto.id);
+      
+      // Limpiar mensaje después de 3 segundos
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("Error al agregar miembro:", error);
+      setError("Error al agregar el desarrollador al proyecto");
+    }
   };
 
   const handleCreateProyecto = async () => {
@@ -163,6 +217,12 @@ function SuperAdmin() {
 
   const isAdministrador = (usuarioId: number) => {
     return selectedProyecto?.administrador.id === usuarioId;
+  };
+
+  const getDesarrolladoresDisponibles = () => {
+    // Filtrar desarrolladores que no estén ya en el proyecto
+    const idsEnProyecto = miembrosProyecto.map(mp => mp.usuario.id);
+    return desarrolladores.filter(dev => !idsEnProyecto.includes(dev.id));
   };
 
   if (!user) {
@@ -353,6 +413,13 @@ function SuperAdmin() {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
+          {/* Mensaje de éxito */}
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
           {/* Administrador destacado */}
           <Box sx={{ mb: 3 }}>
             <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
@@ -400,9 +467,27 @@ function SuperAdmin() {
 
           {/* Miembros del Proyecto */}
           <Box>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2 }}>
-              Miembros del Proyecto ({miembrosProyecto.length})
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Miembros del Proyecto ({miembrosProyecto.length})
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<PersonAddIcon />}
+                onClick={handleOpenAddMemberDialog}
+                sx={{
+                  borderColor: '#312D2A',
+                  color: '#312D2A',
+                  '&:hover': {
+                    borderColor: '#242220',
+                    backgroundColor: 'rgba(49, 45, 42, 0.04)'
+                  }
+                }}
+              >
+                Agregar Miembro
+              </Button>
+            </Box>
             
             {loadingMiembros ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
@@ -501,6 +586,83 @@ function SuperAdmin() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDetailDialog}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog Agregar Miembro */}
+      <Dialog open={openAddMemberDialog} onClose={handleCloseAddMemberDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Agregar Desarrollador al Proyecto</DialogTitle>
+        <DialogContent>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, mt: 1 }}>
+              {error}
+            </Alert>
+          )}
+          
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 2 }}>
+            Proyecto: <strong>{selectedProyecto?.nombreProyecto}</strong>
+          </Typography>
+
+          <FormControl fullWidth>
+            <InputLabel>Seleccionar Desarrollador</InputLabel>
+            <Select
+              value={selectedDesarrollador}
+              onChange={(e) => setSelectedDesarrollador(e.target.value)}
+              label="Seleccionar Desarrollador"
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 300,
+                  },
+                },
+              }}
+            >
+              {getDesarrolladoresDisponibles().length === 0 ? (
+                <MenuItem disabled>
+                  <Typography variant="body2" color="text.secondary">
+                    No hay desarrolladores disponibles
+                  </Typography>
+                </MenuItem>
+              ) : (
+                getDesarrolladoresDisponibles().map((dev) => (
+                  <MenuItem key={dev.id} value={dev.id}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar 
+                        sx={{ 
+                          width: 24, 
+                          height: 24, 
+                          fontSize: '0.875rem',
+                          bgcolor: getAdminColor(dev.id)
+                        }}
+                      >
+                        {dev.nombreUsuario.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2">{dev.nombreUsuario}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {dev.correo}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddMemberDialog}>Cancelar</Button>
+          <Button 
+            variant="contained" 
+            onClick={handleAddMember}
+            disabled={!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0}
+            sx={{ 
+              backgroundColor: '#312D2A',
+              '&:hover': { backgroundColor: '#242220' }
+            }}
+          >
+            Agregar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
