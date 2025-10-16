@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
@@ -8,7 +8,7 @@ import '../styles/components/tasks.css';
 import { TaskStatus } from '../components/enums.tsx';
 
 const Tasks: React.FC = () => {
-  const { tasks } = useTasks();
+  const { tasks, refreshTasks } = useTasks();
   const { sprints } = useSprints();
   const { user } = useAuth();
   
@@ -17,6 +17,36 @@ const Tasks: React.FC = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedSprintFilter, setSelectedSprintFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Auto-refresh cuando la página se vuelve visible
+  useEffect(() => {
+    // Refrescar al montar el componente
+    if (refreshTasks) {
+      refreshTasks();
+    }
+
+    // Refrescar cuando la ventana vuelve a tener foco
+    const handleFocus = () => {
+      if (refreshTasks) {
+        refreshTasks();
+      }
+    };
+
+    // Refrescar cuando el tab vuelve a estar visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden && refreshTasks) {
+        refreshTasks();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshTasks]);
 
   const handleTaskClick = (taskId: number) => {
     setSelectedTaskId(taskId);

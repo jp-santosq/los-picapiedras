@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import axios from "axios";
 import { Task } from "../components/TaskDescription.tsx";
@@ -13,6 +14,7 @@ interface TasksContextProps {
   tasks: Task[];
   addTask: (task: Omit<Task, "id"> & { sprintId?: number }) => Promise<void>;
   updateTaskState: (taskId: number, newState: TaskStatus) => void;
+  refreshTasks: () => Promise<void>;
 }
 
 // Mapeo para enviar al backend
@@ -49,42 +51,42 @@ const TasksContext = createContext<TasksContextProps | undefined>(undefined);
 export function TasksProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  useEffect(() => {
-    const fetchTareas = async () => {
-      try {
-        const response = await axios.get("/tarea");
-        const tareasBackend = response.data as any[];
+  const fetchTareas = useCallback(async () => {
+    try {
+      const response = await axios.get("/tarea");
+      const tareasBackend = response.data as any[];
 
-        const estadoMapFrontend: Record<number, TaskStatus> = {
-          1: TaskStatus.TODO,
-          2: TaskStatus.DOING,
-          3: TaskStatus.REVISION,
-          4: TaskStatus.DONE,
-        };
+      const estadoMapFrontend: Record<number, TaskStatus> = {
+        1: TaskStatus.TODO,
+        2: TaskStatus.DOING,
+        3: TaskStatus.REVISION,
+        4: TaskStatus.DONE,
+      };
 
-        const tareasMapeadas: Task[] = tareasBackend.map((tarea) => ({
-          id: tarea.id,
-          name: tarea.titulo,
-          description: tarea.descripcion,
-          responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
-          responsibleId: tarea.desarrollador?.id || 0,
-          estimatedDate: tarea.fechaFinEstimada,
-          storyPoints: tarea.prioridad,
-          project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
-          status: tarea.estadoTarea
-            ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
-            : TaskStatus.TODO,
-        }));
+      const tareasMapeadas: Task[] = tareasBackend.map((tarea) => ({
+        id: tarea.id,
+        name: tarea.titulo,
+        description: tarea.descripcion,
+        responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
+        responsibleId: tarea.desarrollador?.id || 0,
+        estimatedDate: tarea.fechaFinEstimada,
+        storyPoints: tarea.prioridad,
+        project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
+        status: tarea.estadoTarea
+          ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
+          : TaskStatus.TODO,
+      }));
 
-        setTasks(tareasMapeadas);
-        console.log("Tareas cargadas:", tareasMapeadas);
-      } catch (error) {
-        console.error("Error al obtener las tareas:", error);
-      }
-    };
-
-    fetchTareas();
+      setTasks(tareasMapeadas);
+      console.log("Tareas cargadas:", tareasMapeadas);
+    } catch (error) {
+      console.error("Error al obtener las tareas:", error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchTareas();
+  }, [fetchTareas]);
 
   const addTask = async (task: Omit<Task, "id"> & { sprintId?: number }) => {
     try {
@@ -150,8 +152,12 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const refreshTasks = async () => {
+    await fetchTareas();
+  };
+
   return (
-    <TasksContext.Provider value={{ tasks, addTask, updateTaskState }}>
+    <TasksContext.Provider value={{ tasks, addTask, updateTaskState, refreshTasks }}>
       {children}
     </TasksContext.Provider>
   );
