@@ -65,6 +65,11 @@ public class Proyecto {
         return sprints;
     }
 
+    public Proyecto(Long id) {
+        this.id = id;
+    }
+
+
     public void setSprints(List<Sprint> sprints) {
         this.sprints = sprints;
     }
