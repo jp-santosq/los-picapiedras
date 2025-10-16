@@ -94,6 +94,10 @@ public class Usuario {
         this.rol = rol;
     }
 
+    // Constructor que solo asigna el id
+    public Usuario(Long id) {
+        this.id = id;
+    }
 
     // toString opcional
     @Override
