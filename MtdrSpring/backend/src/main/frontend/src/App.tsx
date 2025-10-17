@@ -25,7 +25,7 @@ function AppContent() {
     return <Login />;
   }
 
-  if(user.id==1){
+  if(user.idRol==1){
     return <SuperAdmin/>
   }
 

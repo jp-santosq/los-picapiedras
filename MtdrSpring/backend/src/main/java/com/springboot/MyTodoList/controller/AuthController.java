@@ -30,7 +30,7 @@ public class AuthController {
                 response.put("id", usuario.getId());
                 response.put("name", usuario.getNombreUsuario());
                 response.put("email", usuario.getCorreo());
-                response.put("isAdmin", usuario.getRol().getId() == 2); // rol 1 = desarrollador, rol 2 = admin
+                response.put("idRol", usuario.getRol().getId()); // rol 1 = desarrollador, rol 2 = admin
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");

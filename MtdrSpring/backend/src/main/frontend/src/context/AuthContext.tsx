@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { Snackbar, Alert } from "@mui/material";
 import axios from "axios";
 
-export type User = { id: number; name: string; email: string; isAdmin: boolean } | null;
+export type User = { id: number; name: string; email: string; idRol: number } | null;
 
 type AuthContextType = {
   user: User;
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: userData.id,
           name: userData.name,
           email: userData.email,
-          isAdmin: userData.isAdmin,
+          idRol: userData.idRol,
         });
         setShowWelcome(true);
         return true;
