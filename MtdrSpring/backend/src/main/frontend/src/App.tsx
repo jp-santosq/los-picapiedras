@@ -27,7 +27,7 @@ function AppContent() {
   console.log("Usuario autenticado:", user);
   console.log("ID de usuario:", user.id);
 
-  if(user.id==1){
+  if(user.idRol==1){
     return <SuperAdmin/>
   }
 

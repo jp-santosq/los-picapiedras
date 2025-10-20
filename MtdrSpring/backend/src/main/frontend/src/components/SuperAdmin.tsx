@@ -109,7 +109,7 @@ function SuperAdmin() {
   const fetchDesarrolladores = async () => {
     try {
       // Obtener usuarios con rol ID 3 (desarrolladores)
-      const response = await axios.get("/usuario/rol/22");
+      const response = await axios.get("/usuario/rol/3");
       setDesarrolladores(response.data);
     } catch (error) {
       console.error("Error al cargar desarrolladores:", error);
