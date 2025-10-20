@@ -74,8 +74,7 @@ const Tasks: React.FC = () => {
     return displayTasks.filter(task => {
       const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            task.responsible.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesSprint = selectedSprintFilter === 'all';
+      const matchesSprint = selectedSprintFilter === 'all' || (task.sprintId !== null && task.sprintId.toString() === selectedSprintFilter);
       
       return matchesSearch && matchesSprint;
     });
@@ -222,6 +221,7 @@ const Tasks: React.FC = () => {
                   <th>Nombre</th>
                   <th>Responsable</th>
                   <th>Proyecto</th>
+                  <th>Sprint</th>
                   <th>Estado</th>
                   <th>Fecha Estimada</th>
                   <th>Story Points</th>
@@ -238,6 +238,7 @@ const Tasks: React.FC = () => {
                     <td className="task-name">{task.name}</td>
                     <td className="task-responsible">{task.responsible}</td>
                     <td className="task-project">{task.project || 'Oracle Java Bot'}</td>
+                    <td className="task-sprint">{task.sprintId ? `Sprint #${task.sprintId}` : 'Sin Sprint'}</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
                         {task.status}

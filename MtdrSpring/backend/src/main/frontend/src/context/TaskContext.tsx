@@ -118,6 +118,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         responsibleId: tareaCreada.desarrollador?.id || 0,
         estimatedDate: tareaCreada.fechaFinEstimada,
         storyPoints: tareaCreada.prioridad,
+        sprintId: tareaCreada.sprint?.id || null,
         project: tareaCreada.proyecto?.nombreProyecto || "Sin proyecto",
         status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado),
       };

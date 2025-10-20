@@ -9,6 +9,7 @@ export interface Task {
   estimatedDate: string;
   storyPoints: number;
   project: string;
+  sprintId: number | null;
   description: string;
   status: TaskStatus;
 }

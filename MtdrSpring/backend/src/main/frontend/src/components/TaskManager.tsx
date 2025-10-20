@@ -16,6 +16,7 @@ export function TaskManager() {
     storyPoints: 0,
     project: "Los Picapiedras #X",
     status: TaskStatus.TODO,
+    sprintId: 1,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -36,6 +37,7 @@ export function TaskManager() {
 
     await addTask({
       ...newTask,
+      sprintId: newTask.sprintId,
       responsible: user.name,
       responsibleId: user.id,
     });
@@ -48,6 +50,7 @@ export function TaskManager() {
       storyPoints: 0,
       project: "Los Picapiedras #X",
       status: TaskStatus.TODO,
+      sprintId: 1,
     });
   }
 
