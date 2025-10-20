@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { Snackbar, Alert } from "@mui/material";
 import axios from "axios";
 
-export type User = { id: number; name: string; email: string; idRol: number } | null;
+export type User = { id: number; name: string; email: string; rol: number } | null;
 
 type AuthContextType = {
   user: User;
@@ -16,10 +16,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User>(null);
   const [showWelcome, setShowWelcome] = useState(false);
 
-  const login = useCallback(async (mail: string, password: string) => {
+  const login = useCallback(async (correo: string, password: string) => {
     try {
       const response = await axios.post("/auth/login", {
-        email: mail,
+        correo: correo,
         password: password
       });
 
@@ -27,11 +27,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userData = response.data;
         setUser({
           id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          idRol: userData.idRol,
+          name: userData.nombreUsuario,
+          email: userData.correo,
+          rol: userData.rol.id,
         });
         setShowWelcome(true);
+        console.log("Respuesta del backend:", response.data);
         return true;
       } 
       return false;

@@ -107,7 +107,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
       console.log("Enviando DTO al backend:", dto);
 
-      const response = await axios.post("/tarea", dto);
+      const response = await axios.post("/tarea", dto/*, { headers: { "Content-Type": "application/json" }}*/);
       const tareaCreada = response.data;
 
       const nuevaTask: Task = {
