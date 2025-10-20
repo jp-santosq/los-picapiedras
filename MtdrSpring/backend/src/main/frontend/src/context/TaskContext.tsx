@@ -71,6 +71,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         responsibleId: tarea.desarrollador?.id || 0,
         estimatedDate: tarea.fechaFinEstimada,
         storyPoints: tarea.prioridad,
+        sprintId: tarea.sprint?.id || null,
         project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
         status: tarea.estadoTarea
           ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
@@ -117,6 +118,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         responsibleId: tareaCreada.desarrollador?.id || 0,
         estimatedDate: tareaCreada.fechaFinEstimada,
         storyPoints: tareaCreada.prioridad,
+        sprintId: tareaCreada.sprint?.id || null,
         project: tareaCreada.proyecto?.nombreProyecto || "Sin proyecto",
         status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado),
       };
