@@ -3,10 +3,13 @@ package com.springboot.MyTodoList.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -97,6 +100,41 @@ public class Usuario {
     // Constructor que solo asigna el id
     public Usuario(Long id) {
         this.id = id;
+    }
+
+    // metodos UserDetails
+    @Override
+    public List<GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (rol != null && rol.getNombreRol() != null) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombreRol()));
+        }
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nombreUsuario;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     // toString opcional

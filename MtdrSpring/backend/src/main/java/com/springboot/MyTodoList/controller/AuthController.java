@@ -1,14 +1,11 @@
 package com.springboot.MyTodoList.controller;
 
-import com.springboot.MyTodoList.model.Usuario;
-import com.springboot.MyTodoList.service.UsuarioService;
+import com.springboot.MyTodoList.dto.AuthRequestDTO;
+import com.springboot.MyTodoList.dto.AuthResponseDTO;
+import com.springboot.MyTodoList.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -16,27 +13,11 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        String email = credentials.get("email");
-        String password = credentials.get("password");
-
-        try {
-            Usuario usuario = usuarioService.authenticateUser(email, password);
-            if (usuario != null) {
-                Map<String, Object> response = new HashMap<>();
-                response.put("id", usuario.getId());
-                response.put("name", usuario.getNombreUsuario());
-                response.put("email", usuario.getCorreo());
-                response.put("isAdmin", usuario.getRol().getId() == 2); // rol 1 = desarrollador, rol 2 = admin
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during authentication");
-        }
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
+        AuthResponseDTO response = authenticationService.authenticate(request);
+        return ResponseEntity.ok(response);
     }
 }
