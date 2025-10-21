@@ -1,37 +1,68 @@
-version: 0.1 
-component: build
-timeoutInSeconds: 600
-shell: bash
+name: GraalVM build
+on: [push, pull_request]
 
-env:
-  variables:
-    JAVA_HOME: /usr/lib64/graalvm/graalvm22-ee-java17
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-  exportedVariables:
-    - BuildServiceDemoVersion
+    env:
+      OCI_CLI_USER:            ${{ secrets.OCI_CLI_USER }}
+      OCI_CLI_TENANCY:         ${{ secrets.OCI_CLI_TENANCY }}
+      OCI_CLI_FINGERPRINT:     ${{ secrets.OCI_CLI_FINGERPRINT }}
+      OCI_CLI_KEY_CONTENT:     ${{ secrets.OCI_CLI_KEY_CONTENT }}
+      OCI_CLI_REGION:          ${{ secrets.OCI_CLI_REGION }}
+      OCI_DOCKER_REPO:         ${{ secrets.OCI_DOCKER_REPO }}
+      OCI_AUTH_TOKEN:          ${{ secrets.OCI_AUTH_TOKEN }}
+      OCI_COMPARTMENT_OCID:    ${{ secrets.OCI_COMPARTMENT_OCID }}
+      OCI_CLUSTER_OCID:        ${{ secrets.OCI_CLUSTER_OCID }}
 
-steps:
-  - type: Command
-    name: "Install GraalVM Enterprise 22.x Native Image for Java17"
-    command: yum -y install graalvm22-ee-17-native-image
+    steps:
+      - uses: actions/checkout@v4
 
-  - type: Command
-    name: "Set PATH Variable"
-    command: export PATH=$JAVA_HOME/bin:$PATH
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '22'
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  - type: Command
-    name: "Docker Login"
-    command:  cd MtdrSpring;
-              oci os object get --bucket-name reacttodo-rolax --name deployment_config.tgz --file deployment_config.tgz;
-              tar -xzvf deployment_config.tgz;
-              source env.sh;
-              cat at.cfg | docker login -u "axzmghqes1gn/adan.ruiz@tec.mx" --password-stdin mx-queretaro-1.ocir.io
+      - name: Java version
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version || true
 
-  - type: Command
-    name: "Build"
-    command:  cd MtdrSpring;
-              source env.sh;
-              (cd backend;source build.sh)
+      - name: Extract configuration files
+        run: |
+          cd MtdrSpring
+          wget https://objectstorage.mx-queretaro-1.oraclecloud.com/n/axvik3xzohce/b/reacttodo-9zgw9/o/deployment_config.tgz
+          tar -xzvf deployment_config.tgz
+          source env.sh
+          cat at.cfg | docker login -u "axvik3xzohce/a00836080@tec.mx" --password-stdin mx-queretaro-1.ocir.io
 
+      - name: Get or create OCIR repo
+        id: get-ocir
+        uses: oracle-actions/get-ocir-repository@v1.3.0
+        with:
+          name: reacttodo/asdvp
+          compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
 
+      - name: Build backend
+        run: |
+          cd MtdrSpring
+          source env.sh
+          (cd backend; source build.sh)
 
+      - name: Configure kubectl for OKE
+        id: kubectl-oke-action
+        uses: oracle-actions/configure-kubectl-oke@v1.5.0
+        with:
+          cluster: ${{ secrets.OCI_CLUSTER_OCID }}
+
+      # === NUEVO PASO: UNDEPLOY AUTOMÁTICO ===
+      - name: UN-Deploy to Kubernetes
+        run: |
+          echo "🧹 Eliminando recursos anteriores..."
+          kubectl -n mtdrworkshop delete deployment todolistapp-springboot-deployment || true
+          kubectl -n mtdrworkshop delete service todolistapp-springboot-service || true
+          echo "✅ Recursos eliminados correctamente."
