@@ -17,6 +17,9 @@ const Tasks: React.FC = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedSprintFilter, setSelectedSprintFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Determinar si el usuario es administrador
+  const isAdmin = user?.rol === 2;
 
   // Auto-refresh cuando la página se vuelve visible
   useEffect(() => {
@@ -53,23 +56,29 @@ const Tasks: React.FC = () => {
     setIsDetailsModalOpen(true);
   };
 
-  // Filtrar tareas del usuario actual
-  const userTasks = useMemo(() => {
+  // Filtrar tareas según el rol y modo de vista
+  const displayTasks = useMemo(() => {
     if (!user) return [];
+    
+    // Si es administrador, mostrar todas las tareas
+    if (isAdmin) {
+      return tasks;
+    }
+    
+    // De lo contrario, mostrar solo las tareas del usuario
     return tasks.filter(task => task.responsibleId === user.id);
-  }, [tasks, user]);
+  }, [tasks, user, isAdmin]);
 
-  // Filtrar tareas
+  // Filtrar tareas por búsqueda y sprint
   const filteredTasks = useMemo(() => {
-    return userTasks.filter(task => {
+    return displayTasks.filter(task => {
       const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            task.responsible.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesSprint = selectedSprintFilter === 'all';
+      const matchesSprint = selectedSprintFilter === 'all' || (task.sprintId !== null && task.sprintId.toString() === selectedSprintFilter);
       
       return matchesSearch && matchesSprint;
     });
-  }, [userTasks, searchTerm, selectedSprintFilter]);
+  }, [displayTasks, searchTerm, selectedSprintFilter]);
 
   const selectedTask = selectedTaskId 
     ? tasks.find(t => t.id === selectedTaskId) || null
@@ -85,13 +94,13 @@ const Tasks: React.FC = () => {
   }), [tasks]);
   */
 
-  // Estadísticas (solo del usuario)
+  // Estadísticas según el modo de vista
   const stats = useMemo(() => ({
-    total: userTasks.length,
-    todo: userTasks.filter(t => t.status === TaskStatus.TODO).length,
-    doing: userTasks.filter(t => t.status === TaskStatus.DOING).length,
-    done: userTasks.filter(t => t.status === TaskStatus.DONE).length,
-  }), [userTasks]);
+    total: displayTasks.length,
+    todo: displayTasks.filter(t => t.status === TaskStatus.TODO).length,
+    doing: displayTasks.filter(t => t.status === TaskStatus.DOING).length,
+    done: displayTasks.filter(t => t.status === TaskStatus.DONE).length,
+  }), [displayTasks]);
 
 
   // Función para manejar cuando se crea una tarea
@@ -212,6 +221,7 @@ const Tasks: React.FC = () => {
                   <th>Nombre</th>
                   <th>Responsable</th>
                   <th>Proyecto</th>
+                  <th>Sprint</th>
                   <th>Estado</th>
                   <th>Fecha Estimada</th>
                   <th>Story Points</th>
@@ -228,6 +238,7 @@ const Tasks: React.FC = () => {
                     <td className="task-name">{task.name}</td>
                     <td className="task-responsible">{task.responsible}</td>
                     <td className="task-project">{task.project || 'Oracle Java Bot'}</td>
+                    <td className="task-sprint">{task.sprintId ? `Sprint #${task.sprintId}` : 'Sin Sprint'}</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
                         {task.status}
