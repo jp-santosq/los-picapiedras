@@ -19,7 +19,7 @@ const Tasks: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   
   // Determinar si el usuario es administrador
-  const isAdmin = user?.idRol === 2;
+  const isAdmin = user?.rol === 2;
 
   // Auto-refresh cuando la página se vuelve visible
   useEffect(() => {
