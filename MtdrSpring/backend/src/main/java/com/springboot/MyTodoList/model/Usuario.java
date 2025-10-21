@@ -19,7 +19,7 @@ public class Usuario implements UserDetails {
     @Column(name = "nombre_usuario", nullable = false, length = 60)
     private String nombreUsuario;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 150)
     private String password;
 
     @Column(nullable = false, length = 30)
