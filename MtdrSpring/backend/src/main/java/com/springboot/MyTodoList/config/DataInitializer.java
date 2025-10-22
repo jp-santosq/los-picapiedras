@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 import com.springboot.MyTodoList.model.*;
 import com.springboot.MyTodoList.repository.*;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import org.springframework.core.io.ClassPathResource;
+import java.util.Scanner;
+import jakarta.persistence.EntityManager;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -36,6 +41,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Override
     public void run(String... args) throws Exception {
@@ -233,5 +241,25 @@ public class DataInitializer implements CommandLineRunner {
         tareaRepository.save(tarea6);
 
         System.out.println("Datos cargados exitosamente!");
+        createKpiProceduresFromFile();
     }
+    private void createKpiProceduresFromFile() {
+    try {
+        ClassPathResource resource = new ClassPathResource("db/kpi_procedures.sql");
+        try (InputStream in = resource.getInputStream();
+             Scanner scanner = new Scanner(in, StandardCharsets.UTF_8)) {
+            scanner.useDelimiter("/");  // split each procedure by slash
+            while (scanner.hasNext()) {
+                String ddl = scanner.next().trim();
+                if (!ddl.isEmpty()) {
+                    entityManager.createNativeQuery(ddl).executeUpdate();
+                }
+            }
+        }
+        System.out.println("✓ KPI procedures created from file successfully.");
+    } catch (Exception e) {
+        System.err.println("⚠️ Failed to load KPI procedures file: " + e.getMessage());
+    }
+}
+
 }
