@@ -7,8 +7,23 @@ import React, {
   useCallback,
 } from "react";
 import axios from "axios";
-import { Task } from "../components/TaskDescription.tsx";
 import { TaskStatus } from "../components/enums.tsx";
+
+export interface Task {
+  id: number;
+  name: string;
+  description: string;
+  startDate: string;
+  estimatedDate: string;
+  endDate?: string;    //opcional
+  storyPoints: number;
+  status: TaskStatus;
+  projectId: number;
+  sprintId?: number;   //opcional
+  responsibleId: number;
+  userStoryId: number;
+}
+
 
 interface TasksContextProps {
   tasks: Task[];
@@ -67,15 +82,18 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         id: tarea.id,
         name: tarea.titulo,
         description: tarea.descripcion,
-        responsible: tarea.desarrollador?.nombreUsuario || "Sin asignar",
-        responsibleId: tarea.desarrollador?.id || 0,
+        startDate: tarea.fechaInicio,
         estimatedDate: tarea.fechaFinEstimada,
+        endDate: tarea.fechaFinReal,
         storyPoints: tarea.prioridad,
-        sprintId: tarea.sprint?.id || null,
-        project: tarea.proyecto?.nombreProyecto || "Oracle Java Bot",
         status: tarea.estadoTarea
-          ? estadoMapFrontend[tarea.estadoTarea.id] || TaskStatus.TODO
+          ? estadoMapFrontend[tarea.estadoTareaId] || TaskStatus.TODO
           : TaskStatus.TODO,
+        projectId: tarea.proyecto?.id || 0,
+        sprintId: tarea.sprint?.id || null,
+        responsibleId: tarea.desarrolladorId || 0,
+        userStoryId: tarea.historiaUsuarioId || 0,
+
       }));
 
       setTasks(tareasMapeadas);
@@ -89,7 +107,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     fetchTareas();
   }, [fetchTareas]);
 
-  const addTask = async (task: Omit<Task, "id"> & { sprintId?: number }) => {
+  const addTask = useCallback(async (task: Omit<Task, "id"> & { sprintId?: number }) => {
     try {
       const dto = {
         titulo: task.name,
@@ -114,13 +132,15 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         id: tareaCreada.id,
         name: tareaCreada.titulo,
         description: tareaCreada.descripcion,
-        responsible: tareaCreada.desarrollador?.nombreUsuario || "Sin asignar",
-        responsibleId: tareaCreada.desarrollador?.id || 0,
+        startDate: tareaCreada.fechaInicio,
         estimatedDate: tareaCreada.fechaFinEstimada,
+        endDate: tareaCreada.fechaFinReal,
         storyPoints: tareaCreada.prioridad,
-        sprintId: tareaCreada.sprint?.id || null,
-        project: tareaCreada.proyecto?.nombreProyecto || "Sin proyecto",
-        status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado),
+        status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado), 
+        projectId: tareaCreada.proyectoId || "Sin proyecto",
+        sprintId: tareaCreada.sprintId || null,
+        responsibleId: tareaCreada.desarrolladorId || 0,
+        userStoryId: tareaCreada.historiaUsuarioId || 0,
       };
 
       setTasks((prev) => [...prev, nuevaTask]);
@@ -129,10 +149,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       console.error("Error al crear tarea:", error);
       throw new Error("Error al crear tarea. Ver consola para más detalles.");
     }
-  };
+  }, []);
 
   // Actualizar solo el estado de la tarea
-  const updateTaskState = async (taskId: number, newState: TaskStatus) => {
+  const updateTaskState = useCallback(async (taskId: number, newState: TaskStatus) => {
     const estadoTareaId = estadoMapBackend[newState];
 
     try {
@@ -152,11 +172,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       console.error("Error al actualizar estado:", error);
       throw new Error("No se pudo actualizar el estado de la tarea.");
     }
-  };
+  }, []);
 
-  const refreshTasks = async () => {
+  const refreshTasks = useCallback(async () => {
     await fetchTareas();
-  };
+  }, [fetchTareas]);
 
   return (
     <TasksContext.Provider value={{ tasks, addTask, updateTaskState, refreshTasks }}>

@@ -17,13 +17,17 @@ export function TaskManager() {
     project: "Los Picapiedras #X",
     status: TaskStatus.TODO,
     sprintId: 1,
+    projectId: 1,
+    userStoryId: 1,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setNewTask((prev) => ({
       ...prev,
-      [name]: name === "storyPoints" ? parseInt(value) || 0 : value,
+      [name]: name === "storyPoints" || name === "sprintId" || name === "projectId" || name === "userStoryId"
+        ? parseInt(value) || 0 
+        : value,
     }));
   }
 
@@ -35,23 +39,31 @@ export function TaskManager() {
       return;
     }
 
-    await addTask({
-      ...newTask,
-      sprintId: newTask.sprintId,
-      responsible: user.name,
-      responsibleId: user.id,
-    });
+    try {
+      await addTask({
+        name: newTask.name,
+        description: newTask.description,
+        startDate: new Date().toISOString().split("T")[0],
+        estimatedDate: newTask.estimatedDate,
+        storyPoints: newTask.storyPoints,
+        status: newTask.status,
+        projectId: newTask.projectId,
+        sprintId: newTask.sprintId,
+        responsibleId: user.id,
+        userStoryId: newTask.userStoryId,
+      });
 
-    setIsModalOpen(false);
-    setNewTask({
-      name: "",
-      description: "",
-      estimatedDate: "",
-      storyPoints: 0,
-      project: "Los Picapiedras #X",
-      status: TaskStatus.TODO,
-      sprintId: 1,
-    });
+      setIsModalOpen(false);
+      setNewTask({
+        ...newTask,
+        sprintId: newTask.sprintId,
+        projectId: newTask.projectId,
+        userStoryId: newTask.userStoryId,
+      });
+    } catch (error) {
+      alert("Error al crear la tarea. Por favor intenta de nuevo.");
+      console.error(error);
+    }
   }
 
   return (
@@ -94,6 +106,36 @@ export function TaskManager() {
                 onChange={handleChange}
                 required
                 min="0"
+              />
+
+              <input
+                type="number"
+                name="projectId"
+                placeholder="ID del Proyecto"
+                value={newTask.projectId}
+                onChange={handleChange}
+                required
+                min="1"
+              />
+
+              <input
+                type="number"
+                name="sprintId"
+                placeholder="ID del Sprint"
+                value={newTask.sprintId}
+                onChange={handleChange}
+                required
+                min="1"
+              />
+
+              <input
+                type="number"
+                name="userStoryId"
+                placeholder="ID de Historia de Usuario"
+                value={newTask.userStoryId}
+                onChange={handleChange}
+                required
+                min="1"
               />
 
               <textarea
