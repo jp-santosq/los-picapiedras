@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
-import { useAuth } from '../context/AuthContext.tsx';
+import { useAuth, User } from '../context/AuthContext.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
@@ -12,46 +12,55 @@ const Tasks: React.FC = () => {
   const { tasks, refreshTasks } = useTasks();
   const { sprints } = useSprints();
   const { user } = useAuth();
-  const { getUserById } = useUsers();
+  const { users, getUserById, refreshUsers } = useUsers();
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [selectedSprintFilter, setSelectedSprintFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
+  // 🔹 Usar ref para evitar recrear listeners
+  const hasLoadedData = useRef(false);
+
   // Determinar si el usuario es administrador
   const isAdmin = user?.rol === 2;
 
-  // Auto-refresh cuando la página se vuelve visible
+  // 🔹 Cargar datos iniciales (usuarios + tareas)
   useEffect(() => {
-    // Refrescar al montar el componente
-    if (refreshTasks) {
-      refreshTasks();
-    }
+    if (hasLoadedData.current) return;
 
-    // Refrescar cuando la ventana vuelve a tener foco
-    const handleFocus = () => {
-      if (refreshTasks) {
-        refreshTasks();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([refreshTasks(), refreshUsers()]);
+        hasLoadedData.current = true;
+      } catch (error) {
+        console.error("Error cargando datos iniciales:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
+    fetchData();
+  }, []);
 
-    // Refrescar cuando el tab vuelve a estar visible
+  // 🔹 Auto-refresh cuando la página se vuelve visible
+  useEffect(() => {
+    const handleFocus = () => {
+      if (refreshTasks) refreshTasks();
+    };
     const handleVisibilityChange = () => {
-      if (!document.hidden && refreshTasks) {
-        refreshTasks();
-      }
+      if (!document.hidden && refreshTasks) refreshTasks();
     };
 
     window.addEventListener('focus', handleFocus);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-
     return () => {
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [refreshTasks]);
+  }, []);
 
   const handleTaskClick = (taskId: number) => {
     setSelectedTaskId(taskId);
@@ -61,14 +70,8 @@ const Tasks: React.FC = () => {
   // Filtrar tareas según el rol y modo de vista
   const displayTasks = useMemo(() => {
     if (!user) return [];
-    
-    // Si es administrador, mostrar todas las tareas
-    if (isAdmin) {
-      return tasks;
-    }
-    
-    // De lo contrario, mostrar solo las tareas del usuario
-    return tasks.filter(task => task.responsibleId === user.id);
+    if (isAdmin) return tasks; // Si es administrador, mostrar todas las tareas
+    return tasks.filter(task => task.responsibleId === user.id); //mostrar solo tareas del usuario
   }, [tasks, user, isAdmin]);
 
   // Filtrar tareas por búsqueda y sprint
@@ -87,16 +90,7 @@ const Tasks: React.FC = () => {
     ? tasks.find(t => t.id === selectedTaskId) || null
     : null;
 
-
-  /*/ Estadísticas generales
-  const stats = useMemo(() => ({
-    total: tasks.length,
-    todo: tasks.filter(t => t.status === TaskStatus.TODO).length,
-    doing: tasks.filter(t => t.status === TaskStatus.DOING).length,
-    done: tasks.filter(t => t.status === TaskStatus.DONE).length,
-  }), [tasks]);
-  */
-
+  
   // Estadísticas según el modo de vista
   const stats = useMemo(() => ({
     total: displayTasks.length,
@@ -110,7 +104,8 @@ const Tasks: React.FC = () => {
   // Función para obtener el nombre del responsable
   const getResponsibleName = (responsibleId: number | null | undefined): string => {
     if (!responsibleId) return 'Sin asignar';
-    const responsible = getUserById(responsibleId);
+    const responsible: User | undefined = getUserById(responsibleId);
+    console.log("Responsable encontrado:", responsibleId, responsible?.name);
     return responsible?.name || 'Desconocido';
   };
 
@@ -118,11 +113,18 @@ const Tasks: React.FC = () => {
   // Función para manejar cuando se crea una tarea
   const handleTaskCreated = () => {
     // La recarga se maneja automáticamente en el TaskContext
-    // Aquí puedes agregar lógica adicional si necesitas
     console.log('Tarea creada exitosamente');
   };
-
   
+  // 🔸 Mostrar pantalla de carga
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-icon">⏳</div>
+        <p>Cargando datos...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="tasks-page">

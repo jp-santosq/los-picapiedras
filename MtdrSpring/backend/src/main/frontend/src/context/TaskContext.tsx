@@ -107,7 +107,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     fetchTareas();
   }, [fetchTareas]);
 
-  const addTask = async (task: Omit<Task, "id"> & { sprintId?: number }) => {
+  const addTask = useCallback(async (task: Omit<Task, "id"> & { sprintId?: number }) => {
     try {
       const dto = {
         titulo: task.name,
@@ -149,10 +149,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       console.error("Error al crear tarea:", error);
       throw new Error("Error al crear tarea. Ver consola para más detalles.");
     }
-  };
+  }, []);
 
   // Actualizar solo el estado de la tarea
-  const updateTaskState = async (taskId: number, newState: TaskStatus) => {
+  const updateTaskState = useCallback(async (taskId: number, newState: TaskStatus) => {
     const estadoTareaId = estadoMapBackend[newState];
 
     try {
@@ -172,11 +172,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       console.error("Error al actualizar estado:", error);
       throw new Error("No se pudo actualizar el estado de la tarea.");
     }
-  };
+  }, []);
 
-  const refreshTasks = async () => {
+  const refreshTasks = useCallback(async () => {
     await fetchTareas();
-  };
+  }, [fetchTareas]);
 
   return (
     <TasksContext.Provider value={{ tasks, addTask, updateTaskState, refreshTasks }}>
