@@ -20,7 +20,7 @@ public class KPIRepository {
     }
 
     public List<HorasSprintDTO> horasEstimadasPorSprint() {
-        StoredProcedureQuery q = em.createStoredProcedureQuery("LOSPICAPIEDRAS.KPI_HORAS_ESTIMADAS_POR_SPRINT");
+        StoredProcedureQuery q = em.createStoredProcedureQuery("KPI_HORAS_ESTIMADAS_POR_SPRINT");
         q.registerStoredProcedureParameter(1, void.class, ParameterMode.REF_CURSOR);
         q.execute();
 
@@ -41,7 +41,7 @@ public class KPIRepository {
     }
 
     public List<HorasSprintDTO> horasRealesPorSprint() {
-        StoredProcedureQuery q = em.createStoredProcedureQuery("LOSPICAPIEDRAS.KPI_HORAS_REALES_POR_SPRINT");
+        StoredProcedureQuery q = em.createStoredProcedureQuery("KPI_HORAS_REALES_POR_SPRINT");
         q.registerStoredProcedureParameter(1, void.class, ParameterMode.REF_CURSOR);
         q.execute();
 
@@ -61,7 +61,7 @@ public class KPIRepository {
     }
 
     public List<HorasSprintUsuarioDTO> horasEstimadasPorSprintYUsuario() {
-        StoredProcedureQuery q = em.createStoredProcedureQuery("LOSPICAPIEDRAS.KPI_HORAS_ESTIMADAS_POR_DESA_SPRINT");
+        StoredProcedureQuery q = em.createStoredProcedureQuery("KPI_HORAS_ESTIMADAS_POR_DESA_SPRINT");
         q.registerStoredProcedureParameter(1, void.class, ParameterMode.REF_CURSOR);
         q.execute();
 
@@ -84,7 +84,7 @@ public class KPIRepository {
     }
 
     public List<HorasSprintUsuarioDTO> horasRealesPorSprintYUsuario() {
-        StoredProcedureQuery q = em.createStoredProcedureQuery("LOSPICAPIEDRAS.KPI_HORAS_REALES_POR_DESA_SPRINT");
+        StoredProcedureQuery q = em.createStoredProcedureQuery("KPI_HORAS_REALES_POR_DESA_SPRINT");
         q.registerStoredProcedureParameter(1, void.class, ParameterMode.REF_CURSOR);
         q.execute();
 
