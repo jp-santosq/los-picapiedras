@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useUsers } from '../context/UserContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
 import '../styles/components/tasks.css';
@@ -11,6 +12,7 @@ const Tasks: React.FC = () => {
   const { tasks, refreshTasks } = useTasks();
   const { sprints } = useSprints();
   const { user } = useAuth();
+  const { getUserById } = useUsers();
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -72,9 +74,10 @@ const Tasks: React.FC = () => {
   // Filtrar tareas por búsqueda y sprint
   const filteredTasks = useMemo(() => {
     return displayTasks.filter(task => {
-      const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           task.responsible.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesSprint = selectedSprintFilter === 'all' || (task.sprintId !== null && task.sprintId.toString() === selectedSprintFilter);
+      const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSprint = selectedSprintFilter === 'all' ||  
+                           (task.sprintId !== null && task.sprintId !== undefined && 
+                            task.sprintId.toString() === selectedSprintFilter);
       
       return matchesSearch && matchesSprint;
     });
@@ -99,8 +102,17 @@ const Tasks: React.FC = () => {
     total: displayTasks.length,
     todo: displayTasks.filter(t => t.status === TaskStatus.TODO).length,
     doing: displayTasks.filter(t => t.status === TaskStatus.DOING).length,
+    revision: displayTasks.filter(t => t.status === TaskStatus.REVISION).length,
     done: displayTasks.filter(t => t.status === TaskStatus.DONE).length,
   }), [displayTasks]);
+
+
+  // Función para obtener el nombre del responsable
+  const getResponsibleName = (responsibleId: number | null | undefined): string => {
+    if (!responsibleId) return 'Sin asignar';
+    const responsible = getUserById(responsibleId);
+    return responsible?.name || 'Desconocido';
+  };
 
 
   // Función para manejar cuando se crea una tarea
@@ -119,8 +131,10 @@ const Tasks: React.FC = () => {
         <div className="header-content">
           <h1 className="page-title">Gestión de Tareas</h1>
           <p className="page-subtitle">
-            {/*Administra y visualiza todas las tareas del proyecto*/}
-            Tareas asignadas a {user?.name || 'ti mismo'}
+            {isAdmin 
+              ? 'Administra y visualiza todas las tareas del proyecto'
+              : `Tareas asignadas a ${user?.name || 'ti'}`
+            }
           </p>
         </div>
         <button
@@ -152,6 +166,13 @@ const Tasks: React.FC = () => {
           <div className="stat-content">
             <span className="stat-value">{stats.doing}</span>
             <span className="stat-label">En Progreso</span>
+          </div>
+        </div>
+        <div className="stat-card stat-revision">
+          <div className="stat-icon">🔍</div>
+          <div className="stat-content">
+            <span className="stat-value">{stats.revision}</span>
+            <span className="stat-label">En Revisión</span>
           </div>
         </div>
         <div className="stat-card stat-done">
@@ -220,7 +241,6 @@ const Tasks: React.FC = () => {
                   <th>ID</th>
                   <th>Nombre</th>
                   <th>Responsable</th>
-                  <th>Proyecto</th>
                   <th>Sprint</th>
                   <th>Estado</th>
                   <th>Fecha Estimada</th>
@@ -236,8 +256,7 @@ const Tasks: React.FC = () => {
                   >
                     <td className="task-id">#{task.id}</td>
                     <td className="task-name">{task.name}</td>
-                    <td className="task-responsible">{task.responsible}</td>
-                    <td className="task-project">{task.project || 'Oracle Java Bot'}</td>
+                    <td className="task-responsible">{getResponsibleName(task.responsibleId)}</td>
                     <td className="task-sprint">{task.sprintId ? `Sprint #${task.sprintId}` : 'Sin Sprint'}</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
