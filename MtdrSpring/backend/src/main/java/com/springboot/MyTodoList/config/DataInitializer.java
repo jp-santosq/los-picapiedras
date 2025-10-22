@@ -1,12 +1,12 @@
 package com.springboot.MyTodoList.config;
 
 import java.time.LocalDate;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+import org.springframework.jdbc.core.JdbcTemplate;
 import com.springboot.MyTodoList.model.*;
 import com.springboot.MyTodoList.repository.*;
 import java.io.InputStream;
@@ -14,9 +14,14 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.core.io.ClassPathResource;
 import java.util.Scanner;
 import jakarta.persistence.EntityManager;
+import java.sql.Connection;
+import java.sql.Statement;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private RolRepository rolRepository;
@@ -244,22 +249,24 @@ public class DataInitializer implements CommandLineRunner {
         createKpiProceduresFromFile();
     }
     private void createKpiProceduresFromFile() {
-    try {
-        ClassPathResource resource = new ClassPathResource("db/kpi_procedures.sql");
-        try (InputStream in = resource.getInputStream();
-             Scanner scanner = new Scanner(in, StandardCharsets.UTF_8)) {
-            scanner.useDelimiter("/");  // split each procedure by slash
-            while (scanner.hasNext()) {
-                String ddl = scanner.next().trim();
-                if (!ddl.isEmpty()) {
-                    entityManager.createNativeQuery(ddl).executeUpdate();
+        try {
+            ClassPathResource resource = new ClassPathResource("db/kpi_procedures.sql");
+            try (InputStream in = resource.getInputStream();
+                Scanner scanner = new Scanner(in, StandardCharsets.UTF_8)) {
+                scanner.useDelimiter("/");
+                while (scanner.hasNext()) {
+                    String ddl = scanner.next().trim();
+                    if (!ddl.isEmpty()) {
+                        jdbcTemplate.execute(ddl);  // ✅ Works for Oracle DDL and PL/SQL
+                        System.out.println("✓ Executed block successfully.");
+                    }
                 }
             }
+            System.out.println("✓ KPI procedures created from file successfully.");
+            } catch (Exception e) {
+            System.err.println("⚠️ Failed to load KPI procedures file: " + e.getMessage());
         }
-        System.out.println("✓ KPI procedures created from file successfully.");
-    } catch (Exception e) {
-        System.err.println("⚠️ Failed to load KPI procedures file: " + e.getMessage());
-    }
 }
+
 
 }
