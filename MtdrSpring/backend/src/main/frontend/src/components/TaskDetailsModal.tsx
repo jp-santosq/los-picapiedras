@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Task } from './TaskDescription';
+import { Task } from '../context/TaskContext.tsx';
 import { useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
@@ -129,7 +129,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               </div>
               <div className="detail-item">
                 <span className="detail-label">Proyecto:</span>
-                <span className="detail-value">{task.project}</span>
+                <span className="detail-value">{task.projectId}</span>
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Responsable:</span>
-                <span className="detail-value">{task.responsible}</span>
+                <span className="detail-value">{task.responsibleId}</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Fecha estimada:</span>

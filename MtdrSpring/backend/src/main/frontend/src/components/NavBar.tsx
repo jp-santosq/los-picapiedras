@@ -3,6 +3,7 @@ import Dashboard from "../pages/Dashboard.tsx";
 import axios from "axios";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
+import KPIs from "../pages/KPIs.tsx";
 import "../styles/components/navbar.css";
 
 
@@ -32,10 +33,10 @@ function NavBar() {
           <img src="../images/oracle.png" alt="" />
           <div>
             <nav className="navbar">
-              <Link to={"/"}>Home Page</Link>
-              <Link to={"/Dashboard"}>Board</Link>
+              <Link to={"/"}>Board</Link>
               <Link to={"/Sprints"}>Sprints</Link>
               <Link to={"/Tasks"}>Tasks</Link>
+              <Link to={"/KPIs"}>KPIs</Link>
               <Link to={"/About-page"}>About Page</Link>
               <Link to={"/Contact"}>Contact Page</Link>
             </nav>
@@ -44,9 +45,9 @@ function NavBar() {
 
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/Sprints" element={<Sprints />} />
           <Route path="/Tasks" element={<Tasks />} />
+          <Route path="/KPIs" element={<KPIs />} />
           <Route path="/About-page" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
         </Routes>

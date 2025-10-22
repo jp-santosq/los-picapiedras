@@ -57,8 +57,28 @@ public class TareaController {
 
     // Obtener todas las tareas
     @GetMapping
-    public List<Tarea> getAll() {
-        return tareaRepository.findAll();
+    public ResponseEntity<List<TareaDTO>> getAll() {
+        List<Tarea> tareas = tareaRepository.findAll();
+        List<TareaDTO> tareasDTO = tareas.stream()
+            .map(tarea -> {
+                TareaDTO dto = new TareaDTO();
+                dto.id = tarea.getId();
+                dto.titulo = tarea.getTitulo();
+                dto.descripcion = tarea.getDescripcion();
+                dto.fechaInicio = tarea.getFechaInicio();
+                dto.fechaFinEstimada = tarea.getFechaFinEstimada();
+                dto.fechaFinReal = tarea.getFechaFinReal();
+                dto.prioridad = tarea.getPrioridad();
+                dto.estadoTareaId = tarea.getEstadoTarea() != null ? tarea.getEstadoTarea().getId() : null;
+                dto.proyectoId = tarea.getProyecto() != null ? tarea.getProyecto().getId() : null;
+                dto.sprintId = tarea.getSprint() != null ? tarea.getSprint().getId() : null;
+                dto.desarrolladorId = tarea.getDesarrollador() != null ? tarea.getDesarrollador().getId() : null;
+                dto.historiaUsuarioId = tarea.getHistoriaUsuario() != null ? tarea.getHistoriaUsuario().getId() : null;
+                return dto;
+            })
+            .collect(Collectors.toList());
+    
+        return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
     }
 
     // Obtener tarea por ID
