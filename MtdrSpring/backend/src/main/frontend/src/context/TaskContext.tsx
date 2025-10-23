@@ -144,6 +144,8 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       };
 
       setTasks((prev) => [...prev, nuevaTask]);
+      await fetchTareas();
+      
       console.log("Tarea creada:", nuevaTask);
     } catch (error) {
       console.error("Error al crear tarea:", error);
