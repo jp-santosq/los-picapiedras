@@ -86,7 +86,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         estimatedDate: tarea.fechaFinEstimada,
         endDate: tarea.fechaFinReal,
         storyPoints: tarea.prioridad,
-        status: tarea.estadoTarea
+        status: tarea.estadoTareaId
           ? estadoMapFrontend[tarea.estadoTareaId] || TaskStatus.TODO
           : TaskStatus.TODO,
         projectId: tarea.proyecto?.id || 0,
