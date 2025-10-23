@@ -63,6 +63,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
 
   // Filtrar tareas que pertenecen a este sprint
   const sprintTasks = sprint.tareas || [];
+  console.log('Tareas del sprint:', sprintTasks);
 
   // Nota: Necesitarías agregar sprintId al tipo Task para que esto funcione
   // Por ahora, mostramos todas las tareas como ejemplo
@@ -84,10 +85,10 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
 
   const taskStats = {
     total: sprintTasks.length,
-    todo: sprintTasks.filter(t => t.status === TaskStatus.TODO).length,
-    doing: sprintTasks.filter(t => t.status === TaskStatus.DOING).length,
-    revision: sprintTasks.filter(t => t.status === TaskStatus.REVISION).length,
-    done: sprintTasks.filter(t => t.status === TaskStatus.DONE).length,
+    todo: sprintTasks.filter(t => t.estadoTarea.id === 1).length,
+    doing: sprintTasks.filter(t => t.estadoTarea.id === 2).length,
+    revision: sprintTasks.filter(t => t.estadoTarea.id === 3).length,
+    done: sprintTasks.filter(t => t.estadoTarea.id === 4).length,
   };
 
   return (

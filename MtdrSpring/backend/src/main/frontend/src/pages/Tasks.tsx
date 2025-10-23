@@ -224,7 +224,7 @@ const Tasks: React.FC = () => {
             <p>
               {searchTerm
                 ? 'No se encontraron tareas con los filtros aplicados'
-                : 'Comienza creando tu primera tarea'}
+                : 'Comienza creando una tarea'}
             </p>
             {!searchTerm && (
               <button

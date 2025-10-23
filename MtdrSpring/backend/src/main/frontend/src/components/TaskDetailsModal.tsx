@@ -3,6 +3,8 @@ import { Task } from '../context/TaskContext.tsx';
 import { useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
+import { User } from '../context/AuthContext.tsx';
+import { useUsers } from '../context/UserContext.tsx';
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const { updateTaskState } = useTasks();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { getUserById } = useUsers();
 
   if (!isOpen || !task) return null;
 
@@ -56,6 +59,14 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setIsUpdating(false);
     }
   };
+
+  // Función para obtener el nombre del responsable
+    const getResponsibleName = (responsibleId: number | null | undefined): string => {
+      if (!responsibleId) return 'Sin asignar';
+      const responsible: User | undefined = getUserById(responsibleId);
+      console.log("Responsable encontrado:", responsibleId, responsible?.name);
+      return responsible?.name || 'Desconocido';
+    };
 
   const statusStyle = getStatusColor(task.status);
 
@@ -148,7 +159,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Responsable:</span>
-                <span className="detail-value">{task.responsibleId}</span>
+                <span className="detail-value">{getResponsibleName(task.responsibleId)}</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Fecha estimada:</span>

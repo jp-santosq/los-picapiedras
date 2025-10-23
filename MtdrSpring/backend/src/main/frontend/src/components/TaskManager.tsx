@@ -3,6 +3,7 @@ import "../styles/components/taskManager.css";
 import { useTasks } from "../context/TaskContext.tsx";
 import { useAuth } from "../context/AuthContext.tsx"; // 👈 importa el contexto de autenticación
 import { TaskStatus } from "./enums.tsx";
+import CreateTaskModal from './CreateTaskModal.tsx';
 
 export function TaskManager() {
   const { addTask } = useTasks();
@@ -20,6 +21,12 @@ export function TaskManager() {
     projectId: 1,
     userStoryId: 1,
   });
+
+  // Función para manejar cuando se crea una tarea
+  const handleTaskCreated = () => {
+    // La recarga se maneja automáticamente en el TaskContext
+    console.log('Tarea creada exitosamente');
+  };
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -76,89 +83,12 @@ export function TaskManager() {
         </button>
       </div>
 
-      {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Crear Nueva Tarea</h3>
-            <form onSubmit={handleSubmit} className="task-form">
-              <input
-                type="text"
-                name="name"
-                placeholder="Nombre de la tarea"
-                value={newTask.name}
-                onChange={handleChange}
-                required
-              />
-
-              <input
-                type="date"
-                name="estimatedDate"
-                value={newTask.estimatedDate}
-                onChange={handleChange}
-                required
-              />
-
-              <input
-                type="number"
-                name="storyPoints"
-                placeholder="Story Points"
-                value={newTask.storyPoints}
-                onChange={handleChange}
-                required
-                min="0"
-              />
-
-              <input
-                type="number"
-                name="projectId"
-                placeholder="ID del Proyecto"
-                value={newTask.projectId}
-                onChange={handleChange}
-                required
-                min="1"
-              />
-
-              <input
-                type="number"
-                name="sprintId"
-                placeholder="ID del Sprint"
-                value={newTask.sprintId}
-                onChange={handleChange}
-                required
-                min="1"
-              />
-
-              <input
-                type="number"
-                name="userStoryId"
-                placeholder="ID de Historia de Usuario"
-                value={newTask.userStoryId}
-                onChange={handleChange}
-                required
-                min="1"
-              />
-
-              <textarea
-                name="description"
-                placeholder="Descripción"
-                value={newTask.description}
-                onChange={handleChange}
-              />
-
-              <div className="modal-actions">
-                <button type="submit" className="save-btn">Guardar</button>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Modal */}
+      <CreateTaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onTaskCreated={handleTaskCreated}
+      />
     </div>
   );
 }
