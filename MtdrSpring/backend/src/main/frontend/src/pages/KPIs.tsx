@@ -16,6 +16,27 @@ const KPIs: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'team' | 'developers'>('team');
   const [selectedDeveloper, setSelectedDeveloper] = useState<number | 'all'>('all');
 
+  // --- NEW: Fetch Oracle KPI data ---
+  const [estimadas, setEstimadas] = useState<any[]>([]);
+  const [reales, setReales] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchKpiData = async () => {
+      try {
+        const res1 = await fetch("/kpi/horas/estimadas/sprint");
+        const res2 = await fetch("/kpi/horas/reales/sprint");
+        if (!res1.ok || !res2.ok) throw new Error("Failed to fetch KPI data");
+        const dataEstimadas = await res1.json();
+        const dataReales = await res2.json();
+        setEstimadas(dataEstimadas);
+        setReales(dataReales);
+      } catch (err) {
+        console.error("Error fetching KPI data:", err);
+      }
+    };
+    fetchKpiData();
+  }, []);
+
   // Obtener datos de tareas completadas por sprint para el equipo
   const teamDataBySprint = useMemo(() => {
     const sprintMap = new Map<number, { completed: number, total: number }>();
@@ -119,9 +140,7 @@ const KPIs: React.FC = () => {
     <div className="kpis-page">
       {/* Header */}
       <div className="kpis-header">
-        <h1 className="kpis-title">
-          📊 KPIs y Métricas
-        </h1>
+        <h1 className="kpis-title">📊 KPIs y Métricas</h1>
         <p className="kpis-subtitle">
           Visualiza el progreso del equipo y desarrolladores individuales
         </p>
@@ -168,43 +187,63 @@ const KPIs: React.FC = () => {
             </div>
           </div>
 
-          {/* Team Chart */}
+          {/* NEW Oracle KPI Chart */}
           <div className="chart-container">
-            <h3 className="chart-title">
-              📈 Tareas Completadas por Sprint
-            </h3>
-            <ResponsiveContainer>
-                <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="sprintId" 
-                    name="Sprint" 
-                    tick={{ fill: '#666' }}
-                    label={{ value: 'Sprint', position: 'insideBottom', offset: -10, fill: '#666' }}
-                  />
-                  <YAxis 
-                    name="Tareas" 
-                    tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666' }}
-                  />
-                  <Tooltip 
-                    cursor={{ strokeDasharray: '3 3' }}
-                    contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                    formatter={(value: number, name: string) =>
-                      [value, name === 'completed' ? 'Completadas' : name]  
-                    }
-                  />
-                  <Legend />
-                  <Scatter 
-                    name="Completadas" 
-                    data={teamDataBySprint} 
-                    dataKey="completed" 
-                    fill="#3b82f6" 
-                    line
-                    lineType="joint"
-                  />
-                </ScatterChart>
-              </ResponsiveContainer>
+            <h3 className="chart-title">📈 Horas Estimadas vs Reales por Sprint</h3>
+            <ResponsiveContainer width="100%" height={400}>
+              <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="sprintId"
+                  name="Sprint"
+                  tick={{ fill: "#666" }}
+                  label={{
+                    value: "Sprint",
+                    position: "insideBottom",
+                    offset: -10,
+                    fill: "#666",
+                  }}
+                />
+
+                <YAxis
+                  name="Horas"
+                  tick={{ fill: "#666" }}
+                  label={{
+                    value: "Horas (estimadas/reales)",
+                    angle: -90,
+                    position: "insideLeft",
+                    fill: "#666",
+                  }}
+                />
+                <Tooltip
+                  cursor={{ strokeDasharray: "3 3" }}
+                  contentStyle={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                  }}
+                  formatter={(value: number, name: string) => [
+                    value,
+                    name === "horas" ? "Horas" : name,
+                  ]}
+                />
+                <Legend />
+                <Scatter
+                  name="Horas Estimadas"
+                  data={estimadas}
+                  fill="#3b82f6"
+                  line
+                  dataKey="horas"
+                />
+                <Scatter
+                  name="Horas Reales"
+                  data={reales}
+                  fill="#10b981"
+                  line
+                  dataKey="horas"
+                />
+              </ScatterChart>
+            </ResponsiveContainer>
           </div>
         </div>
       )}
@@ -212,21 +251,22 @@ const KPIs: React.FC = () => {
       {/* Developers Tab */}
       {activeTab === 'developers' && (
         <div>
-
-          {/* Developer Filter - solo para admin*/}
+          {/* Developer Filter - solo para admin */}
           {isAdmin && (
             <div className="developer-filter">
-              <label htmlFor="developer-select">
-                Seleccionar Desarrollador:
-              </label>
+              <label htmlFor="developer-select">Seleccionar Desarrollador:</label>
               <select
                 id="developer-select"
                 value={selectedDeveloper}
-                onChange={(e) => setSelectedDeveloper(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                onChange={(e) =>
+                  setSelectedDeveloper(
+                    e.target.value === 'all' ? 'all' : Number(e.target.value)
+                  )
+                }
                 className="developer-select"
               >
                 <option value="all">-- Selecciona un desarrollador --</option>
-                {users.map(user => (
+                {users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.name}
                   </option>
@@ -235,13 +275,10 @@ const KPIs: React.FC = () => {
             </div>
           )}
 
-          
           {selectedDeveloper === 'all' ? (
             /* Developer Stats Table */
             <div className="developer-stats-container">
-              <h3 className="developer-stats-title">
-                👥 Rendimiento por Desarrollador
-              </h3>
+              <h3 className="developer-stats-title">👥 Rendimiento por Desarrollador</h3>
               <table className="developer-stats-table">
                 <thead>
                   <tr>
@@ -258,11 +295,15 @@ const KPIs: React.FC = () => {
                       <td className="developer-total">{dev.totalTasks}</td>
                       <td className="developer-completed">{dev.completedTasks}</td>
                       <td className="developer-rate">
-                        <span className={`completion-badge ${
-                          Number(dev.completionRate) >= 70 ? 'completion-badge-high' : 
-                          Number(dev.completionRate) >= 40 ? 'completion-badge-medium' : 
-                          'completion-badge-low'
-                        }`}>
+                        <span
+                          className={`completion-badge ${
+                            Number(dev.completionRate) >= 70
+                              ? 'completion-badge-high'
+                              : Number(dev.completionRate) >= 40
+                              ? 'completion-badge-medium'
+                              : 'completion-badge-low'
+                          }`}
+                        >
                           {dev.completionRate}%
                         </span>
                       </td>
@@ -275,35 +316,35 @@ const KPIs: React.FC = () => {
             /* Developer Chart */
             <div className="chart-container">
               <h3 className="chart-title">
-                📈 Tareas Completadas - {users.find(u => u.id === selectedDeveloper)?.name}
+                📈 Tareas Completadas - {users.find((u) => u.id === selectedDeveloper)?.name}
               </h3>
               <ResponsiveContainer width="100%" height={400}>
                 <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="sprintId" 
-                    name="Sprint" 
+                  <XAxis
+                    dataKey="sprintId"
+                    name="Sprint"
                     tick={{ fill: '#666' }}
                     label={{ value: 'Sprint', position: 'insideBottom', offset: -10, fill: '#666' }}
                   />
-                  <YAxis 
-                    name="Tareas" 
+                  <YAxis
+                    name="Tareas"
                     tick={{ fill: '#666' }}
                     label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666' }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
                     contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
                     formatter={(value: number, name: string) =>
-                      [value, name === 'completed' ? 'Completadas' : name]  
+                      [value, name === 'completed' ? 'Completadas' : name]
                     }
                   />
                   <Legend />
-                  <Scatter 
-                    name="Completadas" 
-                    data={developerDataBySprint} 
-                    dataKey="completed" 
-                    fill="#8b5cf6" 
+                  <Scatter
+                    name="Completadas"
+                    data={developerDataBySprint}
+                    dataKey="completed"
+                    fill="#8b5cf6"
                     line
                     lineType="joint"
                   />
