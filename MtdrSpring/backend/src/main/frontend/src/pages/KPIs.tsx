@@ -200,7 +200,7 @@ const KPIs: React.FC = () => {
                   label={{
                     value: "Sprint",
                     position: "insideBottom",
-                    offset: -10,
+                    offset: 10,
                     fill: "#666",
                   }}
                 />
@@ -212,6 +212,7 @@ const KPIs: React.FC = () => {
                     value: "Horas (estimadas/reales)",
                     angle: -90,
                     position: "insideLeft",
+                    offset: -10,
                     fill: "#666",
                   }}
                 />
@@ -330,7 +331,7 @@ const KPIs: React.FC = () => {
                   <YAxis
                     name="Tareas"
                     tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: 20 }}
+                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: -10 }}
                   />
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
