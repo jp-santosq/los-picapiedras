@@ -45,7 +45,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
 
   // Determinar si el usuario es administrador (rol 2)
-  const isAdmin = user?.idRol === 2;
+  const isAdmin = user?.rol === 2;
 
   // Cargar desarrolladores si el usuario es administrador
   useEffect(() => {
@@ -144,15 +144,17 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       }
 
       const taskData = {
+        id: 0, // El backend asignará el ID
         name: formData.name,
+        description: formData.description,
         estimatedDate: formData.estimatedDate,
         storyPoints: formData.storyPoints,
-        description: formData.description,
-        sprintId: formData.sprintId,
         status: formData.status,
-        responsible: responsibleName,
+        sprintId: formData.sprintId,
         responsibleId: responsibleId,
-        project: '' // Se obtendrá del backend
+        startDate: "",
+        projectId: 1,
+        userStoryId: 1
       };
 
       await addTask(taskData);
