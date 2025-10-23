@@ -11,7 +11,7 @@ BEGIN
     s.id_sprint                AS sprint_id,
     TRUNC(s.fecha_inicio)      AS sprint_inicio,
     TRUNC(s.fecha_fin_estimada) AS sprint_fin,
-    ROUND(SUM((t.fecha_fin_estimada - t.fecha_inicio) * 8), 2) AS horas
+    ROUND(SUM((t.fecha_fin_estimada - t.fecha_inicio) * 1), 2) AS horas
   FROM tarea t
   JOIN sprint s ON t.id_sprint = s.id_sprint
   WHERE t.fecha_fin_estimada IS NOT NULL
@@ -33,7 +33,7 @@ BEGIN
     s.id_sprint                AS sprint_id,
     TRUNC(s.fecha_inicio)      AS sprint_inicio,
     TRUNC(s.fecha_fin_estimada) AS sprint_fin, -- use estimated end if real missing
-    ROUND(SUM((NVL(t.fecha_fin_real, t.fecha_fin_estimada) - t.fecha_inicio) * 8), 2) AS horas
+    ROUND(SUM((NVL(t.fecha_fin_real, t.fecha_fin_estimada) - t.fecha_inicio) * 1), 2) AS horas
   FROM tarea t
   JOIN sprint s ON t.id_sprint = s.id_sprint
   WHERE t.fecha_inicio IS NOT NULL
@@ -56,7 +56,7 @@ BEGIN
     TRUNC(s.fecha_fin_estimada) AS sprint_fin,
     u.id_usuario               AS usuario_id,
     u.nombre_usuario           AS usuario_nombre,
-    ROUND(SUM((t.fecha_fin_estimada - t.fecha_inicio) * 8), 2) AS horas
+    ROUND(SUM((t.fecha_fin_estimada - t.fecha_inicio) * 1), 2) AS horas
   FROM tarea t
   JOIN usuario u ON t.id_desarrollador = u.id_usuario
   JOIN sprint s  ON t.id_sprint = s.id_sprint
@@ -82,7 +82,7 @@ BEGIN
     TRUNC(s.fecha_fin_estimada) AS sprint_fin,
     u.id_usuario               AS usuario_id,
     u.nombre_usuario           AS usuario_nombre,
-    ROUND(SUM((NVL(t.fecha_fin_real, t.fecha_fin_estimada) - t.fecha_inicio) * 8), 2) AS horas
+    ROUND(SUM((NVL(t.fecha_fin_real, t.fecha_fin_estimada) - t.fecha_inicio) * 1), 2) AS horas
   FROM tarea t
   JOIN usuario u ON t.id_desarrollador = u.id_usuario
   JOIN sprint s  ON t.id_sprint = s.id_sprint
