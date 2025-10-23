@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sprint } from '../../context/SprintContext.tsx';
-import { Task } from '../TaskDescription.tsx';
+import { Task } from '../../context/TaskContext.tsx';
 import { useTasks } from '../../context/TaskContext.tsx';
 import TaskReadOnlyModal from '../TaskReadOnlyModal.tsx';
 import '../../styles/components/modal.css';

@@ -1,6 +1,8 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { Snackbar, Alert } from "@mui/material";
+import axios from "axios";
 
-export type User = { id: number; name: string; email: string; isAdmin: boolean } | null;
+export type User = { id: number; name: string; email: string; rol: number } | null;
 
 type AuthContextType = {
   user: User;
@@ -12,19 +14,32 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
 
-  const login = useCallback(async (mail: string, password: string) => {
-    let tries = 0;
-    while (tries < 3) {
-      if (mail === "prueba@oracle.com" && password === "12345") {
-        const fakeUser: User = { id: 3, name: "Ale Terán", email: mail, isAdmin: true };
-        setUser(fakeUser);
+  const login = useCallback(async (correo: string, password: string) => {
+    try {
+      const response = await axios.post("/auth/login", {
+        correo: correo,
+        password: password
+      });
+
+      if (response.status === 200) {
+        const userData = response.data;
+        setUser({
+          id: userData.id,
+          name: userData.nombreUsuario,
+          email: userData.correo,
+          rol: userData.rol.id,
+        });
+        setShowWelcome(true);
+        console.log("Respuesta del backend:", response.data);
         return true;
-      } else {
-        tries++;
-      }
+      } 
+      return false;
+    } catch (error) {
+      console.error("Error during login:", error);
+      return false;
     }
-    return false;
   }, []);
 
   const logout = useCallback(() => {
@@ -40,7 +55,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [user, login, logout]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>
+    {children}
+    <Snackbar
+      open= {showWelcome}
+      autoHideDuration= {4000}
+      onClose = {()=> setShowWelcome(false)}
+      anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+      >
+        <Alert
+          onClose={() => setShowWelcome(false)}
+          severity="success"
+          sx={{ width: '100%'  }}
+          >
+            {`¡Bienvenido, ${user?.name}!`}
+        </Alert>
+      </Snackbar>
+    </AuthContext.Provider>;
 };
 
 export const useAuth = () => {

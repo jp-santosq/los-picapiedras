@@ -1,9 +1,12 @@
 package com.springboot.MyTodoList.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +30,7 @@ public class ProyectoController {
     @Autowired
     private UsuarioRepository usuarioRepository; // <--- aquí
 
+    //Añadir un proyecto
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Proyecto> addProyecto(@RequestBody ProyectoDTO proyectoDTO) {
 
@@ -46,4 +50,17 @@ public class ProyectoController {
 
         return new ResponseEntity<>(dbProyecto, headers, HttpStatus.CREATED);
     }
+
+    //Ver todos los proyectos
+    @GetMapping(value = "/all", produces = "application/json")
+    public ResponseEntity<List<Proyecto>> getAllProyectos() {
+        List<Proyecto> proyectos = proyectoService.getAllProyectos();
+
+        if (proyectos.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(proyectos, HttpStatus.OK);
+}
+
 }

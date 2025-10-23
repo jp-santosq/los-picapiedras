@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Canva from "./Canva.tsx";
 import "../styles/components/board.css";
-import { Task } from "./TaskDescription.tsx";
+import { Task } from "../context/TaskContext.tsx";
 import { TaskStatus } from "./enums.tsx";
 import { useTasks } from "../context/TaskContext.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
@@ -13,9 +13,13 @@ function Board() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
+  const isAdmin = user?.rol === 2;
+  console.log("User Role:", user?.rol);
+
   // Filtrar tareas del usuario actual
   const userTasks = useMemo(() => {
     if (!user) return [];
+    if (isAdmin) return tasks;
     return tasks.filter(task => task.responsibleId === user.id);
   }, [tasks, user]);
 

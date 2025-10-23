@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSprints } from '../context/SprintContext.tsx';
 import SprintCard from '../components/Sprint/SprintCard.tsx';
 import CreateSprintModal from '../components/Sprint/CreateSprintModal.tsx';
@@ -13,6 +13,29 @@ const Sprints: React.FC = () => {
   const [selectedSprintId, setSelectedSprintId] = useState<number | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Auto-refresh cuando la página se vuelve visible
+  useEffect(() => {
+    // Refrescar cuando la ventana vuelve a tener foco
+    const handleFocus = () => {
+      refreshSprints();
+    };
+
+    // Refrescar cuando el tab vuelve a estar visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refreshSprints();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refreshSprints]);
 
   const handleSprintClick = (sprintId: number) => {
     setSelectedSprintId(sprintId);

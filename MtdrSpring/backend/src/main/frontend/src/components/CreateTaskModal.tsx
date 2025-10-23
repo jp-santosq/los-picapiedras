@@ -1,15 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
+import axios from 'axios';
 
 interface CreateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   onTaskCreated: () => void;
 }
+
+type Desarrollador = {
+  id: number;
+  nombreUsuario: string;
+  correo: string;
+};
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   isOpen,
@@ -19,6 +26,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const { addTask } = useTasks();
   const { sprints } = useSprints();
   const { user } = useAuth();
+
+  const [desarrolladores, setDesarrolladores] = useState<Desarrollador[]>([]);
+  const [loadingDesarrolladores, setLoadingDesarrolladores] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -26,16 +36,52 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     storyPoints: 0,
     description: '',
     sprintId: 0,
-    status: TaskStatus.TODO
+    status: TaskStatus.TODO,
+    responsibleId: 0
   });
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+  // Determinar si el usuario es administrador (rol 2)
+  const isAdmin = user?.rol === 2;
+
+  // Cargar desarrolladores si el usuario es administrador
+  useEffect(() => {
+    if (isOpen && isAdmin) {
+      fetchDesarrolladores();
+    }
+  }, [isOpen, isAdmin]);
+
+  // Actualizar responsibleId cuando cambia el usuario
+  useEffect(() => {
+    if (user && !isAdmin) {
+      setFormData(prev => ({
+        ...prev,
+        responsibleId: user.id
+      }));
+    }
+  }, [user, isAdmin]);
+
+  const fetchDesarrolladores = async () => {
+    try {
+      setLoadingDesarrolladores(true);
+      // Obtener usuarios con rol ID 3 (desarrolladores)
+      const response = await axios.get("/usuario/rol/3");
+      setDesarrolladores(response.data);
+    } catch (error) {
+      console.error("Error al cargar desarrolladores:", error);
+      setError("Error al cargar la lista de desarrolladores");
+    } finally {
+      setLoadingDesarrolladores(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'storyPoints' || name === 'sprintId') {
+    if (name === 'storyPoints' || name === 'sprintId' || name === 'responsibleId') {
       setFormData(prev => ({
         ...prev,
         [name]: parseInt(value) || 0
@@ -69,6 +115,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       setError('Los story points deben ser un número positivo');
       return false;
     }
+    if (isAdmin && formData.responsibleId === 0) {
+      setError('Debes seleccionar un desarrollador responsable');
+      return false;
+    }
     return true;
   };
 
@@ -83,12 +133,28 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     setLoading(true);
     
     try {
-      // Agregar datos del usuario autenticado
+      // Obtener el nombre del responsable
+      let responsibleName = user!.name;
+      let responsibleId = user!.id;
+
+      if (isAdmin) {
+        responsibleId = formData.responsibleId;
+        const selectedDev = desarrolladores.find(d => d.id === formData.responsibleId);
+        responsibleName = selectedDev?.nombreUsuario || 'Sin asignar';
+      }
+
       const taskData = {
-        ...formData,
-        responsible: user!.name,
-        responsibleId: user!.id,
-        project: '' // Se obtendrá del backend
+        id: 0, // El backend asignará el ID
+        name: formData.name,
+        description: formData.description,
+        estimatedDate: formData.estimatedDate,
+        storyPoints: formData.storyPoints,
+        status: formData.status,
+        sprintId: formData.sprintId,
+        responsibleId: responsibleId,
+        startDate: "",
+        projectId: 1,
+        userStoryId: 1
       };
 
       await addTask(taskData);
@@ -100,7 +166,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         storyPoints: 0,
         description: '',
         sprintId: 0,
-        status: TaskStatus.TODO
+        status: TaskStatus.TODO,
+        responsibleId: isAdmin ? 0 : user!.id
       });
       
       onTaskCreated();
@@ -121,7 +188,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       storyPoints: 0,
       description: '',
       sprintId: 0,
-      status: TaskStatus.TODO
+      status: TaskStatus.TODO,
+      responsibleId: isAdmin ? 0 : (user?.id || 0)
     });
     onClose();
   };
@@ -145,17 +213,50 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           )}
 
-          {/* Mostrar usuario asignado */}
+          {/* Responsable Asignado - Diferente según el rol */}
           <div className="form-group">
-            <label>Responsable Asignado</label>
-            <div className="assigned-user">
-              <span className="user-badge">
-                👤 {user?.name || 'No autenticado'}
-              </span>
-              <small className="form-hint">
-                Esta tarea será asignada a tu usuario
-              </small>
-            </div>
+            <label htmlFor="responsibleId">
+              Responsable Asignado <span className="required">*</span>
+            </label>
+            
+            {isAdmin ? (
+              // Si es administrador, mostrar dropdown de desarrolladores
+              <>
+                <select
+                  id="responsibleId"
+                  name="responsibleId"
+                  value={formData.responsibleId}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                  disabled={loadingDesarrolladores}
+                >
+                  <option value={0}>
+                    {loadingDesarrolladores ? 'Cargando...' : 'Selecciona un desarrollador'}
+                  </option>
+                  {desarrolladores.map(dev => (
+                    <option key={dev.id} value={dev.id}>
+                      {dev.nombreUsuario} ({dev.correo})
+                    </option>
+                  ))}
+                </select>
+                <small className="form-hint">
+                  Selecciona el desarrollador responsable de esta tarea
+                </small>
+              </>
+            ) : (
+              // Si es desarrollador, mostrar solo su nombre
+              <>
+                <div className="assigned-user">
+                  <span className="user-badge">
+                    👤 {user?.name || 'No autenticado'}
+                  </span>
+                </div>
+                <small className="form-hint">
+                  Esta tarea será asignada a tu usuario
+                </small>
+              </>
+            )}
           </div>
 
           <div className="form-group">
@@ -274,7 +375,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading || !user}
+              disabled={loading || !user || (isAdmin && formData.responsibleId === 0)}
             >
               {loading ? 'Creando...' : 'Crear Tarea'}
             </button>
