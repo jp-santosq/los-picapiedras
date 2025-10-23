@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 import { Snackbar, Alert } from "@mui/material";
 import axios from "axios";
 
-export type User = { id: number; name: string; email: string; rol: number } | null;
+export type User = { id: number; name: string; email: string; rol: number; } | null;
 
 type AuthContextType = {
   user: User;
@@ -10,7 +10,7 @@ type AuthContextType = {
   logout: () => void;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>(null);
