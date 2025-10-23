@@ -259,7 +259,7 @@ const Tasks: React.FC = () => {
                     <td className="task-id">#{task.id}</td>
                     <td className="task-name">{task.name}</td>
                     <td className="task-responsible">{getResponsibleName(task.responsibleId)}</td>
-                    <td className="task-sprint">{task.sprintId ? `Sprint #${task.sprintId}` : 'Sin Sprint'}</td>
+                    <td className="task-sprint">{task.sprintId ? `#${task.sprintId}` : 'Sin Sprint'}</td>
                     <td>
                       <span className={`status-badge status-${task.status.toLowerCase()}`}>
                         {task.status}
