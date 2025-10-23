@@ -86,11 +86,11 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         estimatedDate: tarea.fechaFinEstimada,
         endDate: tarea.fechaFinReal,
         storyPoints: tarea.prioridad,
-        status: tarea.estadoTarea
+        status: tarea.estadoTareaId
           ? estadoMapFrontend[tarea.estadoTareaId] || TaskStatus.TODO
           : TaskStatus.TODO,
         projectId: tarea.proyecto?.id || 0,
-        sprintId: tarea.sprint?.id || null,
+        sprintId: tarea.sprintId || null,
         responsibleId: tarea.desarrolladorId || 0,
         userStoryId: tarea.historiaUsuarioId || 0,
 
@@ -144,6 +144,8 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       };
 
       setTasks((prev) => [...prev, nuevaTask]);
+      await fetchTareas();
+
       console.log("Tarea creada:", nuevaTask);
     } catch (error) {
       console.error("Error al crear tarea:", error);

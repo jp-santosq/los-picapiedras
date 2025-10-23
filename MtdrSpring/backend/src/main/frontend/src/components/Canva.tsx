@@ -24,21 +24,16 @@ function Canva({ state, tasks, updateTaskState, onTaskClick }) {
     >
       
       {Array.isArray(tasks) &&
-        tasks
-          .filter((task) => {
-            console.log("Comparando", task.responsibleId, user?.id);
-            return user && Number(task.responsibleId) === Number(user.id);
-          })
-          .map((task) => (
-            <Task
-              key={task.id}
-              id={task.id}
-              responsibleId={task.responsibleId}
-              name={task.name}
-              state=""
-              onClick={() => onTaskClick(task)}
-            />
-          ))}
+        tasks.map((task) => (
+          <Task
+            key={task.id}
+            id={task.id}
+            responsibleId={task.responsibleId}
+            name={task.name}
+            state={task.state}
+            onClick={() => onTaskClick(task)}
+          />
+        ))}
     </div>
   );
 }
