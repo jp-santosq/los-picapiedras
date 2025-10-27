@@ -53,6 +53,12 @@ jobs:
           echo "${{ secrets.APP_PROPS_B64 }}" | base64 -d > application.properties
           echo "${{ secrets.SPRING_YAML_B64 }}" | base64 -d > todolistapp-springboot.yaml
           echo "✅ Restored application.properties and todolistapp-springboot.yaml"
+      
+      - name: UnDeploy
+        run: |
+          cd MtdrSpring
+          source env.sh
+          (cd backend; source undeploy.sh)
 
       - name: Build backend
         env:
@@ -67,8 +73,6 @@ jobs:
         uses: oracle-actions/configure-kubectl-oke@v1.5.0
         with:
           cluster: ${{ secrets.OCI_CLUSTER_OCID }}
-
-      # === NUEVO PASO: UNDEPLOY AUTOMÁTICO ===
       - name: Deploy
         run: |
           cd MtdrSpring
