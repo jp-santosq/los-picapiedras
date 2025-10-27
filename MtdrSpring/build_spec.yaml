@@ -6,7 +6,7 @@ shell: bash
 env:
   variables:
     JAVA_HOME: /usr/lib64/graalvm/graalvm22-ee-java17
-    OCIR_TOKEN_SECRET_OCID: "ocid1.vaultsecret.oc1.mx-queretaro-1.amaaaaaaqvjbf6ial6lftb32rb6cys5ae7mst3nkm2q7plzibb4wivim3xna"
+    OCIR_TOKEN_SECRET_OCID: "ocid1.vaultsecret.oc1.mx-queretaro-1.amaaaaaaqvjbf6iaeqvlf7pnrtvcmrwsodhpchorkgfgps73vz3v776jstaa"
 
     # 👇 Variables requeridas por build.sh
     DOCKER_REGISTRY: qro.ocir.io/axvik3xzohce/reacttodo/9zgw9
