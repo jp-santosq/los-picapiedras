@@ -55,6 +55,8 @@ jobs:
           echo "✅ Restored application.properties and todolistapp-springboot.yaml"
 
       - name: Build backend
+        env:
+          CI: false
         run: |
           cd MtdrSpring
           source env.sh
