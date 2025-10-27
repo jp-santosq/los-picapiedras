@@ -46,6 +46,13 @@ jobs:
         with:
           name: reacttodo/asdvp
           compartment: ${{ secrets.OCI_COMPARTMENT_OCID }}
+          
+      - name: Restore backend config files
+        run: |
+          cd MtdrSpring/backend/src/main/resources
+          echo "${{ secrets.APP_PROPS_B64 }}" | base64 -d > application.properties
+          echo "${{ secrets.SPRING_YAML_B64 }}" | base64 -d > todolistapp-springboot.yaml
+          echo "✅ Restored application.properties and todolistapp-springboot.yaml"
 
       - name: Build backend
         run: |
