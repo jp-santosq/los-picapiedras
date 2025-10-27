@@ -69,9 +69,8 @@ jobs:
           cluster: ${{ secrets.OCI_CLUSTER_OCID }}
 
       # === NUEVO PASO: UNDEPLOY AUTOMÁTICO ===
-      - name: UN-Deploy to Kubernetes
+      - name: Deploy
         run: |
-          echo "🧹 Eliminando recursos anteriores..."
-          kubectl -n mtdrworkshop delete deployment todolistapp-springboot-deployment || true
-          kubectl -n mtdrworkshop delete service todolistapp-springboot-service || true
-          echo "✅ Recursos eliminados correctamente."
+          cd MtdrSpring
+          source env.sh
+          (cd backend; source deploy.sh)
