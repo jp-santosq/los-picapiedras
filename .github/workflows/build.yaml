@@ -53,6 +53,12 @@ jobs:
           echo "${{ secrets.APP_PROPS_B64 }}" | base64 -d > application.properties
           echo "${{ secrets.SPRING_YAML_B64 }}" | base64 -d > todolistapp-springboot.yaml
           echo "✅ Restored application.properties and todolistapp-springboot.yaml"
+          
+      - name: Configure kubectl for OKE
+        id: kubectl-oke-action
+        uses: oracle-actions/configure-kubectl-oke@v1.5.0
+        with:
+          cluster: ${{ secrets.OCI_CLUSTER_OCID }}
       
       - name: UN-Deploy to Kubernetes
         run: |
@@ -68,12 +74,7 @@ jobs:
           cd MtdrSpring
           source env.sh
           (cd backend; source build.sh)
-
-      - name: Configure kubectl for OKE
-        id: kubectl-oke-action
-        uses: oracle-actions/configure-kubectl-oke@v1.5.0
-        with:
-          cluster: ${{ secrets.OCI_CLUSTER_OCID }}
+      
       - name: Deploy
         run: |
           cd MtdrSpring
