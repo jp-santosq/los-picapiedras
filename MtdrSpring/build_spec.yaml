@@ -6,7 +6,7 @@ shell: bash
 env:
   variables:
     JAVA_HOME: /usr/lib64/graalvm/graalvm22-ee-java17
-    OCIR_TOKEN_SECRET_OCID: ${{ secrets.OCI_CLI_USER }}
+    OCIR_TOKEN_SECRET_OCID: ${{ secrets.OCID_SECRET }}
 
     # 👇 Variables requeridas por build.sh
     DOCKER_REGISTRY: qro.ocir.io/axvik3xzohce/reacttodo/9zgw9
