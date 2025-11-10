@@ -200,7 +200,7 @@ const KPIs: React.FC = () => {
                   label={{
                     value: "Sprint",
                     position: "insideBottom",
-                    offset: -10,
+                    offset: 10,
                     fill: "#666",
                   }}
                 />
@@ -212,6 +212,7 @@ const KPIs: React.FC = () => {
                     value: "Horas (estimadas/reales)",
                     angle: -90,
                     position: "insideLeft",
+                    offset: -10,
                     fill: "#666",
                   }}
                 />
@@ -319,18 +320,18 @@ const KPIs: React.FC = () => {
                 📈 Tareas Completadas - {users.find((u) => u.id === selectedDeveloper)?.name}
               </h3>
               <ResponsiveContainer width="100%" height={400}>
-                <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis
                     dataKey="sprintId"
                     name="Sprint"
                     tick={{ fill: '#666' }}
-                    label={{ value: 'Sprint', position: 'insideBottom', offset: -10, fill: '#666' }}
+                    label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
                   />
                   <YAxis
                     name="Tareas"
                     tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666' }}
+                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: -10 }}
                   />
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
