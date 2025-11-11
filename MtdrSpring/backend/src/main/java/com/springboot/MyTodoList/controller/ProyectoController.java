@@ -16,7 +16,6 @@ import com.springboot.MyTodoList.dto.ProyectoDTO;
 import com.springboot.MyTodoList.model.Proyecto;
 import com.springboot.MyTodoList.model.Usuario;
 import com.springboot.MyTodoList.repository.UsuarioRepository;
-
 import com.springboot.MyTodoList.service.ProyectoService;
 
 
@@ -61,6 +60,5 @@ public class ProyectoController {
         }
 
         return new ResponseEntity<>(proyectos, HttpStatus.OK);
-}
-
+    }
 }

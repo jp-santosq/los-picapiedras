@@ -1,25 +1,15 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
-import axios from "axios";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
 import "../styles/components/navbar.css";
+import Profile from "../pages/Profile.tsx";
 
 
 function NavBar() {
 
-  
 
-  const HomePage = () => {
-
-    return <h1>Hola</h1>
-
-  };
-
-  function About() {
-    return <h1>About Page</h1>;
-  }
 
   function Contact() {
     return <h1>Contact Page</h1>;
@@ -37,7 +27,7 @@ function NavBar() {
               <Link to={"/Sprints"}>Sprints</Link>
               <Link to={"/Tasks"}>Tasks</Link>
               <Link to={"/KPIs"}>KPIs</Link>
-              <Link to={"/About-page"}>About Page</Link>
+              <Link to={"/Profile"}>Profile</Link>
               <Link to={"/Contact"}>Contact Page</Link>
             </nav>
           </div>
@@ -48,7 +38,7 @@ function NavBar() {
           <Route path="/Sprints" element={<Sprints />} />
           <Route path="/Tasks" element={<Tasks />} />
           <Route path="/KPIs" element={<KPIs />} />
-          <Route path="/About-page" element={<About />} />
+          <Route path="/Profile" element={<Profile />} />
           <Route path="/Contact" element={<Contact />} />
         </Routes>
       </BrowserRouter>
