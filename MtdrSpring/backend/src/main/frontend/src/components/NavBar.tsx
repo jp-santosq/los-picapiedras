@@ -4,6 +4,7 @@ import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
 import "../styles/components/navbar.css";
+import Profile from "../pages/Profile.tsx";
 import imgPrueba from "../images/profilePlaceHolder.png";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
