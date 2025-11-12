@@ -3,7 +3,6 @@ import Dashboard from "../pages/Dashboard.tsx";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
-import About from "../pages/AboutPage.tsx";
 import "../styles/components/navbar.css";
 import imgPrueba from "../images/profilePlaceHolder.png";
 import { useState } from "react";
