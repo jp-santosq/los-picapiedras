@@ -3,12 +3,14 @@ import Dashboard from "../pages/Dashboard.tsx";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
+import About from "../pages/AboutPage.tsx";
 import "../styles/components/navbar.css";
 import imgPrueba from "../images/profilePlaceHolder.png";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.tsx";
 import Profile from "../pages/Profile.tsx";
+
 
 
 function NavBar() {
@@ -38,9 +40,6 @@ function NavBar() {
     window.location.reload();
     handleClose();
   };
-
-
-
 
   return (
     <>
@@ -73,12 +72,14 @@ function NavBar() {
                       alignItems: "center",      
                       justifyContent: "center" 
                     }}>
+
                       <Link to="/Profile" style={{ textDecoration: "none", width: "100%" }}>
                         <button className="dropdown-btn" onClick={handleClose}>
                           Profile
                         </button>
                       </Link>
                       <button className="dropdown-btn" onClick={handleLogout}>Log out</button>
+
                     </div>
                   )}
                 </div>
@@ -92,6 +93,7 @@ function NavBar() {
           <Route path="/Tasks" element={<Tasks />} />
           <Route path="/KPIs" element={<KPIs />} />
           <Route path="/Profile" element={<Profile />} />
+
         </Routes>
       </BrowserRouter>
     </>

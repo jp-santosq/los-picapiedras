@@ -5,6 +5,7 @@ import { ROL } from "../components/enums";
 
 export type User = {id: number; name: string; email: string; rol: ROL,image?:string } | null;
 
+
 type AuthContextType = {
   user: User;
   login: (email: string, password: string) => Promise<boolean>;
