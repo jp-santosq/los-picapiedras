@@ -28,7 +28,11 @@
     "browserslist": [
         "last 5 versions"
     ],
+<<<<<<< HEAD
     "proxy": "http://localhost:8080"
     ,
+=======
+    "proxy": "http://localhost:8080",
+>>>>>>> 2aa90d4 (About Page con info del usuario)
     "homepage": "."
 }

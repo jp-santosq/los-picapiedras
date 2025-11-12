@@ -321,17 +321,19 @@ const KPIs: React.FC = () => {
               </h3>
               <ResponsiveContainer width="100%" height={400}>
                 <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
+                <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis
                     dataKey="sprintId"
                     name="Sprint"
                     tick={{ fill: '#666' }}
                     label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
+                    label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
                   />
                   <YAxis
                     name="Tareas"
                     tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: -10 }}
+                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: 20 }}
                   />
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
