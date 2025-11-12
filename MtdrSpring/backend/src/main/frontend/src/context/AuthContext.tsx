@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 1:
         return ROL.SUPERADMIN
       case 2:
-        return ROL.MANAGER
+        return ROL.ADMINISTRADOR
       case 3:
         return ROL.DESARROLLADOR
       

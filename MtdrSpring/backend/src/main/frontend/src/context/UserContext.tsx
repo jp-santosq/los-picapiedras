@@ -1,11 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import axios from 'axios';
+import { ROL } from 'components/enums';
 
 interface User {
   id: number;
   name: string;
   email: string;
-  rol: number;
+  rol: ROL;
 }
 
 interface UserContextType {

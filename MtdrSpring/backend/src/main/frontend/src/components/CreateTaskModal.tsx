@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
-import { TaskStatus } from './enums.tsx';
+import { ROL, TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
 import axios from 'axios';
 
@@ -45,7 +45,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
 
   // Determinar si el usuario es administrador (rol 2)
-  const isAdmin = user?.rol === 2;
+  const isAdmin = user?.rol === ROL.ADMINISTRADOR;
 
   // Cargar desarrolladores si el usuario es administrador
   useEffect(() => {

@@ -11,19 +11,19 @@ import { TaskStatus } from "../components/enums.tsx";
 
 export interface Task {
   id: number;
+  isAdmin?: boolean;
   name: string;
   description: string;
   startDate: string;
   estimatedDate: string;
-  endDate?: string;    //opcional
+  endDate?: string; //opcional
   storyPoints: number;
   status: TaskStatus;
   projectId: number;
-  sprintId?: number;   //opcional
+  sprintId?: number; //opcional
   responsibleId: number;
   userStoryId: number;
 }
-
 
 interface TasksContextProps {
   tasks: Task[];
@@ -93,7 +93,6 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         sprintId: tarea.sprintId || null,
         responsibleId: tarea.desarrolladorId || 0,
         userStoryId: tarea.historiaUsuarioId || 0,
-
       }));
 
       setTasks(tareasMapeadas);
@@ -107,81 +106,88 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     fetchTareas();
   }, [fetchTareas]);
 
-  const addTask = useCallback(async (task: Omit<Task, "id"> & { sprintId?: number }) => {
-    try {
-      const dto = {
-        titulo: task.name,
-        descripcion: task.description,
-        fechaInicio: new Date().toISOString().split("T")[0],
-        fechaFinEstimada: task.estimatedDate,
-        fechaFinReal: null,
-        prioridad: task.storyPoints,
-        estadoTareaId: estadoMapBackend[task.status] || estadoMapBackend[TaskStatus.TODO],
-        proyectoId: 1, // Puedes hacerlo dinámico si lo necesitas
-        sprintId: task.sprintId || 1,
-        desarrolladorId: task.responsibleId || 1,
-        historiaUsuarioId: 1, // Puedes hacerlo dinámico si lo necesitas
-      };
+  const addTask = useCallback(
+    async (task: Omit<Task, "id"> & { sprintId?: number }) => {
+      try {
+        const dto = {
+          titulo: task.name,
+          descripcion: task.description,
+          fechaInicio: new Date().toISOString().split("T")[0],
+          fechaFinEstimada: task.estimatedDate,
+          fechaFinReal: null,
+          prioridad: task.storyPoints,
+          estadoTareaId:
+            estadoMapBackend[task.status] || estadoMapBackend[TaskStatus.TODO],
+          proyectoId: 1, // Puedes hacerlo dinámico si lo necesitas
+          sprintId: task.sprintId || 1,
+          desarrolladorId: task.responsibleId || 1,
+          historiaUsuarioId: 1, // Puedes hacerlo dinámico si lo necesitas
+        };
 
-      console.log("Enviando DTO al backend:", dto);
+        console.log("Enviando DTO al backend:", dto);
 
-      const response = await axios.post("/tarea", dto/*, { headers: { "Content-Type": "application/json" }}*/);
-      const tareaCreada = response.data;
+        const response = await axios.post(
+          "/tarea",
+          dto /*, { headers: { "Content-Type": "application/json" }}*/
+        );
+        const tareaCreada = response.data;
 
-      const nuevaTask: Task = {
-        id: tareaCreada.id,
-        name: tareaCreada.titulo,
-        description: tareaCreada.descripcion,
-        startDate: tareaCreada.fechaInicio,
-        estimatedDate: tareaCreada.fechaFinEstimada,
-        endDate: tareaCreada.fechaFinReal,
-        storyPoints: tareaCreada.prioridad,
-        status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado), 
-        projectId: tareaCreada.proyectoId || "Sin proyecto",
-        sprintId: tareaCreada.sprintId || null,
-        responsibleId: tareaCreada.desarrolladorId || 0,
-        userStoryId: tareaCreada.historiaUsuarioId || 0,
-      };
+        const nuevaTask: Task = {
+          id: tareaCreada.id,
+          name: tareaCreada.titulo,
+          description: tareaCreada.descripcion,
+          startDate: tareaCreada.fechaInicio,
+          estimatedDate: tareaCreada.fechaFinEstimada,
+          endDate: tareaCreada.fechaFinReal,
+          storyPoints: tareaCreada.prioridad,
+          status: normalizeStatus(tareaCreada.estadoTarea?.nombreEstado),
+          projectId: tareaCreada.proyectoId || "Sin proyecto",
+          sprintId: tareaCreada.sprintId || null,
+          responsibleId: tareaCreada.desarrolladorId || 0,
+          userStoryId: tareaCreada.historiaUsuarioId || 0,
+        };
 
-      setTasks((prev) => [...prev, nuevaTask]);
-      await fetchTareas();
+        setTasks((prev) => [...prev, nuevaTask]);
 
-      console.log("Tarea creada:", nuevaTask);
-    } catch (error) {
-      console.error("Error al crear tarea:", error);
-      throw new Error("Error al crear tarea. Ver consola para más detalles.");
-    }
-  }, []);
+        console.log("Tarea creada:", nuevaTask);
+      } catch (error) {
+        console.error("Error al crear tarea:", error);
+        throw new Error("Error al crear tarea. Ver consola para más detalles.");
+      }
+    },
+    []
+  );
 
   // Actualizar solo el estado de la tarea
-  const updateTaskState = useCallback(async (taskId: number, newState: TaskStatus) => {
-    const estadoTareaId = estadoMapBackend[newState];
-
-    try {
-      const response = await axios.put(
-        `/tarea/${taskId}/estado/${estadoTareaId}`
+  const updateTaskState = useCallback(
+    async (taskId: number, newState: TaskStatus) => {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, status: newState } : t))
       );
 
-      if (response.status === 200) {
+      try {
+        const estadoTareaId = estadoMapBackend[newState];
+        await axios.put(`/tarea/${taskId}/estado/${estadoTareaId}`);
+      } catch (error) {
+        console.error("Error al actualizar estado:", error);
         setTasks((prev) =>
-          prev.map((task) =>
-            task.id === taskId ? { ...task, status: newState } : task
+          prev.map((t) =>
+            t.id === taskId ? { ...t, status: TaskStatus.TODO } : t
           )
         );
-        console.log(`Estado de tarea ${taskId} actualizado a ${newState}`);
       }
-    } catch (error) {
-      console.error("Error al actualizar estado:", error);
-      throw new Error("No se pudo actualizar el estado de la tarea.");
-    }
-  }, []);
+    },
+    []
+  );
 
   const refreshTasks = useCallback(async () => {
     await fetchTareas();
   }, [fetchTareas]);
 
   return (
-    <TasksContext.Provider value={{ tasks, addTask, updateTaskState, refreshTasks }}>
+    <TasksContext.Provider
+      value={{ tasks, addTask, updateTaskState, refreshTasks }}
+    >
       {children}
     </TasksContext.Provider>
   );

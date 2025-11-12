@@ -7,6 +7,6 @@ export enum TaskStatus {
 
 export enum ROL{
   SUPERADMIN = "Super Administrador",
-  MANAGER = "Administrador",
+  ADMINISTRADOR = "Administrador",
   DESARROLLADOR = "Desarrollador"
 }
