@@ -4,7 +4,6 @@ import "../styles/components/canva.css";
 import { useAuth } from "../context/AuthContext.tsx";
 
 function Canva({ state, tasks, updateTaskState, onTaskClick }) {
-  const { user } = useAuth();
   function handleOnDragOver(e) {
     e.preventDefault();
   }

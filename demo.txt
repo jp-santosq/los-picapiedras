@@ -1,0 +1,1 @@
+Este es un demo del pipeline de OCI DevOps mediante Github. Cada cambio en Main automáticamente crea otra vez la instancia en la nube.

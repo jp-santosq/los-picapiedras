@@ -6,7 +6,7 @@ import { TaskStatus } from "./enums.tsx";
 
 export function TaskManager() {
   const { addTask } = useTasks();
-  const { user } = useAuth(); // 👈 obtenemos el usuario autenticado
+  const { user } = useAuth(); // obtenemos el usuario autenticado
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [newTask, setNewTask] = useState({

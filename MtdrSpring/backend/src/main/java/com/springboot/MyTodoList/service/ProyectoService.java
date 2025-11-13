@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.springboot.MyTodoList.model.Proyecto;
 import com.springboot.MyTodoList.repository.ProyectoRepository;
 
@@ -24,6 +25,4 @@ public class ProyectoService {
     public List<Proyecto> getAllProyectos(){
         return proyectoRepository.findAll();
     }
-
-
 }

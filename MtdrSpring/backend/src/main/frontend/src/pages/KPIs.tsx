@@ -3,7 +3,7 @@ import { useTasks } from '../context/TaskContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useUsers } from '../context/UserContext.tsx';
-import { TaskStatus } from '../components/enums.tsx';
+import { ROL, TaskStatus } from '../components/enums.tsx';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import '../styles/components/kpis.css';
 
@@ -126,8 +126,8 @@ const KPIs: React.FC = () => {
   }, [tasks, users]);
 
   // Verificar si el usuario es administrador
-  const isAdmin = user?.rol === 2;
-  const isDeveloper = user?.rol === 3;
+  const isAdmin = user?.rol === ROL.ADMINISTRADOR;
+  const isDeveloper = user?.rol === ROL.DESARROLLADOR;
 
   useEffect(() => {
     if (isDeveloper && user?.id && selectedDeveloper !== user.id) {
@@ -321,6 +321,7 @@ const KPIs: React.FC = () => {
               </h3>
               <ResponsiveContainer width="100%" height={400}>
                 <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
+
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis
                     dataKey="sprintId"
@@ -331,7 +332,7 @@ const KPIs: React.FC = () => {
                   <YAxis
                     name="Tareas"
                     tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: -10 }}
+                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: 20 }}
                   />
                   <Tooltip
                     cursor={{ strokeDasharray: '3 3' }}
