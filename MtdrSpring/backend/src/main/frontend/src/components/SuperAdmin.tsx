@@ -29,13 +29,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import axios from "axios";
+import { ROL } from "./enums.tsx";
 
 type Usuario = {
   id: number;
   nombreUsuario: string;
   correo: string;
   rol: {
-    id: number;
+    id: ROL;
   };
 };
 

@@ -42,7 +42,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.status === 200) {
         const userData = response.data;
-        if (userData.id === 1)
         setUser({
           id: userData.id,
           name: userData.nombreUsuario,
