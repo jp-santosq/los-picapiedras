@@ -6,7 +6,7 @@ import { useUsers } from '../context/UserContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
 import '../styles/components/tasks.css';
-import { TaskStatus } from '../components/enums.tsx';
+import { ROL, TaskStatus } from '../components/enums.tsx';
 
 const Tasks: React.FC = () => {
   const { tasks, refreshTasks } = useTasks();
@@ -25,7 +25,7 @@ const Tasks: React.FC = () => {
   const hasLoadedData = useRef(false);
 
   // Determinar si el usuario es administrador
-  const isAdmin = user?.rol === 2;
+  const isAdmin = user?.rol === ROL.ADMINISTRADOR;
 
   // 🔹 Cargar datos iniciales (usuarios + tareas)
   useEffect(() => {

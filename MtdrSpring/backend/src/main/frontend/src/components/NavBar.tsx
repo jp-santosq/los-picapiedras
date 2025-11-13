@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "../pages/Dashboard.tsx";
-import axios from "axios";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
@@ -11,6 +10,8 @@ import imgPrueba from "../images/profilePlaceHolder.png";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.tsx";
+import Profile from "../pages/Profile.tsx";
+
 
 
 function NavBar() {
@@ -40,6 +41,7 @@ function NavBar() {
     window.location.reload();
     handleClose();
   };
+
   return (
     <>
 
@@ -72,12 +74,14 @@ function NavBar() {
                       alignItems: "center",      
                       justifyContent: "center" 
                     }}>
-                      <Link to="/About-page" style={{ textDecoration: "none", width: "100%" }}>
+
+                      <Link to="/Profile" style={{ textDecoration: "none", width: "100%" }}>
                         <button className="dropdown-btn" onClick={handleClose}>
-                          Mi cuenta
+                          Profile
                         </button>
                       </Link>
-                      <button className="dropdown-btn" onClick={handleLogout}>Cerrar sesión</button>
+                      <button className="dropdown-btn" onClick={handleLogout}>Log out</button>
+
                     </div>
                   )}
                 </div>
@@ -92,6 +96,8 @@ function NavBar() {
           <Route path="/KPIs" element={<KPIs />} />
           <Route path="/About-page" element={<About />} />
           <Route path="/Team" element={<Team/>}/>
+          <Route path="/Profile" element={<Profile />} />
+
         </Routes>
       </BrowserRouter>
     </>
