@@ -3,6 +3,8 @@ import Dashboard from "../pages/Dashboard.tsx";
 import Sprints from "../pages/Sprints.tsx";
 import Tasks from "../pages/Tasks.tsx";
 import KPIs from "../pages/KPIs.tsx";
+import About from "../pages/AboutPage.tsx";
+import Team from "../pages/Team.tsx";
 import "../styles/components/navbar.css";
 import imgPrueba from "../images/profilePlaceHolder.png";
 import { useState } from "react";
@@ -51,6 +53,7 @@ function NavBar() {
               <Link to={"/"}>Board</Link>
               <Link to={"/Sprints"}>Sprints</Link>
               <Link to={"/Tasks"}>Tasks</Link>
+              <Link to={"/Team"}>Team</Link>
               <Link to={"/KPIs"} style={{ marginRight: "50px" }}>KPIs</Link>
                 <div style={{ position: "relative", display: "inline-block" }} ref={dropdownRef}>
                   <img src={imgPrueba} alt="Info" style={{ width: "30px", marginLeft: "5px",cursor: "pointer" }} onClick={handleToggle} />
@@ -91,6 +94,8 @@ function NavBar() {
           <Route path="/Sprints" element={<Sprints />} />
           <Route path="/Tasks" element={<Tasks />} />
           <Route path="/KPIs" element={<KPIs />} />
+          <Route path="/About-page" element={<About />} />
+          <Route path="/Team" element={<Team/>}/>
           <Route path="/Profile" element={<Profile />} />
 
         </Routes>

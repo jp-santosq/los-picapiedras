@@ -20,4 +20,7 @@ public interface UsuarioProyectoRepository extends JpaRepository<UsuarioProyecto
     
     @Query("SELECT up FROM UsuarioProyecto up WHERE up.proyecto.id = :idProyecto")
     List<UsuarioProyecto> findByProyectoId(@Param("idProyecto") Long idProyecto);
+
+    @Query("SELECT up FROM UsuarioProyecto up WHERE up.usuario.id = :idUsuario")
+    List<UsuarioProyecto> findByUsuarioId(@Param("idUsuario") Long idUsuario);
 }

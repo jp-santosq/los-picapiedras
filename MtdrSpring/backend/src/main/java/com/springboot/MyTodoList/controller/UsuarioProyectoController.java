@@ -80,4 +80,41 @@ public class UsuarioProyectoController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // Obtener todos los proyectos de un usuario con información completa
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<UsuarioProyectoDTO>> getProyectosByUsuario(@PathVariable Long idUsuario) {
+        try {
+            List<UsuarioProyecto> relaciones = usuarioProyectoService.getProyectosByUsuario(idUsuario);
+            
+            List<UsuarioProyectoDTO> response = relaciones.stream()
+                .map(rel -> {
+                    Usuario usuario = rel.getUsuario();
+                    Proyecto proyecto = rel.getProyecto();
+                    
+                    UsuarioProyectoDTO.RolInfo rolInfo = new UsuarioProyectoDTO.RolInfo(
+                        usuario.getRol().getId()
+                    );
+                    
+                    UsuarioProyectoDTO.UsuarioInfo usuarioInfo = new UsuarioProyectoDTO.UsuarioInfo(
+                        usuario.getId(),
+                        usuario.getNombreUsuario(),
+                        usuario.getCorreo(),
+                        rolInfo
+                    );
+                    
+                    UsuarioProyectoDTO.ProyectoInfo proyectoInfo = new UsuarioProyectoDTO.ProyectoInfo(
+                        proyecto.getId(),
+                        proyecto.getNombreProyecto()
+                    );
+                    
+                    return new UsuarioProyectoDTO(rel.getId(), usuarioInfo, proyectoInfo);
+                })
+                .collect(Collectors.toList());
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

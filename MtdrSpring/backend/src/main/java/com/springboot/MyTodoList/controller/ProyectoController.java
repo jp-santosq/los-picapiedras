@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,9 +28,9 @@ public class ProyectoController {
     private ProyectoService proyectoService;
 
     @Autowired
-    private UsuarioRepository usuarioRepository; // <--- aquí
+    private UsuarioRepository usuarioRepository;
 
-    //Añadir un proyecto
+    // Añadir un proyecto
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Proyecto> addProyecto(@RequestBody ProyectoDTO proyectoDTO) {
 
@@ -50,7 +51,7 @@ public class ProyectoController {
         return new ResponseEntity<>(dbProyecto, headers, HttpStatus.CREATED);
     }
 
-    //Ver todos los proyectos
+    // Ver todos los proyectos
     @GetMapping(value = "/all", produces = "application/json")
     public ResponseEntity<List<Proyecto>> getAllProyectos() {
         List<Proyecto> proyectos = proyectoService.getAllProyectos();
@@ -60,5 +61,21 @@ public class ProyectoController {
         }
 
         return new ResponseEntity<>(proyectos, HttpStatus.OK);
+    }
+
+    // Obtener proyectos por administrador
+    @GetMapping(value = "/administrador/{idAdministrador}", produces = "application/json")
+    public ResponseEntity<List<Proyecto>> getProyectosByAdministrador(@PathVariable Long idAdministrador) {
+        try {
+            List<Proyecto> proyectos = proyectoService.getProyectosByAdministrador(idAdministrador);
+            
+            if (proyectos.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            
+            return new ResponseEntity<>(proyectos, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

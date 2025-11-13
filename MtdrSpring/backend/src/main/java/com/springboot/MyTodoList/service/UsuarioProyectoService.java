@@ -24,4 +24,9 @@ public class UsuarioProyectoService {
     public List<UsuarioProyecto> getUsuariosByProyecto(Long idProyecto) {
         return usuarioProyectoRepository.findByProyectoId(idProyecto);
     }
+
+    // Nuevo método para obtener proyectos por usuario
+    public List<UsuarioProyecto> getProyectosByUsuario(Long idUsuario) {
+        return usuarioProyectoRepository.findByUsuarioId(idUsuario);
+    }
 }

@@ -25,4 +25,9 @@ public class ProyectoService {
     public List<Proyecto> getAllProyectos(){
         return proyectoRepository.findAll();
     }
+
+
+    public List<Proyecto> getProyectosByAdministrador(Long idAdministrador) {
+        return proyectoRepository.findByAdministradorId(idAdministrador);
+    }
 }
