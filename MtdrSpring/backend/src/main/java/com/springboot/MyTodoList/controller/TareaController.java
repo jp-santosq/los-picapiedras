@@ -1,11 +1,16 @@
 package com.springboot.MyTodoList.controller;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.MyTodoList.dto.TareaDTO;
 import com.springboot.MyTodoList.model.EstadoTarea;
@@ -29,6 +36,7 @@ import com.springboot.MyTodoList.repository.SprintRepository;
 import com.springboot.MyTodoList.repository.TareaRepository;
 import com.springboot.MyTodoList.repository.UsuarioRepository;
 import com.springboot.MyTodoList.service.TareaService;
+import com.springboot.MyTodoList.service.SprintPlanningService;
 
 @RestController
 @RequestMapping("/tarea")
@@ -55,6 +63,9 @@ public class TareaController {
     @Autowired
     private HistoriaUsuarioRepository historiaUsuarioRepository;
 
+    @Autowired
+    private SprintPlanningService sprintPlanningService;
+
     // Obtener todas las tareas
     @GetMapping
     public ResponseEntity<List<TareaDTO>> getAll() {
@@ -79,6 +90,35 @@ public class TareaController {
             .collect(Collectors.toList());
     
         return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/plan-sprint", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> sugerirTareasParaSprint(@RequestParam("archivo") MultipartFile archivoTxt) {
+        if (archivoTxt == null || archivoTxt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Debes adjuntar un archivo .txt con la descripción del sprint.");
+        }
+
+        String nombreArchivo = archivoTxt.getOriginalFilename();
+        if (StringUtils.hasText(nombreArchivo) && !nombreArchivo.toLowerCase().endsWith(".txt")) {
+            return ResponseEntity.badRequest().body("Solo se aceptan archivos con extensión .txt.");
+        }
+
+        try {
+            String descripcion = new String(archivoTxt.getBytes(), StandardCharsets.UTF_8);
+            if (!StringUtils.hasText(descripcion)) {
+                return ResponseEntity.badRequest().body("El archivo está vacío, agrega la descripción del sprint.");
+            }
+
+            List<TareaDTO> tareas = sprintPlanningService.generarTareas(descripcion);
+            return ResponseEntity.ok(tareas);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("No se pudo leer el archivo proporcionado.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     // Obtener tarea por ID
