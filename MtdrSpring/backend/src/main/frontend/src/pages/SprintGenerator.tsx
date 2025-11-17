@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { TaskStatus } from '../components/enums.tsx';
+import AddTaskToListModal from '../components/AddTaskToListModal.tsx';
 import '../styles/components/sprintGenerator.css';
 
 interface UploadModalProps {
@@ -126,9 +129,240 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onContinue }
   );
 };
 
+// Interfaz para las tareas temporales
+export interface TempTask {
+  id?: number;
+  name: string;
+  description: string;
+  startDate: string;
+  estimatedDate: string;
+  storyPoints: number;
+  status: TaskStatus;
+  responsibleId: number;
+  sprintId?: number;
+  projectId: number;
+  userStoryId: number;
+}
+
+interface TasksReviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onContinue: (tasks: TempTask[]) => void;
+}
+
+const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, onContinue }) => {
+  const [tasks, setTasks] = useState<TempTask[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  // Cargar tareas del endpoint cuando se abre el modal
+  React.useEffect(() => {
+    if (isOpen && !hasLoaded) {
+      fetchTasks();
+    }
+  }, [isOpen, hasLoaded]);
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get('/tarea');
+      const tareasBackend = response.data as any[];
+
+      // Mapear las tareas del backend al formato TempTask
+      const estadoMapFrontend: Record<number, TaskStatus> = {
+        1: TaskStatus.TODO,
+        2: TaskStatus.DOING,
+        3: TaskStatus.REVISION,
+        4: TaskStatus.DONE,
+      };
+
+      const tareasMapeadas: TempTask[] = tareasBackend.map((tarea) => ({
+        id: tarea.id,
+        name: tarea.titulo,
+        description: tarea.descripcion,
+        startDate: tarea.fechaInicio,
+        estimatedDate: tarea.fechaFinEstimada,
+        storyPoints: tarea.prioridad,
+        status: tarea.estadoTareaId
+          ? estadoMapFrontend[tarea.estadoTareaId] || TaskStatus.TODO
+          : TaskStatus.TODO,
+        projectId: tarea.proyectoId || 1,
+        sprintId: tarea.sprintId || undefined,
+        responsibleId: tarea.desarrolladorId || 0,
+        userStoryId: tarea.historiaUsuarioId || 1,
+      }));
+
+      setTasks(tareasMapeadas);
+      setHasLoaded(true);
+      console.log('Tareas cargadas desde /tarea2:', tareasMapeadas);
+    } catch (err: any) {
+      console.error('Error al cargar tareas:', err);
+      setError('Error al cargar las tareas desde el servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTask = (index: number) => {
+    setTasks(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddTask = (newTask: TempTask) => {
+    setTasks(prev => [...prev, newTask]);
+    setIsAddModalOpen(false);
+  };
+
+  const handleContinue = () => {
+    if (tasks.length === 0) {
+      setError('Debes tener al menos una tarea para continuar');
+      return;
+    }
+    onContinue(tasks);
+  };
+
+  const handleClose = () => {
+    setTasks([]);
+    setHasLoaded(false);
+    setError(null);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div className="modal-overlay" onClick={handleClose}>
+        <div className="modal-content modal-large modal-tasks-review" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>📋 Revisa las Tareas Sugeridas</h2>
+            <button className="modal-close-btn" onClick={handleClose}>×</button>
+          </div>
+
+          <div className="modal-body">
+            {error && (
+              <div className="alert alert-error">
+                {error}
+              </div>
+            )}
+
+            {loading ? (
+              <div className="loading-container">
+                <div className="loading-spinner">⏳</div>
+                <p>Cargando tareas...</p>
+              </div>
+            ) : (
+              <>
+                <p className="review-instruction">
+                  Revisa, modifica o elimina las tareas antes de continuar con la planificación del sprint
+                </p>
+
+                <div className="tasks-table-container">
+                  <table className="tasks-review-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Estimada</th>
+                        <th>Story Points</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tasks.length === 0 ? (
+                        <tr>
+                          <td colSpan={7} className="empty-tasks">
+                            <div className="empty-icon">📭</div>
+                            <p>No hay tareas disponibles</p>
+                            <p className="empty-hint">Agrega tareas para comenzar</p>
+                          </td>
+                        </tr>
+                      ) : (
+                        tasks.map((task, index) => (
+                          <tr key={index}>
+                            <td className="task-number">{index + 1}</td>
+                            <td className="task-title">{task.name}</td>
+                            <td className="task-desc">{task.description || 'Sin descripción'}</td>
+                            <td className="task-date">
+                              {task.startDate ? new Date(task.startDate).toLocaleDateString('es-ES') : 'N/A'}
+                            </td>
+                            <td className="task-date">
+                              {new Date(task.estimatedDate).toLocaleDateString('es-ES')}
+                            </td>
+                            <td className="task-points">
+                              <span className="points-badge">{task.storyPoints}</span>
+                            </td>
+                            <td className="task-actions">
+                              <button
+                                className="btn-icon btn-delete"
+                                onClick={() => handleDeleteTask(index)}
+                                title="Eliminar tarea"
+                              >
+                                🗑️
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="add-task-section">
+                  <button
+                    className="btn btn-outline btn-add-task"
+                    onClick={() => setIsAddModalOpen(true)}
+                  >
+                    ➕ Agregar Tarea
+                  </button>
+                </div>
+
+                <div className="tasks-summary">
+                  <span className="summary-text">
+                    Total de tareas: <strong>{tasks.length}</strong>
+                  </span>
+                  <span className="summary-text">
+                    Story Points totales: <strong>{tasks.reduce((sum, t) => sum + t.storyPoints, 0)}</strong>
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="modal-footer">
+            <button onClick={handleClose} className="btn btn-secondary">
+              Cancelar
+            </button>
+            <button
+              onClick={handleContinue}
+              className="btn btn-primary"
+              disabled={loading || tasks.length === 0}
+            >
+              Continuar con Planificación →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal para agregar tareas */}
+      <AddTaskToListModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onTaskAdded={handleAddTask}
+      />
+    </>
+  );
+};
+
 const SprintGenerator: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isTasksReviewModalOpen, setIsTasksReviewModalOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [tempTasks, setTempTasks] = useState<TempTask[]>([]);
 
   const handleDownloadTemplate = () => {
     // Ruta al documento que subirás en tu proyecto
@@ -155,7 +389,16 @@ const SprintGenerator: React.FC = () => {
     
     // Aquí después conectarás con el siguiente modal
     console.log('Archivo subido:', file.name);
+    setIsTasksReviewModalOpen(true);
     // TODO: Abrir el siguiente modal para procesar con IA
+  };
+
+  const handleTasksReviewContinue = (tasks: TempTask[]) => {
+    setTempTasks(tasks);
+    setIsTasksReviewModalOpen(false);
+    
+    console.log('Tareas finales para procesar:', tasks);
+    // TODO: Aquí abrirás el siguiente modal
   };
 
   return (
@@ -234,6 +477,13 @@ const SprintGenerator: React.FC = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onContinue={handleFileContinue}
+      />
+
+      {/* Modal de revisión de tareas */}
+      <TasksReviewModal
+        isOpen={isTasksReviewModalOpen}
+        onClose={() => setIsTasksReviewModalOpen(false)}
+        onContinue={handleTasksReviewContinue}
       />
     </div>
   );
