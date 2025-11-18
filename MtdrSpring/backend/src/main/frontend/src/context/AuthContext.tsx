@@ -1,8 +1,10 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { Snackbar, Alert } from "@mui/material";
 import axios from "axios";
+import { ROL } from "../components/enums";
 
-export type User = { id: number; name: string; email: string; rol: number } | null;
+export type User = {id: number; name: string; email: string; rol: ROL,image?:string } | null;
+
 
 type AuthContextType = {
   user: User;
@@ -10,11 +12,26 @@ type AuthContextType = {
   logout: () => void;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User>(null);
   const [showWelcome, setShowWelcome] = useState(false);
+
+  const normalizeRol =(rolId:number):ROL=>{
+    switch(rolId){
+      case 1:
+        return ROL.SUPERADMIN
+      case 2:
+        return ROL.ADMINISTRADOR
+      case 3:
+        return ROL.DESARROLLADOR
+      
+        default:
+          throw new Error("No tiene rol Valido")
+    }
+
+  }
 
   const login = useCallback(async (correo: string, password: string) => {
     try {
@@ -29,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: userData.id,
           name: userData.nombreUsuario,
           email: userData.correo,
-          rol: userData.rol.id,
+          rol: normalizeRol(userData.rol.id),
         });
         setShowWelcome(true);
         console.log("Respuesta del backend:", response.data);

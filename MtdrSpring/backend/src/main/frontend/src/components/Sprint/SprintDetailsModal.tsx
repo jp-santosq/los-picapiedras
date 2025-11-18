@@ -180,7 +180,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
                       <h4 className="task-item-title">{task.titulo}</h4>
                       <div className="task-item-footer">
                         <span className="task-item-responsible">
-                          👤 {task.desarrollador.nombreUsuario || "Sin responsable"}
+                          👤 {task.desarrollador?.nombreUsuario || "Sin responsable"}
                         </span>
                         <span className="task-item-points">
                           {task.prioridad ?? 0} pts

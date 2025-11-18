@@ -110,6 +110,10 @@
   border-left: 4px solid #4a90e2;
 }
 
+.stat-revision {
+  border-left: 4px solid #17a2b8;
+}
+
 .stat-done {
   border-left: 4px solid #28a745;
 }
@@ -132,7 +136,7 @@
 }
 
 .search-input {
-  width: 100%;
+  width: 95%;
   padding: 10px 14px;
   border: 1px solid #ced4da;
   border-radius: 6px;

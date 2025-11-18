@@ -17,6 +17,7 @@ import { useAuth } from "./context/AuthContext.tsx";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TasksProvider } from "./context/TaskContext.tsx";
 import SuperAdmin from "./components/SuperAdmin.tsx";
+import {ROL} from "./components/enums.tsx"
 
 
 function AppContent() {
@@ -28,7 +29,7 @@ function AppContent() {
   console.log("Usuario autenticado:", user);
   console.log("ID de usuario:", user.id);
 
-  if(user.rol===1){
+  if(user.rol===ROL.SUPERADMIN){
     return <SuperAdmin/>
   }
 

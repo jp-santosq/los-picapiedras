@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Canva from "./Canva.tsx";
 import "../styles/components/board.css";
 import { Task } from "../context/TaskContext.tsx";
-import { TaskStatus } from "./enums.tsx";
+import { ROL, TaskStatus } from "./enums.tsx";
 import { useTasks } from "../context/TaskContext.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
 import TaskReadOnlyModal from './TaskReadOnlyModal.tsx';
@@ -13,7 +13,7 @@ function Board() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
-  const isAdmin = user?.rol === 2;
+  const isAdmin = user?.rol === ROL.ADMINISTRADOR;
   console.log("User Role:", user?.rol);
 
   // Filtrar tareas del usuario actual
@@ -21,7 +21,7 @@ function Board() {
     if (!user) return [];
     if (isAdmin) return tasks;
     return tasks.filter(task => task.responsibleId === user.id);
-  }, [tasks, user]);
+  }, [tasks, user,isAdmin]);
 
   function handleTaskClick(task: Task) {
     setSelectedTask(task);
@@ -117,6 +117,9 @@ function Board() {
       </div>
 
       {/* Progress Bar */}
+      <button onClick={()=>{
+        console.log(user?.rol)
+      }}>consola</button>
       <div className="board-progress-section">
         <div className="progress-label">
           <span>Progreso General</span>
