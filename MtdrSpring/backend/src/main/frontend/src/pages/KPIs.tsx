@@ -4,7 +4,7 @@ import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import { ROL, TaskStatus } from '../components/enums.tsx';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import '../styles/components/kpis.css';
 
 type SprintHours = {
@@ -218,7 +218,7 @@ const KPIs: React.FC = () => {
     <div className="kpis-page">
       {/* Header */}
       <div className="kpis-header">
-        <h1 className="kpis-title">📊 KPIs y Métricas</h1>
+        <h1 className="kpis-title">KPIs y Métricas</h1>
         <p className="kpis-subtitle">
           Visualiza el progreso del equipo y desarrolladores individuales
         </p>
@@ -231,13 +231,13 @@ const KPIs: React.FC = () => {
             onClick={() => setActiveTab('team')}
             className={`tab-button ${activeTab === 'team' ? 'active' : ''}`}
           >
-            👥 Equipo
+            Equipo
           </button>
           <button
             onClick={() => setActiveTab('developers')}
             className={`tab-button ${activeTab === 'developers' ? 'active' : ''}`}
           >
-            👨‍💻 Desarrolladores
+            Desarrolladores
           </button>
         </div>
       </div>
@@ -267,9 +267,9 @@ const KPIs: React.FC = () => {
 
           {/* NEW Oracle KPI Chart */}
           <div className="chart-container">
-            <h3 className="chart-title">📈 Horas Estimadas vs Reales por Sprint</h3>
+            <h3 className="chart-title">Horas Estimadas vs Reales por Sprint</h3>
             <ResponsiveContainer width="100%" height={400}>
-              <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
                   dataKey="sprintId"
@@ -283,17 +283,16 @@ const KPIs: React.FC = () => {
                   }}
                 />
 
-                <YAxis
-                  name="Horas"
-                  tick={{ fill: "#666" }}
-                  label={{
-                    value: "Horas (estimadas/reales)",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: -10,
-                    fill: "#666",
-                  }}
-                />
+                <YAxis name="Horas" tick={{ fill: "#666" }}>
+                  <Label
+                    value="Horas (estimadas/reales)"
+                    angle={-90}
+                    position="left"
+                    fill="#4b5563"
+                    offset={0}
+                    style={{ textAnchor: 'middle' }}
+                  />
+                </YAxis>
                 <Tooltip
                   cursor={{ strokeDasharray: "3 3" }}
                   contentStyle={{
@@ -357,7 +356,7 @@ const KPIs: React.FC = () => {
           {selectedDeveloper === 'all' ? (
             /* Developer Stats Table */
             <div className="developer-stats-container">
-              <h3 className="developer-stats-title">👥 Rendimiento por Desarrollador</h3>
+              <h3 className="developer-stats-title">Rendimiento por Desarrollador</h3>
               <table className="developer-stats-table">
                 <thead>
                   <tr>
@@ -419,10 +418,10 @@ const KPIs: React.FC = () => {
               {/* Developer hours chart */}
               <div className="chart-container">
                 <h3 className="chart-title">
-                  ⏱️ Horas Estimadas vs Reales - {selectedDeveloperName}
+                  Horas Estimadas vs Reales - {selectedDeveloperName}
                 </h3>
                 <ResponsiveContainer width="100%" height={400}>
-                  <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                  <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="sprintId"
@@ -430,11 +429,16 @@ const KPIs: React.FC = () => {
                       tick={{ fill: '#666' }}
                       label={{ value: 'Sprint', position: 'insideBottom', offset: 10, fill: '#666' }}
                     />
-                    <YAxis
-                      name="Horas"
-                      tick={{ fill: '#666' }}
-                      label={{ value: 'Horas (estimadas/reales)', angle: -90, position: 'insideLeft', fill: '#666' }}
-                    />
+                    <YAxis name="Horas" tick={{ fill: '#666' }}>
+                      <Label
+                        value="Horas (estimadas/reales)"
+                        angle={-90}
+                        position="left"
+                        fill="#4b5563"
+                        offset={0}
+                        style={{ textAnchor: 'middle' }}
+                      />
+                    </YAxis>
                     <Tooltip
                       cursor={{ strokeDasharray: '3 3' }}
                       contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
@@ -465,10 +469,10 @@ const KPIs: React.FC = () => {
               {/* Developer completed tasks chart */}
               <div className="chart-container">
                 <h3 className="chart-title">
-                  📈 Tareas Completadas - {selectedDeveloperName}
+                  Tareas Completadas - {selectedDeveloperName}
                 </h3>
                 <ResponsiveContainer width="100%" height={400}>
-                  <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
+                  <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 0 }}>
 
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
@@ -477,11 +481,16 @@ const KPIs: React.FC = () => {
                       tick={{ fill: '#666' }}
                       label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
                     />
-                    <YAxis
-                      name="Tareas"
-                      tick={{ fill: '#666' }}
-                      label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: 20 }}
-                    />
+                    <YAxis name="Tareas" tick={{ fill: '#666' }}>
+                      <Label
+                        value="Tareas Completadas"
+                        angle={-90}
+                        position="left"
+                        fill="#4b5563"
+                        offset={0}
+                        style={{ textAnchor: 'middle' }}
+                      />
+                    </YAxis>
                     <Tooltip
                       cursor={{ strokeDasharray: '3 3' }}
                       contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
