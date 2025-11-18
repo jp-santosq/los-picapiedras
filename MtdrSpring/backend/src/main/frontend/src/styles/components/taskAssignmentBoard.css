@@ -1,0 +1,376 @@
+/* Task Assignment Board Modal */
+.modal-board {
+  max-width: 95vw;
+  width: 1600px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-subtitle {
+  color: #666;
+  font-size: 0.95rem;
+  margin-top: 5px;
+  font-weight: normal;
+}
+
+.board-modal-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* Board Container */
+.board-container {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+}
+
+/* Board Columns */
+.board-column {
+  min-width: 320px;
+  max-width: 350px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.board-column:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.unassigned-column {
+  background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+  border: 2px dashed #ffc107;
+}
+
+.member-column {
+  background: white;
+  border: 2px solid #e0e0e0;
+}
+
+/* Column Header */
+.column-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.column-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.member-header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.member-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.member-info h3 {
+  font-size: 1rem;
+  margin-bottom: 3px;
+}
+
+.member-email {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.task-count {
+  background: #667eea;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.unassigned-column .task-count {
+  background: #ffc107;
+  color: #333;
+}
+
+/* Tasks Container */
+.tasks-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 200px;
+}
+
+/* Task Cards */
+.task-card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  transition: all 0.2s ease;
+  border-left: 4px solid #667eea;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task-card:active {
+  cursor: grabbing;
+  opacity: 0.8;
+}
+
+.unassigned-column .task-card {
+  border-left-color: #ffc107;
+}
+
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.task-card-title {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  flex: 1;
+}
+
+.task-card-points {
+  background: #e8f0ff;
+  color: #667eea;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.task-card-desc {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.task-card-date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* Empty Column State */
+.empty-column {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+  padding: 40px 20px;
+}
+
+/* Column Footer */
+.column-footer {
+  padding: 15px 20px;
+  border-top: 2px solid #f0f0f0;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+}
+
+.total-points {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Board Footer */
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-top: 2px solid #f0f0f0;
+  background: #f8f9fa;
+}
+
+.footer-info {
+  display: flex;
+  gap: 30px;
+}
+
+.footer-info span {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.footer-info strong {
+  color: #667eea;
+  font-size: 1.1rem;
+  margin-left: 5px;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-confirm {
+  padding: 12px 30px;
+  font-size: 1rem;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scrollbar Styling */
+.tasks-container::-webkit-scrollbar,
+.board-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tasks-container::-webkit-scrollbar-track,
+.board-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb,
+.board-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.tasks-container::-webkit-scrollbar-thumb:hover,
+.board-container::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.board-column {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .modal-board {
+    width: 95vw;
+    height: 85vh;
+  }
+
+  .board-column {
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-board {
+    height: 80vh;
+  }
+
+  .board-modal-body {
+    padding: 10px;
+  }
+
+  .board-container {
+    gap: 10px;
+  }
+
+  .board-column {
+    min-width: 250px;
+  }
+
+  .column-header {
+    padding: 15px;
+  }
+
+  .tasks-container {
+    padding: 10px;
+  }
+
+  .board-footer {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .footer-info {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .footer-actions {
+    width: 100%;
+  }
+
+  .footer-actions button {
+    flex: 1;
+  }
+}

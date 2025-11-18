@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { TaskStatus } from '../components/enums.tsx';
 import AddTaskToListModal from '../components/AddTaskToListModal.tsx';
+import TaskAssignmentBoard from '../components/TaskAssignmentBoard.tsx';
 import '../styles/components/sprintGenerator.css';
 
 interface UploadModalProps {
@@ -361,6 +362,7 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
 const SprintGenerator: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isTasksReviewModalOpen, setIsTasksReviewModalOpen] = useState(false);
+  const [isAssignmentBoardOpen, setIsAssignmentBoardOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [tempTasks, setTempTasks] = useState<TempTask[]>([]);
 
@@ -376,7 +378,7 @@ const SprintGenerator: React.FC = () => {
   };
 
   const handleViewTemplate = () =>   {
-    window.open('/templates/plantilla-sprint.docx', '_blank');
+    window.open('./docs/plantilla.txt', '_blank');
   };
 
   const handleStartPlanning = () => {
@@ -399,6 +401,15 @@ const SprintGenerator: React.FC = () => {
     
     console.log('Tareas finales para procesar:', tasks);
     // TODO: Aquí abrirás el siguiente modal
+    // Abrir el tablero de asignación
+    setIsAssignmentBoardOpen(true);
+  };
+
+  const handleAssignmentComplete = () => {
+    setIsAssignmentBoardOpen(false);
+    setTempTasks([]);
+    setUploadedFile(null);
+    // Aquí puedes agregar navegación o mostrar mensaje de éxito
   };
 
   return (
@@ -484,6 +495,13 @@ const SprintGenerator: React.FC = () => {
         isOpen={isTasksReviewModalOpen}
         onClose={() => setIsTasksReviewModalOpen(false)}
         onContinue={handleTasksReviewContinue}
+      />
+
+      {/* Tablero de asignación de tareas */}
+      <TaskAssignmentBoard
+        isOpen={isAssignmentBoardOpen}
+        onClose={handleAssignmentComplete}
+        tasks={tempTasks}
       />
     </div>
   );
