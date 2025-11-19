@@ -1,11 +1,21 @@
 Creación de sprint con ayuda de IA
 
-Equipo y roles:
-- Miembro 1: Full stack developer
-- Miembro 2: Front end developer
-- Miembro 3: Full stack developer
+Nombre de Sprint:
 
-Fecha de inicio de sprint (dd/mm/aaaa):
-Fecha de fin de sprint estimada (dd/mm/aaaa):
+Fecha de inicio de sprint (dd/mm/aaaa): 
+Fecha de fin de sprint (dd/mm/aaaa): 
 
-Descripción de lo que se quiere lograr en el sprint:
+Equipo y roles (por miembro pon el nombre, ID y su rol):
+- Miembro 1: 
+- Miembro 2: 
+- Miembro 3: 
+
+Objetivos:
+- 
+-
+-
+
+Alcance detallado:
+-
+-
+-
