@@ -3,6 +3,7 @@ import axios from 'axios';
 import { TaskStatus } from '../components/enums.tsx';
 import AddTaskToListModal from '../components/AddTaskToListModal.tsx';
 import TaskAssignmentBoard from '../components/TaskAssignmentBoard.tsx';
+import CreateSprintForGenerator from '../components/CreateSprintForGenerator.tsx';
 import '../styles/components/sprintGenerator.css';
 
 interface UploadModalProps {
@@ -159,6 +160,8 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTaskIndex, setEditingTaskIndex] = useState<number | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   // Cargar tareas del endpoint cuando se abre el modal
@@ -185,12 +188,15 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
       formData.append('archivo', uploadedFile);
 
       // Hacer POST al endpoint con el archivo
+      
       const response = await axios.post('/tarea/plan-sprint', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+      
 
+      //const response = await axios.get('/tarea');
       const tareasBackend = response.data as any[];
 
       // Mapear las tareas del backend al formato TempTask
@@ -219,7 +225,7 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
 
       setTasks(tareasMapeadas);
       setHasLoaded(true);
-      console.log('Tareas cargadas desde /tarea2:', tareasMapeadas);
+      console.log('Tareas cargadas IA:', tareasMapeadas);
     } catch (err: any) {
       console.error('Error al cargar tareas:', err);
       setError('Error al cargar las tareas desde el servidor');
@@ -230,6 +236,19 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
 
   const handleDeleteTask = (index: number) => {
     setTasks(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleEditTask = (index: number) => {
+    setEditingTaskIndex(index);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateTask = (updatedTask: TempTask) => {
+    if (editingTaskIndex !== null) {
+      setTasks(prev => prev.map((task, i) => i === editingTaskIndex ? updatedTask : task));
+      setIsEditModalOpen(false);
+      setEditingTaskIndex(null);
+    }
   };
 
   const handleAddTask = (newTask: TempTask) => {
@@ -249,6 +268,7 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
     setTasks([]);
     setHasLoaded(false);
     setError(null);
+    setEditingTaskIndex(null);
     onClose();
   };
 
@@ -320,6 +340,13 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
                             </td>
                             <td className="task-actions">
                               <button
+                                className="btn-icon btn-edit"
+                                onClick={() => handleEditTask(index)}
+                                title="Editar tarea"
+                              >
+                                ✏️
+                              </button>
+                              <button
                                 className="btn-icon btn-delete"
                                 onClick={() => handleDeleteTask(index)}
                                 title="Eliminar tarea"
@@ -376,16 +403,253 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
         onClose={() => setIsAddModalOpen(false)}
         onTaskAdded={handleAddTask}
       />
+
+      {/* Modal para editar tareas */}
+      {editingTaskIndex !== null && (
+        <EditTaskModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingTaskIndex(null);
+          }}
+          onTaskUpdated={handleUpdateTask}
+          task={tasks[editingTaskIndex]}
+        />
+      )}
     </>
+  );
+};
+
+// Modal para editar tareas
+interface EditTaskModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onTaskUpdated: (task: TempTask) => void;
+  task: TempTask;
+}
+
+const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onTaskUpdated, task }) => {
+  const [formData, setFormData] = useState({
+    name: task.name,
+    description: task.description,
+    startDate: task.startDate,
+    estimatedDate: task.estimatedDate,
+    storyPoints: task.storyPoints,
+    status: task.status,
+  });
+  
+  const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: task.name,
+        description: task.description,
+        startDate: task.startDate,
+        estimatedDate: task.estimatedDate,
+        storyPoints: task.storyPoints,
+        status: task.status,
+      });
+    }
+  }, [isOpen, task]);
+
+  if (!isOpen) return null;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    if (name === 'storyPoints') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: parseInt(value) || 0
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    if (!formData.name.trim()) {
+      setError('El nombre de la tarea es requerido');
+      return false;
+    }
+    if (!formData.estimatedDate) {
+      setError('La fecha estimada es requerida');
+      return false;
+    }
+    if (formData.storyPoints < 0) {
+      setError('Los story points deben ser un número positivo');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const updatedTask: TempTask = {
+      ...task,
+      name: formData.name,
+      description: formData.description,
+      startDate: formData.startDate || new Date().toISOString().split('T')[0],
+      estimatedDate: formData.estimatedDate,
+      storyPoints: formData.storyPoints,
+      status: formData.status,
+    };
+
+    onTaskUpdated(updatedTask);
+  };
+
+  const handleClose = () => {
+    setError(null);
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>✏️ Editar Tarea</h2>
+          <button className="modal-close-btn" onClick={handleClose}>×</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-form">
+          {error && (
+            <div className="alert alert-error">
+              {error}
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="edit-name">
+              Nombre de la Tarea <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="edit-name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="form-input"
+              placeholder="Ej: Implementar login"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="edit-description">Descripción</label>
+            <textarea
+              id="edit-description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="form-input form-textarea"
+              placeholder="Describe la tarea..."
+              rows={3}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="edit-startDate">Fecha Inicio</label>
+              <input
+                type="date"
+                id="edit-startDate"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="edit-estimatedDate">
+                Fecha Estimada <span className="required">*</span>
+              </label>
+              <input
+                type="date"
+                id="edit-estimatedDate"
+                name="estimatedDate"
+                value={formData.estimatedDate}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="edit-storyPoints">
+                Story Points <span className="required">*</span>
+              </label>
+              <input
+                type="number"
+                id="edit-storyPoints"
+                name="storyPoints"
+                value={formData.storyPoints}
+                onChange={handleChange}
+                required
+                className="form-input"
+                min="0"
+                placeholder="0"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="edit-status">Estado</label>
+              <select
+                id="edit-status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="form-input"
+              >
+                <option value={TaskStatus.TODO}>TODO</option>
+                <option value={TaskStatus.DOING}>DOING</option>
+                <option value={TaskStatus.REVISION}>REVISION</option>
+                <option value={TaskStatus.DONE}>DONE</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="btn btn-secondary"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
 const SprintGenerator: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSprintCreateModalOpen, setIsSprintCreateModalOpen] = useState(false);
   const [isTasksReviewModalOpen, setIsTasksReviewModalOpen] = useState(false);
   const [isAssignmentBoardOpen, setIsAssignmentBoardOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [tempTasks, setTempTasks] = useState<TempTask[]>([]);
+  const [currentSprintId, setCurrentSprintId] = useState<number | null>(null);
 
   const handleDownloadTemplate = () => {
     // Ruta al documento que subirás en tu proyecto
@@ -412,12 +676,25 @@ const SprintGenerator: React.FC = () => {
     
     // Aquí después conectarás con el siguiente modal
     console.log('Archivo subido:', file.name);
-    setIsTasksReviewModalOpen(true);
+    setIsSprintCreateModalOpen(true);
     // TODO: Abrir el siguiente modal para procesar con IA
   };
 
+  const handleSprintCreated = (sprintId: number) => {
+    setCurrentSprintId(sprintId);
+    setIsSprintCreateModalOpen(false);
+    // Abrir el modal de revisión de tareas
+    setIsTasksReviewModalOpen(true);
+  };
+
   const handleTasksReviewContinue = (tasks: TempTask[]) => {
-    setTempTasks(tasks);
+    // Asignar el sprintId a todas las tareas
+    const tasksWithSprint = tasks.map(task => ({
+      ...task,
+      sprintId: currentSprintId || undefined
+    }));
+
+    setTempTasks(tasksWithSprint);
     setIsTasksReviewModalOpen(false);
     
     console.log('Tareas finales para procesar:', tasks);
@@ -430,6 +707,7 @@ const SprintGenerator: React.FC = () => {
     setIsAssignmentBoardOpen(false);
     setTempTasks([]);
     setUploadedFile(null);
+    setCurrentSprintId(null);
     // Aquí puedes agregar navegación o mostrar mensaje de éxito
   };
 
@@ -457,8 +735,8 @@ const SprintGenerator: React.FC = () => {
             </p>
             <button 
               className="btn btn-outline"
-              onClick={handleViewTemplate}
-              onDoubleClick={handleDownloadTemplate}
+              onClick={handleDownloadTemplate}
+              onDoubleClick={handleViewTemplate}
             >
               📄 Descargar Plantilla
             </button>
@@ -509,6 +787,12 @@ const SprintGenerator: React.FC = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onContinue={handleFileContinue}
+      />
+
+      <CreateSprintForGenerator
+        isOpen={isSprintCreateModalOpen}
+        onClose={() => setIsSprintCreateModalOpen(false)}
+        onSprintCreated={handleSprintCreated}
       />
 
       {/* Modal de revisión de tareas */}
