@@ -4,8 +4,20 @@ import { useSprints } from '../context/SprintContext.tsx';
 import { useAuth } from '../context/AuthContext.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import { ROL, TaskStatus } from '../components/enums.tsx';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import '../styles/components/kpis.css';
+
+type SprintHours = {
+  sprintId: number;
+  sprintInicio?: string;
+  sprintFin?: string;
+  horas: number;
+};
+
+type SprintUserHours = SprintHours & {
+  usuarioId: number;
+  usuarioNombre: string;
+};
 
 const KPIs: React.FC = () => {
   const { tasks } = useTasks();
@@ -17,21 +29,53 @@ const KPIs: React.FC = () => {
   const [selectedDeveloper, setSelectedDeveloper] = useState<number | 'all'>('all');
 
   // --- NEW: Fetch Oracle KPI data ---
-  const [estimadas, setEstimadas] = useState<any[]>([]);
-  const [reales, setReales] = useState<any[]>([]);
+  const [estimadas, setEstimadas] = useState<SprintHours[]>([]);
+  const [reales, setReales] = useState<SprintHours[]>([]);
+  const [estimadasUsuarios, setEstimadasUsuarios] = useState<SprintUserHours[]>([]);
+  const [realesUsuarios, setRealesUsuarios] = useState<SprintUserHours[]>([]);
 
   useEffect(() => {
     const fetchKpiData = async () => {
       try {
-        const res1 = await fetch("/kpi/horas/estimadas/sprint");
-        const res2 = await fetch("/kpi/horas/reales/sprint");
-        if (!res1.ok || !res2.ok) throw new Error("Failed to fetch KPI data");
-        const dataEstimadas = await res1.json();
-        const dataReales = await res2.json();
+        const [
+          resEstimadas,
+          resReales,
+          resEstimadasUsuario,
+          resRealesUsuario,
+        ] = await Promise.all([
+          fetch('/kpi/horas/estimadas/sprint'),
+          fetch('/kpi/horas/reales/sprint'),
+          fetch('/kpi/horas/estimadas/sprint-desarrollador'),
+          fetch('/kpi/horas/reales/sprint-desarrollador'),
+        ]);
+
+        if (
+          !resEstimadas.ok ||
+          !resReales.ok ||
+          !resEstimadasUsuario.ok ||
+          !resRealesUsuario.ok
+        ) {
+          throw new Error('Failed to fetch KPI data');
+        }
+
+        const [
+          dataEstimadas,
+          dataReales,
+          dataEstimadasUsuario,
+          dataRealesUsuario,
+        ] = await Promise.all([
+          resEstimadas.json(),
+          resReales.json(),
+          resEstimadasUsuario.json(),
+          resRealesUsuario.json(),
+        ]);
+
         setEstimadas(dataEstimadas);
         setReales(dataReales);
+        setEstimadasUsuarios(dataEstimadasUsuario);
+        setRealesUsuarios(dataRealesUsuario);
       } catch (err) {
-        console.error("Error fetching KPI data:", err);
+        console.error('Error fetching KPI data:', err);
       }
     };
     fetchKpiData();
@@ -125,6 +169,40 @@ const KPIs: React.FC = () => {
     }).sort((a, b) => b.completedTasks - a.completedTasks);
   }, [tasks, users]);
 
+  const developerHoursBySprint = useMemo(() => {
+    if (selectedDeveloper === 'all') return [];
+
+    const estimadasPorSprint = estimadasUsuarios.filter(
+      (item) => item.usuarioId === selectedDeveloper
+    );
+    const realesPorSprint = realesUsuarios.filter(
+      (item) => item.usuarioId === selectedDeveloper
+    );
+
+    const sprintIds = new Set<number>([
+      ...estimadasPorSprint.map((item) => item.sprintId),
+      ...realesPorSprint.map((item) => item.sprintId),
+    ]);
+
+    return Array.from(sprintIds)
+      .map((sprintId) => ({
+        sprintId,
+        sprintName: `Sprint #${sprintId}`,
+        estimadas: estimadasPorSprint.find((item) => item.sprintId === sprintId)?.horas || 0,
+        reales: realesPorSprint.find((item) => item.sprintId === sprintId)?.horas || 0,
+      }))
+      .sort((a, b) => a.sprintId - b.sprintId);
+  }, [estimadasUsuarios, realesUsuarios, selectedDeveloper]);
+
+  const selectedDeveloperStats = useMemo(() => {
+    if (selectedDeveloper === 'all') return null;
+    return developerStats.find((dev) => dev.id === selectedDeveloper) || null;
+  }, [developerStats, selectedDeveloper]);
+  const selectedDeveloperName = useMemo(() => {
+    if (selectedDeveloper === 'all') return '';
+    return users.find((u) => u.id === selectedDeveloper)?.name || '';
+  }, [selectedDeveloper, users]);
+
   // Verificar si el usuario es administrador
   const isAdmin = user?.rol === ROL.ADMINISTRADOR;
   const isDeveloper = user?.rol === ROL.DESARROLLADOR;
@@ -140,7 +218,7 @@ const KPIs: React.FC = () => {
     <div className="kpis-page">
       {/* Header */}
       <div className="kpis-header">
-        <h1 className="kpis-title">📊 KPIs y Métricas</h1>
+        <h1 className="kpis-title">KPIs y Métricas</h1>
         <p className="kpis-subtitle">
           Visualiza el progreso del equipo y desarrolladores individuales
         </p>
@@ -153,13 +231,13 @@ const KPIs: React.FC = () => {
             onClick={() => setActiveTab('team')}
             className={`tab-button ${activeTab === 'team' ? 'active' : ''}`}
           >
-            👥 Equipo
+            Equipo
           </button>
           <button
             onClick={() => setActiveTab('developers')}
             className={`tab-button ${activeTab === 'developers' ? 'active' : ''}`}
           >
-            👨‍💻 Desarrolladores
+            Desarrolladores
           </button>
         </div>
       </div>
@@ -189,14 +267,16 @@ const KPIs: React.FC = () => {
 
           {/* NEW Oracle KPI Chart */}
           <div className="chart-container">
-            <h3 className="chart-title">📈 Horas Estimadas vs Reales por Sprint</h3>
+            <h3 className="chart-title">Horas Estimadas vs Reales por Sprint</h3>
             <ResponsiveContainer width="100%" height={400}>
-              <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
+                  type="category"
                   dataKey="sprintId"
                   name="Sprint"
                   tick={{ fill: "#666" }}
+                  allowDuplicatedCategory={false}
                   label={{
                     value: "Sprint",
                     position: "insideBottom",
@@ -205,17 +285,16 @@ const KPIs: React.FC = () => {
                   }}
                 />
 
-                <YAxis
-                  name="Horas"
-                  tick={{ fill: "#666" }}
-                  label={{
-                    value: "Horas (estimadas/reales)",
-                    angle: -90,
-                    position: "insideLeft",
-                    offset: -10,
-                    fill: "#666",
-                  }}
-                />
+                <YAxis name="Horas" tick={{ fill: "#666" }}>
+                  <Label
+                    value="Horas (estimadas/reales)"
+                    angle={-90}
+                    position="left"
+                    fill="#4b5563"
+                    offset={0}
+                    style={{ textAnchor: 'middle' }}
+                  />
+                </YAxis>
                 <Tooltip
                   cursor={{ strokeDasharray: "3 3" }}
                   contentStyle={{
@@ -279,7 +358,7 @@ const KPIs: React.FC = () => {
           {selectedDeveloper === 'all' ? (
             /* Developer Stats Table */
             <div className="developer-stats-container">
-              <h3 className="developer-stats-title">👥 Rendimiento por Desarrollador</h3>
+              <h3 className="developer-stats-title">Rendimiento por Desarrollador</h3>
               <table className="developer-stats-table">
                 <thead>
                   <tr>
@@ -314,45 +393,128 @@ const KPIs: React.FC = () => {
               </table>
             </div>
           ) : (
-            /* Developer Chart */
-            <div className="chart-container">
-              <h3 className="chart-title">
-                📈 Tareas Completadas - {users.find((u) => u.id === selectedDeveloper)?.name}
-              </h3>
-              <ResponsiveContainer width="100%" height={400}>
-                <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 0 }}>
+            <>
+              {selectedDeveloperStats && (
+                <div className="stats-grid developer-summary">
+                  <div className="stat-card stat-card-purple">
+                    <span className="stat-label">Total de Tareas</span>
+                    <span className="stat-value">{selectedDeveloperStats.totalTasks}</span>
+                  </div>
+                  <div className="stat-card stat-card-green">
+                    <span className="stat-label">Tareas Completadas</span>
+                    <span className="stat-value">{selectedDeveloperStats.completedTasks}</span>
+                  </div>
+                  <div className="stat-card stat-card-blue">
+                    <span className="stat-label">Pendientes</span>
+                    <span className="stat-value">
+                      {selectedDeveloperStats.totalTasks - selectedDeveloperStats.completedTasks}
+                    </span>
+                  </div>
+                  <div className="stat-card stat-card-pink">
+                    <span className="stat-label">Tasa de Completitud</span>
+                    <span className="stat-value">{selectedDeveloperStats.completionRate}%</span>
+                  </div>
+                </div>
+              )}
 
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="sprintId"
-                    name="Sprint"
-                    tick={{ fill: '#666' }}
-                    label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
-                  />
-                  <YAxis
-                    name="Tareas"
-                    tick={{ fill: '#666' }}
-                    label={{ value: 'Tareas Completadas', angle: -90, position: 'insideLeft', fill: '#666', offset: 20 }}
-                  />
-                  <Tooltip
-                    cursor={{ strokeDasharray: '3 3' }}
-                    contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                    formatter={(value: number, name: string) =>
-                      [value, name === 'completed' ? 'Completadas' : name]
-                    }
-                  />
-                  <Legend />
-                  <Scatter
-                    name="Completadas"
-                    data={developerDataBySprint}
-                    dataKey="completed"
-                    fill="#8b5cf6"
-                    line
-                    lineType="joint"
-                  />
-                </ScatterChart>
-              </ResponsiveContainer>
-            </div>
+              {/* Developer hours chart */}
+              <div className="chart-container">
+                <h3 className="chart-title">
+                  Horas Estimadas vs Reales - {selectedDeveloperName}
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis
+                      type="category"
+                      dataKey="sprintId"
+                      name="Sprint"
+                      tick={{ fill: '#666' }}
+                      allowDuplicatedCategory={false}
+                      label={{ value: 'Sprint', position: 'insideBottom', offset: 10, fill: '#666' }}
+                    />
+                    <YAxis name="Horas" tick={{ fill: '#666' }}>
+                      <Label
+                        value="Horas (estimadas/reales)"
+                        angle={-90}
+                        position="left"
+                        fill="#4b5563"
+                        offset={0}
+                        style={{ textAnchor: 'middle' }}
+                      />
+                    </YAxis>
+                    <Tooltip
+                      cursor={{ strokeDasharray: '3 3' }}
+                      contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                      formatter={(value: number, name: string) => [
+                        value,
+                        name === 'estimadas' ? 'Horas Estimadas' : 'Horas Reales',
+                      ]}
+                    />
+                    <Legend />
+                    <Scatter
+                      name="Horas Estimadas"
+                      data={developerHoursBySprint}
+                      dataKey="estimadas"
+                      fill="#3b82f6"
+                      line
+                    />
+                    <Scatter
+                      name="Horas Reales"
+                      data={developerHoursBySprint}
+                      dataKey="reales"
+                      fill="#10b981"
+                      line
+                    />
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Developer completed tasks chart */}
+              <div className="chart-container">
+                <h3 className="chart-title">
+                  Tareas Completadas - {selectedDeveloperName}
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 0 }}>
+
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis
+                      dataKey="sprintId"
+                      name="Sprint"
+                      tick={{ fill: '#666' }}
+                      label={{ value: 'Sprint', position: 'insideBottom', offset: 0, fill: '#666' }}
+                    />
+                    <YAxis name="Tareas" tick={{ fill: '#666' }}>
+                      <Label
+                        value="Tareas Completadas"
+                        angle={-90}
+                        position="left"
+                        fill="#4b5563"
+                        offset={0}
+                        style={{ textAnchor: 'middle' }}
+                      />
+                    </YAxis>
+                    <Tooltip
+                      cursor={{ strokeDasharray: '3 3' }}
+                      contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                      formatter={(value: number, name: string) =>
+                        [value, name === 'completed' ? 'Completadas' : name]
+                      }
+                    />
+                    <Legend />
+                    <Scatter
+                      name="Completadas"
+                      data={developerDataBySprint}
+                      dataKey="completed"
+                      fill="#8b5cf6"
+                      line
+                      lineType="joint"
+                    />
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </div>
+            </>
           )}
         </div>
       )}
