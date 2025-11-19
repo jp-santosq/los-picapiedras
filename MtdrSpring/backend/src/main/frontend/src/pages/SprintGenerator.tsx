@@ -11,6 +11,7 @@ interface UploadModalProps {
   onContinue: (file: File) => void;
 }
 
+// el modal para subir el archivo
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onContinue }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -149,9 +150,11 @@ interface TasksReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onContinue: (tasks: TempTask[]) => void;
+  uploadedFile: File | null;
 }
 
-const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, onContinue }) => {
+// es el modal que sugiere la lista de tareas y puedes modificarlas
+const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, onContinue, uploadedFile }) => {
   const [tasks, setTasks] = useState<TempTask[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -168,8 +171,26 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
   const fetchTasks = async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const response = await axios.get('/tarea');
+      // Verificar que hay un archivo subido
+      if (!uploadedFile) {
+        setError('No se ha subido ningún archivo');
+        setLoading(false);
+        return;
+      }
+
+      // Crear FormData con el archivo
+      const formData = new FormData();
+      formData.append('archivo', uploadedFile);
+
+      // Hacer POST al endpoint con el archivo
+      const response = await axios.post('/tarea/plan-sprint', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       const tareasBackend = response.data as any[];
 
       // Mapear las tareas del backend al formato TempTask
@@ -495,6 +516,7 @@ const SprintGenerator: React.FC = () => {
         isOpen={isTasksReviewModalOpen}
         onClose={() => setIsTasksReviewModalOpen(false)}
         onContinue={handleTasksReviewContinue}
+        uploadedFile={uploadedFile}
       />
 
       {/* Tablero de asignación de tareas */}
