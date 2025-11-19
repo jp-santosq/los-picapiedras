@@ -119,94 +119,115 @@ const Tasks: React.FC = () => {
   // 🔸 Mostrar pantalla de carga
   if (isLoading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-icon">⏳</div>
-        <p>Cargando datos...</p>
+      <div className="tasks-page loading-wrapper">
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Cargando datos...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="tasks-page">
-      {/* Header */}
-      <div className="page-header">
-        <div className="header-content">
+      <section className="page-hero">
+        <div className="hero-text">
+          <p className="hero-eyebrow">Panel operativo</p>
           <h1 className="page-title">Gestión de Tareas</h1>
           <p className="page-subtitle">
-            {isAdmin 
+            {isAdmin
               ? 'Administra y visualiza todas las tareas del proyecto'
-              : `Tareas asignadas a ${user?.name || 'ti'}`
-            }
+              : `Tareas asignadas a ${user?.name || 'ti'}`}
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-create"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          + Crear Tarea
-        </button>
+        <div className="hero-actions">
+          <button
+            className="btn btn-primary hero-refresh"
+            onClick={refreshTasks}
+            aria-label="Actualizar tareas"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 12a9 9 0 11-9-9"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M21 3v6h-6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            className="btn btn-primary hero-create"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            + Crear Tarea
+          </button>
+        </div>
+      </section>
+
+      <div className="stats-panel">
+        <div className="stat-card accent-total">
+          <p className="stat-label">Total de tareas</p>
+          <p className="stat-value">{stats.total}</p>
+          <span className="stat-footnote">Registro global</span>
+        </div>
+        <div className="stat-card accent-todo">
+          <p className="stat-label">Por hacer</p>
+          <p className="stat-value">{stats.todo}</p>
+          <span className="stat-footnote">Pendientes de inicio</span>
+        </div>
+        <div className="stat-card accent-doing">
+          <p className="stat-label">En progreso</p>
+          <p className="stat-value">{stats.doing}</p>
+          <span className="stat-footnote">Actualmente activas</span>
+        </div>
+        <div className="stat-card accent-revision">
+          <p className="stat-label">En revisión</p>
+          <p className="stat-value">{stats.revision}</p>
+          <span className="stat-footnote">A la espera de aprobación</span>
+        </div>
+        <div className="stat-card accent-done">
+          <p className="stat-label">Completadas</p>
+          <p className="stat-value">{stats.done}</p>
+          <span className="stat-footnote">Cerradas correctamente</span>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">📋</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.total}</span>
-            <span className="stat-label">Total</span>
-          </div>
-        </div>
-        <div className="stat-card stat-todo">
-          <div className="stat-icon">📝</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.todo}</span>
-            <span className="stat-label">Por Hacer</span>
-          </div>
-        </div>
-        <div className="stat-card stat-doing">
-          <div className="stat-icon">⚙️</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.doing}</span>
-            <span className="stat-label">En Progreso</span>
-          </div>
-        </div>
-        <div className="stat-card stat-revision">
-          <div className="stat-icon">🔍</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.revision}</span>
-            <span className="stat-label">En Revisión</span>
-          </div>
-        </div>
-        <div className="stat-card stat-done">
-          <div className="stat-icon">✓</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.done}</span>
-            <span className="stat-label">Completadas</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="filters-bar">
-        <div className="search-box">
+      <div className="filters-panel">
+        <div className="search-group">
+          <label htmlFor="task-search">Buscar tarea</label>
           <input
+            id="task-search"
             type="text"
-            placeholder="Buscar por nombre..."
+            placeholder="Nombre de la tarea"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
         </div>
-        <div className="filter-group">
-          <label htmlFor="sprint-filter">Filtrar por Sprint:</label>
+        <div className="select-group">
+          <label htmlFor="sprint-filter">Sprint</label>
           <select
             id="sprint-filter"
             value={selectedSprintFilter}
             onChange={(e) => setSelectedSprintFilter(e.target.value)}
-            className="sprint-select"
+            className="select-control"
           >
             <option value="all">Todos los sprints</option>
-            {sprints.map(sprint => (
+            {sprints.map((sprint) => (
               <option key={sprint.id} value={sprint.id}>
                 Sprint #{sprint.id}
               </option>
@@ -219,9 +240,9 @@ const Tasks: React.FC = () => {
       <div className="tasks-content">
         {filteredTasks.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📋</div>
-            <h3>No hay tareas disponibles</h3>
-            <p>
+            <div className="empty-graphic" aria-hidden="true"></div>
+            <h3>Sin tareas registradas</h3>
+            <p className="empty-text">
               {searchTerm
                 ? 'No se encontraron tareas con los filtros aplicados'
                 : 'Comienza creando tu primera tarea'}
