@@ -53,7 +53,8 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
           </span>
         </div>
         <div className="sprint-duration">
-          <span className="duration-text">{duration} días</span>
+          <span className="duration-label">Duración</span>
+          <span className="duration-value">{duration} días</span>
         </div>
       </div>
 
@@ -63,14 +64,14 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
             <span className="date-label">Inicio:</span>
             <span className="date-value">{formatDate(sprint.fechaInicio)}</span>
           </div>
-          <div className="date-separator">→</div>
+          <div className="date-separator" aria-hidden="true"></div>
           <div className="date-item">
             <span className="date-label">Fin estimado:</span>
             <span className="date-value">{formatDate(sprint.fechaFinEstimada)}</span>
           </div>
           {sprint.fechaFinReal && (
             <>
-              <div className="date-separator">✓</div>
+              <div className="date-separator" aria-hidden="true"></div>
               <div className="date-item">
                 <span className="date-label">Fin real:</span>
                 <span className="date-value">{formatDate(sprint.fechaFinReal)}</span>
@@ -81,8 +82,9 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
 
         {sprint.tareas && sprint.tareas.length > 0 && (
           <div className="sprint-tasks-info">
+            <span className="tasks-label">Tareas asignadas</span>
             <span className="tasks-count">
-              📋 {sprint.tareas.length} {sprint.tareas.length === 1 ? 'tarea' : 'tareas'}
+              {sprint.tareas.length} {sprint.tareas.length === 1 ? 'tarea' : 'tareas'}
             </span>
           </div>
         )}

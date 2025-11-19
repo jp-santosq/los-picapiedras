@@ -81,87 +81,123 @@ const Sprints: React.FC = () => {
 
   return (
     <div className="sprints-page">
-      <div className="page-header">
-        <div className="header-content">
+      <section className="page-hero">
+        <div className="hero-text">
+          <p className="hero-eyebrow">Panel de planificación</p>
           <h1 className="page-title">Gestión de Sprints</h1>
           <p className="page-subtitle">
             Administra y visualiza todos tus sprints de proyecto
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-create"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          + Crear Sprint
-        </button>
+        <div className="hero-actions">
+          <button
+            className="btn btn-primary hero-refresh"
+            onClick={refreshSprints}
+            aria-label="Actualizar sprints"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 12a8 8 0 10-2.34 5.66"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M20 8v4h-4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            className="btn btn-primary hero-create"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            + Crear Sprint
+          </button>
+        </div>
+      </section>
+
+      <div className="stats-panel">
+        <div className="stat-card accent-total">
+          <div>
+            <p className="stat-label">Total de sprints</p>
+            <p className="stat-value">{stats.total}</p>
+          </div>
+          <span className="stat-footnote">Registro general</span>
+        </div>
+        <div className="stat-card accent-active">
+          <div>
+            <p className="stat-label">En progreso</p>
+            <p className="stat-value">{stats.active}</p>
+          </div>
+          <span className="stat-footnote">Sprints activos</span>
+        </div>
+        <div className="stat-card accent-completed">
+          <div>
+            <p className="stat-label">Completados</p>
+            <p className="stat-value">{stats.completed}</p>
+          </div>
+          <span className="stat-footnote">Finalizados correctamente</span>
+        </div>
+        <div className="stat-card accent-upcoming">
+          <div>
+            <p className="stat-label">Por iniciar</p>
+            <p className="stat-value">{stats.upcoming}</p>
+          </div>
+          <span className="stat-footnote">Programados</span>
+        </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">📊</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.total}</span>
-            <span className="stat-label">Total</span>
-          </div>
-        </div>
-        <div className="stat-card stat-active">
-          <div className="stat-icon">🚀</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.active}</span>
-            <span className="stat-label">En Progreso</span>
-          </div>
-        </div>
-        <div className="stat-card stat-completed">
-          <div className="stat-icon">✓</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.completed}</span>
-            <span className="stat-label">Completados</span>
-          </div>
-        </div>
-        <div className="stat-card stat-upcoming">
-          <div className="stat-icon">📅</div>
-          <div className="stat-content">
-            <span className="stat-value">{stats.upcoming}</span>
-            <span className="stat-label">Por Iniciar</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="filters-bar">
-        <div className="search-box">
+      <div className="filters-panel">
+        <div className="search-group">
+          <label htmlFor="sprint-search">Buscar sprint</label>
           <input
+            id="sprint-search"
             type="text"
-            placeholder="Buscar por ID..."
+            placeholder="ID del sprint"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
         </div>
-        <div className="filter-buttons">
-          <button
-            className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('all')}
-          >
-            Todos
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === 'active' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('active')}
-          >
-            En Progreso
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === 'upcoming' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('upcoming')}
-          >
-            Por Iniciar
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === 'completed' ? 'active' : ''}`}
-            onClick={() => setFilterStatus('completed')}
-          >
-            Completados
-          </button>
+        <div className="filter-tabs">
+          <span className="filter-label">Estado</span>
+          <div className="filter-options">
+            <button
+              className={`filter-chip ${filterStatus === 'all' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('all')}
+            >
+              Todos
+            </button>
+            <button
+              className={`filter-chip ${filterStatus === 'active' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('active')}
+            >
+              En progreso
+            </button>
+            <button
+              className={`filter-chip ${filterStatus === 'upcoming' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('upcoming')}
+            >
+              Por iniciar
+            </button>
+            <button
+              className={`filter-chip ${filterStatus === 'completed' ? 'active' : ''}`}
+              onClick={() => setFilterStatus('completed')}
+            >
+              Completados
+            </button>
+          </div>
         </div>
       </div>
 
@@ -173,7 +209,7 @@ const Sprints: React.FC = () => {
           </div>
         ) : error ? (
           <div className="error-state">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon">!</div>
             <p>{error}</p>
             <button className="btn btn-primary" onClick={refreshSprints}>
               Reintentar
@@ -181,9 +217,9 @@ const Sprints: React.FC = () => {
           </div>
         ) : sortedSprints.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📋</div>
-            <h3>No hay sprints disponibles</h3>
-            <p>
+            <div className="empty-graphic" aria-hidden="true"></div>
+            <h3>Sin sprints registrados</h3>
+            <p className="empty-text">
               {searchTerm || filterStatus !== 'all'
                 ? 'No se encontraron sprints con los filtros aplicados'
                 : 'Comienza creando tu primer sprint'}

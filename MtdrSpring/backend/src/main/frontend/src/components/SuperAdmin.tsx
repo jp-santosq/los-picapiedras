@@ -28,6 +28,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import LogoutIcon from '@mui/icons-material/Logout';
 import axios from "axios";
 import { ROL } from "./enums.tsx";
 
@@ -61,7 +62,7 @@ type UsuarioProyecto = {
 };
 
 function SuperAdmin() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [proyectos, setProyectos] = useState<Proyecto[]>([]);
   const [administradores, setAdministradores] = useState<Usuario[]>([]);
   const [desarrolladores, setDesarrolladores] = useState<Usuario[]>([]);
@@ -211,6 +212,10 @@ function SuperAdmin() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   const getAdminColor = (adminId: number) => {
     const colors = ['#1976d2', '#2e7d32', '#ed6c02', '#9c27b0', '#d32f2f', '#0288d1'];
     return colors[adminId % colors.length];
@@ -241,17 +246,34 @@ function SuperAdmin() {
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
           Panel de Proyectos
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenDialog}
-          sx={{ 
-            backgroundColor: '#312D2A',
-            '&:hover': { backgroundColor: '#242220' }
-          }}
-        >
-          Nuevo Proyecto
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenDialog}
+            sx={{ 
+              backgroundColor: '#312D2A',
+              '&:hover': { backgroundColor: '#242220' }
+            }}
+          >
+            Nuevo Proyecto
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<LogoutIcon />}
+            onClick={handleLogout}
+            sx={{ 
+              borderColor: '#312D2A',
+              color: '#312D2A',
+              '&:hover': { 
+                borderColor: '#242220',
+                backgroundColor: 'rgba(49, 45, 42, 0.04)'
+              }
+            }}
+          >
+            Cerrar Sesión
+          </Button>
+        </Box>
       </Box>
 
       {/* Lista de Proyectos */}
