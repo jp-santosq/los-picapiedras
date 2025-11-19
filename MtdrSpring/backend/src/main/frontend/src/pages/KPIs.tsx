@@ -272,9 +272,11 @@ const KPIs: React.FC = () => {
               <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
+                  type="category"
                   dataKey="sprintId"
                   name="Sprint"
                   tick={{ fill: "#666" }}
+                  allowDuplicatedCategory={false}
                   label={{
                     value: "Sprint",
                     position: "insideBottom",
@@ -424,9 +426,11 @@ const KPIs: React.FC = () => {
                   <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
+                      type="category"
                       dataKey="sprintId"
                       name="Sprint"
                       tick={{ fill: '#666' }}
+                      allowDuplicatedCategory={false}
                       label={{ value: 'Sprint', position: 'insideBottom', offset: 10, fill: '#666' }}
                     />
                     <YAxis name="Horas" tick={{ fill: '#666' }}>
@@ -479,7 +483,7 @@ const KPIs: React.FC = () => {
                       dataKey="sprintId"
                       name="Sprint"
                       tick={{ fill: '#666' }}
-                      label={{ value: 'Sprint', position: 'insideBottom', offset: -0.001, fill: '#666' }}
+                      label={{ value: 'Sprint', position: 'insideBottom', offset: 0, fill: '#666' }}
                     />
                     <YAxis name="Tareas" tick={{ fill: '#666' }}>
                       <Label
