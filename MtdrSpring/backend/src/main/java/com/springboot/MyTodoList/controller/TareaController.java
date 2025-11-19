@@ -311,4 +311,72 @@ public class TareaController {
                     .body("Error al cambiar el estado: " + e.getMessage());
         }
     }
+
+    @GetMapping("/sprint/{sprintId}/completadas")
+    public ResponseEntity<List<TareaDTO>> getTareasCompletadasPorSprint(@PathVariable Long sprintId) {
+        try {
+            List<Tarea> tareas = tareaRepository.findTareasCompletadasPorSprint(sprintId);
+            
+            List<TareaDTO> tareasDTO = tareas.stream()
+                .map(tarea -> {
+                    TareaDTO dto = new TareaDTO();
+                    dto.id = tarea.getId();
+                    dto.titulo = tarea.getTitulo();
+                    dto.descripcion = tarea.getDescripcion();
+                    dto.fechaInicio = tarea.getFechaInicio();
+                    dto.fechaFinEstimada = tarea.getFechaFinEstimada();
+                    dto.fechaFinReal = tarea.getFechaFinReal();
+                    dto.prioridad = tarea.getPrioridad();
+                    dto.estadoTareaId = tarea.getEstadoTarea() != null ? tarea.getEstadoTarea().getId() : null;
+                    dto.proyectoId = tarea.getProyecto() != null ? tarea.getProyecto().getId() : null;
+                    dto.sprintId = tarea.getSprint() != null ? tarea.getSprint().getId() : null;
+                    dto.desarrolladorId = tarea.getDesarrollador() != null ? tarea.getDesarrollador().getId() : null;
+                    dto.historiaUsuarioId = tarea.getHistoriaUsuario() != null ? tarea.getHistoriaUsuario().getId() : null;
+                    return dto;
+                })
+                .collect(Collectors.toList());
+            
+            return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtener tareas completadas de un usuario en un sprint específico
+     * GET /tarea/sprint/{sprintId}/usuario/{usuarioId}/completadas
+     */
+    @GetMapping("/sprint/{sprintId}/usuario/{usuarioId}/completadas")
+    public ResponseEntity<List<TareaDTO>> getTareasCompletadasPorUsuarioEnSprint(
+            @PathVariable Long sprintId, 
+            @PathVariable Long usuarioId) {
+        try {
+            List<Tarea> tareas = tareaRepository.findTareasCompletadasPorUsuarioEnSprint(sprintId, usuarioId);
+            
+            List<TareaDTO> tareasDTO = tareas.stream()
+                .map(tarea -> {
+                    TareaDTO dto = new TareaDTO();
+                    dto.id = tarea.getId();
+                    dto.titulo = tarea.getTitulo();
+                    dto.descripcion = tarea.getDescripcion();
+                    dto.fechaInicio = tarea.getFechaInicio();
+                    dto.fechaFinEstimada = tarea.getFechaFinEstimada();
+                    dto.fechaFinReal = tarea.getFechaFinReal();
+                    dto.prioridad = tarea.getPrioridad();
+                    dto.estadoTareaId = tarea.getEstadoTarea() != null ? tarea.getEstadoTarea().getId() : null;
+                    dto.proyectoId = tarea.getProyecto() != null ? tarea.getProyecto().getId() : null;
+                    dto.sprintId = tarea.getSprint() != null ? tarea.getSprint().getId() : null;
+                    dto.desarrolladorId = tarea.getDesarrollador() != null ? tarea.getDesarrollador().getId() : null;
+                    dto.historiaUsuarioId = tarea.getHistoriaUsuario() != null ? tarea.getHistoriaUsuario().getId() : null;
+                    return dto;
+                })
+                .collect(Collectors.toList());
+            
+            return new ResponseEntity<>(tareasDTO, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
