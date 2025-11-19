@@ -46,6 +46,7 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draggedTask, setDraggedTask] = useState<{ task: TempTask; fromMemberId: number | null } | null>(null);
+  const [autoAssignedCount, setAutoAssignedCount] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -53,6 +54,55 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
       setUnassignedTasks([...initialTasks]);
     }
   }, [isOpen, initialTasks]);
+
+  // Nuevo efecto: Asignar tareas automáticamente cuando se cargan los miembros
+  useEffect(() => {
+    if (teamMembers.length > 0 && initialTasks.length > 0) {
+      autoAssignTasks();
+    }
+  }, [teamMembers, initialTasks]);
+
+  const autoAssignTasks = () => {
+    const assigned: TaskAssignment = {};
+    const unassigned: TempTask[] = [];
+    let autoAssigned = 0;
+
+    // Inicializar arrays para cada miembro
+    teamMembers.forEach(member => {
+      assigned[member.usuario.id] = [];
+    });
+
+    // Clasificar tareas según si tienen responsibleId
+    initialTasks.forEach(task => {
+      if (task.responsibleId && task.responsibleId !== 0) {
+        // Verificar que el responsable exista en el equipo
+        const memberExists = teamMembers.some(m => m.usuario.id === task.responsibleId);
+        
+        if (memberExists) {
+          // Asignar a su columna correspondiente
+          assigned[task.responsibleId].push(task);
+          autoAssigned++;
+          console.log(`Tarea "${task.name}" auto-asignada a usuario ${task.responsibleId}`);
+        } else {
+          // Si el responsable no está en el equipo, va a sin asignar
+          unassigned.push(task);
+          console.warn(`Tarea "${task.name}" tiene responsibleId ${task.responsibleId} pero no está en el equipo`);
+        }
+      } else {
+        // Sin responsable, va a tareas sin asignar
+        unassigned.push(task);
+      }
+    });
+
+    setTaskAssignments(assigned);
+    setUnassignedTasks(unassigned);
+    setAutoAssignedCount(autoAssigned);
+    
+    console.log('Asignación automática completada:', {
+      asignadas: autoAssigned,
+      sinAsignar: unassigned.length
+    });
+  };
 
   const fetchTeamMembers = async () => {
     setLoading(true);
@@ -66,13 +116,6 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
       const members: TeamMember[] = response.data;
       
       setTeamMembers(members);
-      
-      // Inicializar arrays vacíos para cada miembro
-      const initialAssignments: TaskAssignment = {};
-      members.forEach(member => {
-        initialAssignments[member.usuario.id] = [];
-      });
-      setTaskAssignments(initialAssignments);
       
       console.log('Miembros del equipo cargados:', members);
     } catch (err) {
@@ -171,6 +214,7 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
     setTeamMembers([]);
     setTaskAssignments({});
     setUnassignedTasks([]);
+    setAutoAssignedCount(0);
     setError(null);
     onClose();
   };
