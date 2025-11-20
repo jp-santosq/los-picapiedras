@@ -102,4 +102,19 @@ public class SprintController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    // Completar sprint (establecer fecha de fin real)
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Sprint> completeSprint(@PathVariable Long id) {
+        Optional<Sprint> sprintOpt = sprintService.getSprintById(id);
+        
+        if (sprintOpt.isPresent()) {
+            Sprint sprint = sprintOpt.get();
+            sprint.setFechaFinReal(java.time.LocalDate.now());
+            Sprint updatedSprint = sprintService.updateSprint(id, sprint);
+            return new ResponseEntity<>(updatedSprint, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
