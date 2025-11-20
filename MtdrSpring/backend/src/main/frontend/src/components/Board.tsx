@@ -117,9 +117,6 @@ function Board() {
       </div>
 
       {/* Progress Bar */}
-      <button onClick={()=>{
-        console.log(user?.rol)
-      }}>consola</button>
       <div className="board-progress-section">
         <div className="progress-label">
           <span>Progreso General</span>

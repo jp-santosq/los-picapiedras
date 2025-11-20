@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSprints } from '../../context/SprintContext.tsx';
 import '../../styles/components/sprintCard.css';
 
 interface SprintCardProps {
@@ -7,6 +8,8 @@ interface SprintCardProps {
 }
 
 const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
+  const { completeSprint } = useSprints();
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -43,6 +46,15 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
   const status = getStatus();
   const duration = calculateDuration();
 
+  const handleCompleteSprint = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await completeSprint(sprint.id);
+    } catch (error) {
+      console.error('Error al completar el sprint:', error);
+    }
+  };
+
   return (
     <div className="sprint-card" onClick={onClick}>
       <div className="sprint-card-header">
@@ -53,8 +65,16 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
           </span>
         </div>
         <div className="sprint-duration">
-          <span className="duration-label">Duración</span>
-          <span className="duration-value">{duration} días</span>
+          <span className="duration-text">{duration} días</span>
+          {!sprint.fechaFinReal && (
+            <button
+              className="btn-complete-sprint"
+              onClick={handleCompleteSprint}
+              title="Completar sprint"
+            >
+              Completar
+            </button>
+          )}
         </div>
       </div>
 
