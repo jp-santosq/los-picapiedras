@@ -7,20 +7,35 @@ import About from "../pages/AboutPage.tsx";
 import Team from "../pages/Team.tsx";
 import SprintGenerator from '../pages/SprintGenerator.tsx';
 import "../styles/components/navbar.css";
-import imgPrueba from "../images/profilePlaceHolder.png";
+import oracle from "../images/Oracle-Logo.png";
 import { useState } from "react";
 import { useRef, useEffect } from "react";
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Divider from '@mui/material/Divider';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
+import TaskIcon from '@mui/icons-material/Task';
+import GroupsIcon from '@mui/icons-material/Groups';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from "../context/AuthContext.tsx";
 import Profile from "../pages/Profile.tsx";
 
-
-
 function NavBar() {
   const [open, setOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { logout } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleToggle = () => setOpen((prev) => !prev);
+  const handleToggleDrawer = (value: boolean) => () => setDrawerOpen(value);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
@@ -48,48 +63,95 @@ function NavBar() {
 
       <BrowserRouter>
         <div className="navbar-container">
-          <img src="../images/oracle.png" alt="" />
+          <img src={oracle} alt="Oracle Logo" className="oracle"/>
           <div>
             <nav className="navbar">
-              <Link to={"/"}>Board</Link>
-              <Link to={"/Sprints"}>Sprints</Link>
-              <Link to={"/Tasks"}>Tasks</Link>
-              <Link to={"/Team"}>Team</Link>
-              <Link to={"/SprintGenerator"}>Sprint Generator</Link>
-              <Link to={"/KPIs"} style={{ marginRight: "50px" }}>KPIs</Link>
-                <div style={{ position: "relative", display: "inline-block" }} ref={dropdownRef}>
-                  <img src={imgPrueba} alt="Info" style={{ width: "30px", marginLeft: "5px",cursor: "pointer" }} onClick={handleToggle} />
-                  {open && (
-                    <div style={{
-                      position: "absolute",
-                      top: "30px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      background: "#fff",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                      borderRadius: "8px",
-                      zIndex: 10,
-                      minWidth: "120px",
-                      padding: "12px 0",
-                      display: "flex",           
-                      flexDirection: "column",   
-                      alignItems: "center",      
-                      justifyContent: "center" 
-                    }}>
-
-                      <Link to="/Profile" style={{ textDecoration: "none", width: "100%" }}>
-                        <button className="dropdown-btn" onClick={handleClose}>
-                          Profile
-                        </button>
-                      </Link>
-                      <button className="dropdown-btn" onClick={handleLogout}>Log out</button>
-
-                    </div>
-                  )}
-                </div>
+              <button className="navbar-boton-menu"
+                type="button"
+                aria-label="menu"
+                aria-expanded={drawerOpen}
+                onClick={() => setDrawerOpen(prev => !prev)}
+              >
+                <MenuOpenIcon className="menu-open-icon" sx={{ fontSize: 35 }} />
+              </button>
             </nav>
           </div>
         </div>
+
+        {/* drawer for navigation/menu */}
+        <Drawer anchor="left" open={drawerOpen} onClose={handleToggleDrawer(false)} PaperProps={{sx: {backgroundColor: '#1f2937', color: 'rgba(137, 140, 147, 1)' }}}>
+          <div role="presentation" className = "drawer-container">
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <BarChartIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/Sprints" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <AirlineStopsIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Sprints" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/Tasks" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <TaskIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Tareas" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/Team" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <GroupsIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Teams" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/SprintGenerator" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <AutoAwesomeIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Sprint Generator" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/KPIs" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <QueryStatsIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="KPIs" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+            <Divider />
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to="/Profile" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <AccountBoxIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Profile" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => { handleLogout(); setDrawerOpen(false); }}>
+                  <ListItemIcon>
+                    <LogoutIcon className="drawer-icon logout-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="Log out" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </div>
+        </Drawer>
 
         <Routes>
           <Route path="/" element={<Dashboard />} />

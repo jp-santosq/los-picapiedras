@@ -1,15 +1,3 @@
-
-
-a{
-  text-decoration: none;
-  color: whitesmoke;
-  padding: 10px;
-}
-
-a:hover{
-  color: rgb(173, 55, 55);
-}
-
 /* Navbar Container */
 .navbar-container {
   position: sticky;
@@ -19,23 +7,34 @@ a:hover{
   height: 70px;
   background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 0;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .navbar {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: flex-start; /* align items at start so button appears left inside nav */
+  /*align-items: center;*/
   gap: 1rem;
-  padding: 0.05rem 2rem;
+  /*padding-left: 1px;*/
+}
+
+.navbar-container > div {
+  order: 1;
+  flex: 1 1 auto; /* allow nav wrapper to grow */
+}
+.navbar-container > img {
+  order: 2;
+  margin-left: 0; /* ensure logo doesn't push nav */
 }
 
 /* Logo/Brand */
 .navbar-brand {
   display: flex;
-  align-items: center;
   gap: 0.75rem;
   font-size: 1.5rem;
   font-weight: 700;
@@ -256,4 +255,144 @@ a:hover{
 }
 .dropdown-btn:hover {
   background: #f5f5f5;
+}
+
+.navbar-boton-menu {
+  display: inline-flex;
+  align-items: center;
+  min-width: 48px;           
+  height: 48px;             
+  border: none; 
+  background: transparent;
+  padding: 5px; 
+  border-radius: 10px;
+  transition: box-shadow 160ms, transform 120ms;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.menu-open-icon {
+  color: #e5e7eb;
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.navbar-boton-menu.open .menu-open-icon {
+  transform: rotate(90deg);
+  color: #ffffff;
+}
+
+.navbar-boton-menu:hover .menu-open-icon {
+  transform: translateY(-3px) scale(1.12);
+  transition: transform 180ms cubic-bezier(.2,.9,.2,1);
+}
+
+.drawer-container {
+  width: 280px;
+}
+.oracle {
+  width: 50px;
+  height: auto;
+  margin-right: 1rem;
+}
+
+.drawer-container {
+  width: 280px;                 /* ancho del menú */
+  padding: 1rem;                /* espacio interno */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;       /* permite empujar items abajo */
+  min-height: 100vh;
+  background: #1f2937;          /* coincide con PaperProps actual */
+  color: #e5e7eb;               /* texto claro */
+}
+
+.drawer-container .MuiList-root {
+  padding: 0.25rem 0;
+}
+
+.drawer-container .MuiListItemButton-root {
+  border-radius: 8px;
+  margin: 6px 8px;              /* espacio entre items */
+  padding: 10px 12px;
+  color: inherit;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+
+.drawer-container .MuiListItemButton-root:hover,
+.drawer-container .MuiListItemButton-root:focus {
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-1px);
+}
+
+.drawer-container .MuiListItemText-primary {
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: inherit;
+}
+
+.drawer-container .MuiDivider-root {
+  margin: 0.5rem 0;
+  background-color: rgba(255,255,255,0.06);
+}
+
+.drawer-container > .MuiList-root:last-child {
+  margin-top: auto;
+  padding-bottom: 1rem;
+}
+
+.drawer-container .logout-button {
+  margin: 6px 8px;
+  border-radius: 8px;
+  color: #fecaca;               
+}
+
+.drawer-container .profile-avatar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.75rem;
+  margin: 0 8px 0.5rem 8px;
+}
+
+.drawer-container .profile-name {
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.drawer-container .MuiListItemIcon-root {
+  min-width: 40px; /* espacio para el icono */
+  color: inherit;  /* toma color del parent */
+}
+
+.drawer-container .drawer-icon {
+  font-size: 20px;        /* ajustar tamaño del icono */
+  color: inherit;         /* hereda color del drawer (PaperProps) */
+  opacity: 0.95;
+}
+
+.drawer-container .MuiListItemButton-root:hover .drawer-icon,
+.drawer-container .MuiListItemButton-root:focus .drawer-icon {
+  transform: translateX(2px);
+  color: #fff;
+  transition: all 120ms ease;
+}
+
+/* Estilo específico para logout (si quieres resaltar en rojo) */
+.drawer-container .logout-button .logout-icon {
+  color: #fecaca; /* rojo claro */
+}
+.drawer-container .logout-button:hover .logout-icon {
+  color: #ff7b7b;
+}
+
+/* Opcional: reducir separación entre icon y texto */
+.drawer-container .MuiListItemText-root {
+  margin-left: -6px;
+}
+
+/* Ajuste para que el texto principal (label) tenga peso distinto */
+.drawer-container .MuiListItemText-primary {
+  font-weight: 600;
+  font-size: 0.98rem;
 }

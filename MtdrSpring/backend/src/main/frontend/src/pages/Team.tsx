@@ -19,6 +19,7 @@ import StarIcon from '@mui/icons-material/Star';
 import GroupIcon from '@mui/icons-material/Group';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import axios from "axios";
+import "../styles/components/team.css";
 
 type Usuario = {
   id: number;
@@ -157,7 +158,7 @@ function Team() {
 
   if (!user) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box className="team-centered">
         <Typography variant="h5">Debes iniciar sesión</Typography>
       </Box>
     );
@@ -165,7 +166,7 @@ function Team() {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box className="team-centered">
         <CircularProgress />
       </Box>
     );
@@ -191,25 +192,25 @@ function Team() {
   }
 
   return (
-    <Box sx={{ p: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <Box className="team-page">
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+      <div className="team-header">
+        <Typography variant="h4" className="team-title">
           Equipo
         </Typography>
-      </Box>
+      </div>
 
       <Grid container spacing={3}>
         {/* Panel izquierdo - Lista de Proyectos */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 2 }}>
+          <Paper className="team-left-paper">
             {/* Tabs para cambiar entre vistas */}
-            {proyectosUsuario.length > 0 && proyectosAdmin.length > 0 && (
+              {proyectosUsuario.length > 0 && proyectosAdmin.length > 0 && (
               <Tabs 
                 value={tabValue} 
                 onChange={handleTabChange} 
                 variant="fullWidth"
-                sx={{ mb: 2 }}
+                className="team-tabs"
               >
                 <Tab 
                   label="Como Miembro" 
@@ -224,47 +225,34 @@ function Team() {
               </Tabs>
             )}
 
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+            <Typography variant="h6" className="team-subtitle">
               {tabValue === 0 ? 'Proyectos' : 'Proyectos'}
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div className="team-projects-column">
               {tabValue === 0 ? (
                 // Proyectos como miembro
                 proyectosUsuario.length > 0 ? (
                   proyectosUsuario.map((up) => (
                     <Card
                       key={up.id}
-                      sx={{
-                        cursor: 'pointer',
-                        border: proyectoSeleccionado?.id === up.proyecto.id 
-                          ? '2px solid #312D2A' 
-                          : '1px solid #e0e0e0',
-                        backgroundColor: proyectoSeleccionado?.id === up.proyecto.id 
-                          ? '#f8f9fa' 
-                          : 'white',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          boxShadow: 3,
-                          transform: 'translateY(-2px)'
-                        }
-                      }}
+                      className={`team-project-card ${proyectoSeleccionado?.id === up.proyecto.id ? 'selected' : ''}`}
                       onClick={() => handleSeleccionarProyecto(up.proyecto.id)}
                     >
-                      <CardContent sx={{ p: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <FolderIcon sx={{ color: '#312D2A' }} />
-                          <Typography variant="body1" fontWeight="medium">
+                      <CardContent className="team-card-content">
+                        <div className="team-project-row">
+                          <FolderIcon className="team-icon" />
+                          <Typography variant="body1" className="team-project-name">
                             {up.proyecto.nombreProyecto}
                           </Typography>
-                        </Box>
+                        </div>
                       </CardContent>
                     </Card>
                   ))
                 ) : (
-                  <Paper sx={{ p: 3, textAlign: 'center', backgroundColor: '#f9f9f9' }}>
-                    <GroupIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
+                  <Paper className="team-empty-paper">
+                    <GroupIcon className="muted" sx={{ fontSize: 40, marginBottom: 8 }} />
+                    <Typography variant="body2" className="muted">
                       No eres miembro de ningún proyecto
                     </Typography>
                   </Paper>
@@ -273,37 +261,24 @@ function Team() {
                 // Proyectos como administrador
                 proyectosAdmin.length > 0 ? (
                   proyectosAdmin.map((proyecto) => (
-                    <Card
-                      key={proyecto.id}
-                      sx={{
-                        cursor: 'pointer',
-                        border: proyectoSeleccionado?.id === proyecto.id 
-                          ? '2px solid #312D2A' 
-                          : '1px solid #e0e0e0',
-                        backgroundColor: proyectoSeleccionado?.id === proyecto.id 
-                          ? '#f8f9fa' 
-                          : 'white',
-                        transition: 'all 0.2s',
-                        '&:hover': {
-                          boxShadow: 3,
-                          transform: 'translateY(-2px)'
-                        }
-                      }}
-                      onClick={() => handleSeleccionarProyecto(proyecto.id)}
-                    >
-                      <CardContent sx={{ p: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AdminPanelSettingsIcon sx={{ color: '#312D2A' }} />
-                          <Typography variant="body1" fontWeight="medium">
-                            {proyecto.nombreProyecto}
+                      <Card
+                        key={proyecto.id}
+                        className={`team-project-card ${proyectoSeleccionado?.id === proyecto.id ? 'selected' : ''}`}
+                        onClick={() => handleSeleccionarProyecto(proyecto.id)}
+                      >
+                        <CardContent className="team-card-content">
+                          <div className="team-project-row">
+                            <AdminPanelSettingsIcon className="team-icon" />
+                            <Typography variant="body1" className="team-project-name">
+                              {proyecto.nombreProyecto}
+                            </Typography>
+                          </div>
+                          <Typography variant="caption" className="muted">
+                            Administrador
                           </Typography>
-                        </Box>
-                        <Typography variant="caption" color="text.secondary">
-                          Administrador
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ))
+                        </CardContent>
+                      </Card>
+                    ))
                 ) : (
                   <Paper sx={{ p: 3, textAlign: 'center', backgroundColor: '#f9f9f9' }}>
                     <AdminPanelSettingsIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
@@ -313,7 +288,7 @@ function Team() {
                   </Paper>
                 )
               )}
-            </Box>
+            </div>
           </Paper>
         </Grid>
 
@@ -322,8 +297,8 @@ function Team() {
           {proyectoSeleccionado ? (
             <Box>
               {/* Card del Proyecto */}
-              <Paper sx={{ p: 3, mb: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                  <Paper className="team-project-detail-card">
+                    <div className="team-project-header" style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
                   {tabValue === 0 ? (
                     <FolderIcon sx={{ fontSize: 40, color: '#312D2A' }} />
                   ) : (
@@ -337,7 +312,7 @@ function Team() {
                       ID: {proyectoSeleccionado.id}
                     </Typography>
                   </Box>
-                </Box>
+                </div>
 
                 <Divider sx={{ my: 2 }} />
 
@@ -346,56 +321,39 @@ function Team() {
                   <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                     Administrador del Proyecto
                   </Typography>
-                  <Card sx={{ 
-                    backgroundColor: '#f8f9fa', 
-                    border: '2px solid #312D2A'
-                  }}>
-                    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
+                  <Card className="team-admin-card">
+                    <CardContent className="team-admin-content">
                       <Avatar 
-                        sx={{ 
-                          width: 48, 
-                          height: 48,
-                          bgcolor: getAdminColor(proyectoSeleccionado.administrador.id)
-                        }}
+                        className="team-admin-avatar"
+                        sx={{ bgcolor: getAdminColor(proyectoSeleccionado.administrador.id) }}
                       >
                         {proyectoSeleccionado.administrador.nombreUsuario.charAt(0)}
                       </Avatar>
-                      <Box sx={{ flex: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="h6" fontWeight="bold">
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Typography variant="h6" style={{ fontWeight: 700 }}>
                             {proyectoSeleccionado.administrador.nombreUsuario}
                           </Typography>
                           <Chip 
                             icon={<StarIcon />} 
                             label="Admin" 
                             size="small" 
-                            sx={{ 
-                              backgroundColor: '#312D2A', 
-                              color: 'white',
-                              fontWeight: 'bold'
-                            }} 
+                            sx={{ backgroundColor: '#312D2A', color: 'white', fontWeight: 'bold' }}
                           />
                           {proyectoSeleccionado.administrador.id === user.id && (
-                            <Chip 
-                              label="Tú" 
-                              size="small" 
-                              sx={{ 
-                                backgroundColor: '#1976d2', 
-                                color: 'white'
-                              }} 
-                            />
+                            <Chip label="Tú" size="small" sx={{ backgroundColor: '#1976d2', color: 'white' }} />
                           )}
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
+                        </div>
+                        <Typography variant="body2" className="muted">
                           {proyectoSeleccionado.administrador.correo}
                         </Typography>
-                      </Box>
+                      </div>
                     </CardContent>
                   </Card>
                 </Box>
 
                 {/* Stats */}
-                <Grid container spacing={2} sx={{ mt: 2 }}>
+                <Grid container spacing={2} className="team-stats-grid">
                   <Grid item xs={6}>
                     <Paper sx={{ p: 2, backgroundColor: '#f5f5f5', textAlign: 'center' }}>
                       <Typography variant="h4" fontWeight="bold" color="primary">
@@ -420,55 +378,42 @@ function Team() {
               </Paper>
 
               {/* Miembros del Equipo */}
-              <Paper sx={{ p: 3 }}>
+              <Paper className="team-members-card">
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
                   Miembros del Equipo
                 </Typography>
 
                 {loadingMiembros ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                  <Box className="team-centered" style={{ padding: 12 }}>
                     <CircularProgress />
                   </Box>
                 ) : miembrosProyecto.length === 0 ? (
-                  <Paper sx={{ p: 3, textAlign: 'center', backgroundColor: '#f9f9f9' }}>
-                    <GroupIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                    <Typography variant="body2" color="text.secondary">
+                  <Paper className="team-empty-paper">
+                    <GroupIcon className="muted" sx={{ fontSize: 40, marginBottom: 8 }} />
+                    <Typography variant="body2" className="muted">
                       No hay miembros en este proyecto
                     </Typography>
                   </Paper>
                 ) : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     {miembrosProyecto.map((miembro) => (
                       <Card 
                         key={miembro.id}
-                        sx={{ 
-                          backgroundColor: isAdministrador(miembro.usuario.id) 
-                            ? '#f8f9fa' 
-                            : 'white',
-                          border: isAdministrador(miembro.usuario.id) 
-                            ? '1px solid #dee2e6' 
-                            : '1px solid #e0e0e0',
-                          boxShadow: miembro.usuario.id === user.id ? 3 : 1
-                        }}
+                        className={`team-member-card ${isAdministrador(miembro.usuario.id) ? 'admin' : ''} ${miembro.usuario.id === user.id ? 'you' : ''}`}
                       >
-                        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
+                        <CardContent className="team-member-content">
                           <Avatar 
-                            sx={{ 
-                              width: 40, 
-                              height: 40,
-                              bgcolor: getAdminColor(miembro.usuario.id)
-                            }}
+                            className="team-member-avatar"
+                            sx={{ bgcolor: getAdminColor(miembro.usuario.id) }}
                           >
                             {miembro.usuario.nombreUsuario.charAt(0)}
                           </Avatar>
-                          <Box sx={{ flex: 1 }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="body1" fontWeight="medium">
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <Typography variant="body1" style={{ fontWeight: 500 }}>
                                 {miembro.usuario.nombreUsuario}
                                 {miembro.usuario.id === user.id && (
-                                  <span style={{ color: '#1976d2', marginLeft: '8px' }}>
-                                    (Tú)
-                                  </span>
+                                  <span style={{ color: '#1976d2', marginLeft: 8 }}>(Tú)</span>
                                 )}
                               </Typography>
                               {isAdministrador(miembro.usuario.id) && (
@@ -476,34 +421,29 @@ function Team() {
                                   icon={<StarIcon />} 
                                   label="Admin" 
                                   size="small" 
-                                  sx={{ 
-                                    backgroundColor: '#312D2A', 
-                                    color: 'white',
-                                    height: 20,
-                                    fontSize: '0.7rem'
-                                  }} 
+                                  sx={{ backgroundColor: '#312D2A', color: 'white', height: 20, fontSize: '0.7rem' }} 
                                 />
                               )}
-                            </Box>
-                            <Typography variant="body2" color="text.secondary">
+                            </div>
+                            <Typography variant="body2" className="muted">
                               {miembro.usuario.correo}
                             </Typography>
-                          </Box>
+                          </div>
                           <Chip 
-                            label={`Rol ID: ${miembro.usuario.rol.id}`} 
+                            label={`Rol ID: ${miembro.usuario.rol?.id ?? 'N/A'}`} 
                             size="small" 
                             variant="outlined"
                           />
                         </CardContent>
                       </Card>
                     ))}
-                  </Box>
+                  </div>
                 )}
               </Paper>
             </Box>
           ) : (
-            <Paper sx={{ p: 6, textAlign: 'center' }}>
-              <Typography variant="body1" color="text.secondary">
+            <Paper className="team-select-project">
+              <Typography variant="body1" className="muted">
                 Selecciona un proyecto para ver los detalles del equipo
               </Typography>
             </Paper>

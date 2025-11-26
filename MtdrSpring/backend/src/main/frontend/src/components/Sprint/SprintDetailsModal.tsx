@@ -5,6 +5,9 @@ import { useTasks } from '../../context/TaskContext.tsx';
 import TaskReadOnlyModal from '../TaskReadOnlyModal.tsx';
 import '../../styles/components/modal.css';
 import { TaskStatus } from "../enums.tsx";
+import InfoIcon from '@mui/icons-material/Info';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import TaskIcon from '@mui/icons-material/Task';
 
 interface SprintDetailsModalProps {
   isOpen: boolean;
@@ -112,7 +115,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
           <div className="modal-body">
             {/* Información del Sprint */}
             <div className="details-section">
-              <h3 className="section-title">📅 Información del Sprint</h3>
+              <h3 className="section-title"><InfoIcon className="section-icon" fontSize="small" /> Información del Sprint</h3>
               <div className="details-grid">
                 <div className="detail-item">
                   <span className="detail-label">Fecha de Inicio:</span>
@@ -131,7 +134,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
 
             {/* Estadísticas de Tareas */}
             <div className="details-section">
-              <h3 className="section-title">📊 Estadísticas de Tareas</h3>
+              <h3 className="section-title"><EqualizerIcon className="section-icon" fontSize="small" /> Estadísticas de Tareas</h3>
               <div className="sprint-task-stats">
                 <div className="stat-item">
                   <span className="stat-number">{taskStats.total}</span>
@@ -139,7 +142,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
                 </div>
                 <div className="stat-item stat-todo">
                   <span className="stat-number">{taskStats.todo}</span>
-                  <span className="stat-label">TODO</span>
+                  <span className="stat-label">TO DO</span>
                 </div>
                 <div className="stat-item stat-doing">
                   <span className="stat-number">{taskStats.doing}</span>
@@ -158,7 +161,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
 
             {/* Lista de Tareas */}
             <div className="details-section">
-              <h3 className="section-title">📋 Tareas del Sprint ({sprintTasks.length})</h3>
+              <h3 className="section-title"><TaskIcon className="section-icon" fontSize="small" /> Tareas del Sprint ({sprintTasks.length})</h3>
               {sprintTasks.length === 0 ? (
                 <div className="empty-tasks">
                   <p>No hay tareas asignadas a este sprint</p>
@@ -180,7 +183,7 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
                       <h4 className="task-item-title">{task.titulo}</h4>
                       <div className="task-item-footer">
                         <span className="task-item-responsible">
-                          👤 {task.desarrollador?.nombreUsuario || "Sin responsable"}
+                          {task.desarrollador?.nombreUsuario || "Sin responsable"}
                         </span>
                         <span className="task-item-points">
                           {task.prioridad ?? 0} pts
@@ -192,7 +195,6 @@ const SprintDetailsModal: React.FC<SprintDetailsModalProps> = ({
               )}
             </div>
           </div>
-
           <div className="modal-footer">
             <button onClick={onClose} className="btn btn-secondary">
               Cerrar

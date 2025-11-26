@@ -5,6 +5,9 @@ import { useAuth, User } from '../context/AuthContext.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import TaskDetailsModal from '../components/TaskDetailsModal.tsx';
 import CreateTaskModal from '../components/CreateTaskModal.tsx';
+import ReplayIcon from '@mui/icons-material/Replay';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import { FormControl, InputLabel, Select, MenuItem, ListItemText } from '@mui/material';
 import '../styles/components/tasks.css';
 import { ROL, TaskStatus } from '../components/enums.tsx';
 
@@ -145,29 +148,9 @@ const Tasks: React.FC = () => {
             className="btn btn-primary hero-refresh"
             onClick={refreshTasks}
             aria-label="Actualizar tareas"
+            title="Actualizar tareas"
           >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 12a9 9 0 11-9-9"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M21 3v6h-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ReplayIcon className="refresh-icon" fontSize="small" />
           </button>
           <button
             className="btn btn-primary hero-create"
@@ -220,19 +203,29 @@ const Tasks: React.FC = () => {
         </div>
         <div className="select-group">
           <label htmlFor="sprint-filter">Sprint</label>
-          <select
-            id="sprint-filter"
-            value={selectedSprintFilter}
-            onChange={(e) => setSelectedSprintFilter(e.target.value)}
-            className="select-control"
-          >
-            <option value="all">Todos los sprints</option>
-            {sprints.map((sprint) => (
-              <option key={sprint.id} value={sprint.id}>
-                Sprint #{sprint.id}
-              </option>
-            ))}
-          </select>
+          <FormControl size="small" className="sprint-formcontrol">
+            <Select
+              labelId="sprint-filter-label"
+              id="sprint-filter"
+              variant="outlined"
+              value={selectedSprintFilter}
+              label="Sprint"
+              onChange={(e) => setSelectedSprintFilter(e.target.value as string)}
+              renderValue={(val) => {
+                if (val === 'all') return 'Todos los sprints';
+                const s = sprints.find(s => s.id.toString() === val);
+                return s ? `Sprint #${s.id}` : val;
+              }}
+              IconComponent={() => <KeyboardArrowDownIcon fontSize="small" />}
+            >
+              <MenuItem value="all" className="sprint-menuitem">Todos los sprints</MenuItem>
+              {sprints.map(sprint => (
+                <MenuItem key={sprint.id} value={sprint.id.toString()} className="sprint-menuitem">
+                  <ListItemText primary={`Sprint #${sprint.id}`} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
       </div>
 

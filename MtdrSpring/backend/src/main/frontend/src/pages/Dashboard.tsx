@@ -17,7 +17,7 @@ function Dashboard() {
       <div className="dashboard-container">
         <div className="dashboard-bar">
           <h2 className="dashboard-project-title">Proyecto: Los Picapiedras</h2>
-          <h2 className="dashboard-kanban-title">TABLERO KANBAN</h2>
+          {/*<h2 className="dashboard-kanban-title">TABLERO KANBAN</h2>*/}
           <button
             className="dashboard-create-btn"
             onClick={() => setIsCreateModalOpen(true)}

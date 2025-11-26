@@ -44,7 +44,7 @@
   max-width: 500px;
   width: 90%;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 28px -8px rgba(0, 0, 0, 0.25);
 }
 
 /* Botón de cerrar */
@@ -61,7 +61,7 @@
 /* Board Wrapper */
 .board-wrapper {
   width: 100%;
-  max-width: 1400px; /* o 1200px, según prefieras */
+  max-width: 1450px; /* o 1200px, según prefieras */
   margin: 0 auto;
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
@@ -72,11 +72,12 @@
 
 /* Board Header */
 .board-header {
-  background: white;
+  background: #F8F7F5;
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* sombra sólo abajo, más marcada */
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.22);
 }
 
 .board-header-content {
@@ -87,14 +88,24 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #1a202c;
   margin: 0 0 0.5rem 0;
 }
 
+.board-icon-wrapper {
+  background: linear-gradient(135deg, #00033d 0%, #0600ab 100%);
+  border-radius: 12px;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .board-icon {
-  font-size: 2.5rem;
+  font-size: 4.2rem;
+  color: #e8ecf1;
 }
 
 .board-subtitle {
@@ -123,7 +134,8 @@
 
 .board-stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* sombra inferior al elevar tarjeta */
+  box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.12);
 }
 
 .stat-icon-wrapper {
@@ -135,6 +147,13 @@
   justify-content: center;
   font-size: 1.5rem;
 }
+
+.stat-icon{
+  font-size: 3rem;
+  color: #ffffff;
+  transform: translateY(5px);
+}
+
 
 .stat-icon-wrapper.stat-total {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -168,11 +187,11 @@
 
 /* Progress Section */
 .board-progress-section {
-  background: white;
+  background: #F8F7F5;
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 20px -8px rgba(0,0,0,0.18);
 }
 
 .progress-label {
@@ -235,6 +254,7 @@
 .board-container {
   width: 100%;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
 }
 
 .board-columns {
@@ -247,9 +267,10 @@
 .board-column-wrapper {
   display: flex;
   flex-direction: column;
-  background: white;
+  background: #F8F7F5;
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* sombra más pronunciada en la parte inferior */
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,0.16);
   overflow: hidden;
   height: fit-content;
   max-height: calc(100vh - 400px);
@@ -259,8 +280,8 @@
 /* Column Header */
 .column-header {
   padding: 1.25rem 1.5rem;
-  border-top: 4px solid;
-  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  border-top: 8px solid;
+  background: #EDECEA;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -273,23 +294,16 @@
   gap: 0.75rem;
 }
 
-.column-icon {
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .column-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: bold;
   color: #2d3748;
   margin: 0;
 }
 
 .column-count {
   min-width: 28px;
-  height: 28px;
+  height: auto;
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -310,7 +324,7 @@
   background: white;
   border-radius: 16px;
   padding: 3rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 30px -12px rgba(0,0,0,0.18);
 }
 
 .board-empty .empty-icon {
@@ -330,6 +344,21 @@
   font-size: 1rem;
   margin: 0;
 }
+
+/* linea divisora */
+.board-separator {
+  border: 0;
+  height: 1px;
+  background:  #dcdcdc;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+/* Utilidad: sombra solo en la parte inferior, reutilizable */
+.shadow-bottom {
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,0.16);
+}
+
 
 /* Responsive Design */
 @media (max-width: 1200px) {

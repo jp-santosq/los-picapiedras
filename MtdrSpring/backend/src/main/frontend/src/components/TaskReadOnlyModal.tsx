@@ -2,6 +2,11 @@ import React from 'react';
 import { Task } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import '../styles/components/modal.css';
+import InfoIcon from '@mui/icons-material/Info';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PersonIcon from '@mui/icons-material/Person';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+
 
 interface TaskReadOnlyModalProps {
   isOpen: boolean;
@@ -27,12 +32,18 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
   };
 
   const getStatusColor = (status: string) => {
+    // Compare against TaskStatus enum values (e.g. "To Do", "Doing")
     switch (status) {
-      case 'TODO': return { bg: '#fff3cd', color: '#856404' };
-      case 'DOING': return { bg: '#cce5ff', color: '#004085' };
-      case 'REVISION': return { bg: '#d1ecf1', color: '#0c5460' };
-      case 'DONE': return { bg: '#d4edda', color: '#155724' };
-      default: return { bg: '#f8f9fa', color: '#495057' };
+      case TaskStatus.TODO:
+        return { bg: '#e6eff7', color: '#083D77' };
+      case TaskStatus.DOING:
+        return { bg: '#fde3ea', color: '#EF2D56' };
+      case TaskStatus.REVISION:
+        return { bg: '#f8fbdc', color: '#7b861f' };
+      case TaskStatus.DONE:
+        return { bg: '#e6f7eb', color: '#1c7832' };
+      default:
+        return { bg: '#f8f9fa', color: '#495057' };
     }
   };
 
@@ -59,7 +70,7 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
         <div className="modal-body">
           {/* Información General */}
           <div className="details-section">
-            <h3 className="section-title">📋 Información General</h3>
+            <h3 className="section-title"><InfoIcon className="section-icon" fontSize="small" /> Información General</h3>
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">ID de Tarea:</span>
@@ -74,7 +85,7 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
 
           {/* Descripción */}
           <div className="details-section">
-            <h3 className="section-title">📝 Descripción</h3>
+            <h3 className="section-title"><DescriptionIcon className="section-icon" fontSize="small" /> Descripción</h3>
             <p className="task-description-text">
               {task.description || 'Sin descripción'}
             </p>
@@ -82,7 +93,7 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
 
           {/* Asignación y Fechas */}
           <div className="details-section">
-            <h3 className="section-title">👤 Asignación</h3>
+            <h3 className="section-title"><PersonIcon className="section-icon" fontSize="small" /> Asignación</h3>
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Responsable:</span>
@@ -101,7 +112,7 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
 
           {/* Estado Actual */}
           <div className="details-section">
-            <h3 className="section-title">📊 Estado Actual</h3>
+            <h3 className="section-title"><EqualizerIcon className="section-icon" fontSize="small" /> Estado Actual</h3>
             <div className="status-display">
               <span 
                 className="status-display-badge"
@@ -120,7 +131,7 @@ const TaskReadOnlyModal: React.FC<TaskReadOnlyModalProps> = ({
         </div>
 
         <div className="modal-footer">
-          <button onClick={onClose} className="btn btn-primary">
+          <button onClick={onClose} className="btn btn-secondary">
             Cerrar
           </button>
         </div>

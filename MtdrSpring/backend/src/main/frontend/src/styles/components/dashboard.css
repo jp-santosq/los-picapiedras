@@ -25,8 +25,7 @@
 }
 
 .dashboard-project-title::before {
-  content: '📁';
-  font-size: 1.75rem;
+  font-size: 2rem;
 }
 
 .dashboard-kanban-title {
@@ -114,6 +113,6 @@
   }
 
   .dashboard-project-title {
-    font-size: 1.125rem;
+    font-size: 3rem;
   }
 }

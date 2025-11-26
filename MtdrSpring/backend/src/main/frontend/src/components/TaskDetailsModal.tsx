@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Task } from '../context/TaskContext.tsx';
 import { useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
+import { useUsers } from '../context/UserContext.tsx';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import InfoIcon from '@mui/icons-material/Info';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PersonIcon from '@mui/icons-material/Person';
 import '../styles/components/modal.css';
 
 interface TaskDetailsModalProps {
@@ -16,10 +21,14 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   task
 }) => {
   const { updateTaskState } = useTasks();
+  const { getUserById } = useUsers();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen || !task) return null;
+
+  const responsible = getUserById(task.responsibleId);
+  const responsibleLabel = responsible ? responsible.name : (task.responsibleId && task.responsibleId !== 0 ? `#${task.responsibleId}` : 'Sin asignar');
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -86,42 +95,47 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
           {/* Cambiar Estado */}
           <div className="details-section">
-            <h3 className="section-title">🔄 Cambiar Estado</h3>
+            <h3 className="section-title">
+              <ChangeCircleIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 8 }} />
+              Cambiar Estado
+            </h3>
             <div className="status-buttons">
               <button
                 className={`status-btn status-btn-todo ${task.status === TaskStatus.TODO ? 'active' : ''}`}
                 onClick={() => handleStatusChange(TaskStatus.TODO)}
                 disabled={isUpdating || task.status === TaskStatus.TODO}
               >
-                {isUpdating && task.status !== TaskStatus.TODO ? '⏳' : '📝'} TODO
+                {/*isUpdating && task.status !== TaskStatus.TODO ? '⏳' : '📝'*/} POR HACER
               </button>
               <button
                 className={`status-btn status-btn-doing ${task.status === TaskStatus.DOING ? 'active' : ''}`}
                 onClick={() => handleStatusChange(TaskStatus.DOING)}
                 disabled={isUpdating || task.status === TaskStatus.DOING}
               >
-                {isUpdating && task.status !== TaskStatus.DOING ? '⏳' : '⚙️'} DOING
+                {/*isUpdating && task.status !== TaskStatus.DOING ? '⏳' : '⚙️'*/} EN PROGRESO
               </button>
               <button
                 className={`status-btn status-btn-revision ${task.status === TaskStatus.REVISION ? 'active' : ''}`}
                 onClick={() => handleStatusChange(TaskStatus.REVISION)}
                 disabled={isUpdating || task.status === TaskStatus.REVISION}
               >
-                {isUpdating && task.status !== TaskStatus.REVISION ? '⏳' : '👀'} REVISION
+                EN REVISIÓN
               </button>
               <button
                 className={`status-btn status-btn-done ${task.status === TaskStatus.DONE ? 'active' : ''}`}
                 onClick={() => handleStatusChange(TaskStatus.DONE)}
                 disabled={isUpdating || task.status === TaskStatus.DONE}
               >
-                {isUpdating && task.status !== TaskStatus.DONE ? '⏳' : '✅'} DONE
+                {/*isUpdating && task.status !== TaskStatus.DONE ? '⏳' : '✅'*/} COMPLETADO
               </button>
             </div>
           </div>
 
           {/* Información General */}
           <div className="details-section">
-            <h3 className="section-title">📋 Información General</h3>
+            <h3 className="section-title">
+              <InfoIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 8 }} />
+              Información General</h3>
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">ID de Tarea:</span>
@@ -136,7 +150,9 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
           {/* Descripción */}
           <div className="details-section">
-            <h3 className="section-title">📝 Descripción</h3>
+            <h3 className="section-title">
+              <DescriptionIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 8 }} />
+              Descripción</h3>
             <p className="task-description-text">
               {task.description || 'Sin descripción'}
             </p>
@@ -144,10 +160,16 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
           {/* Asignación y Fechas */}
           <div className="details-section">
-            <h3 className="section-title">👤 Asignación</h3>
+            <h3 className="section-title">
+              <PersonIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 8 }} />
+              Asignación</h3>
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Responsable:</span>
+                <span className="detail-value">{responsibleLabel}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">ID del Responsable:</span>
                 <span className="detail-value">{task.responsibleId}</span>
               </div>
               <div className="detail-item">

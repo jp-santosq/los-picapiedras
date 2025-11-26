@@ -6,6 +6,10 @@ import { ROL, TaskStatus } from "./enums.tsx";
 import { useTasks } from "../context/TaskContext.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
 import TaskReadOnlyModal from './TaskReadOnlyModal.tsx';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function Board() {
   const { tasks, updateTaskState } = useTasks();
@@ -37,26 +41,22 @@ function Board() {
     { 
       status: TaskStatus.TODO, 
       title: "Por Hacer", 
-      icon: "📝",
-      color: "#ffc107"
+      color: "#083D77"
     },
     { 
       status: TaskStatus.DOING, 
       title: "En Progreso", 
-      icon: "⚙️",
-      color: "#007bff"
+      color: "#EF2D56"
     },
     { 
       status: TaskStatus.REVISION, 
       title: "En Revisión", 
-      icon: "👀",
-      color: "#17a2b8"
+      color: "#DCED31"
     },
     { 
       status: TaskStatus.DONE, 
       title: "Completado", 
-      icon: "✅",
-      color: "#28a745"
+      color: "#28A745"
     },
   ];
 
@@ -88,7 +88,6 @@ function Board() {
 
   return (
     <div className="board-wrapper">
-      {/* Kanban Board */}
       <div className="board-container">
         <div className="board-columns">
           {columns.map((column) => {
@@ -97,7 +96,6 @@ function Board() {
               <div key={column.status} className="board-column-wrapper">
                 <div className="column-header" style={{ borderTopColor: column.color }}>
                   <div className="column-header-content">
-                    <span className="column-icon">{column.icon}</span>
                     <h3 className="column-title">{column.title}</h3>
                   </div>
                   <span className="column-count" style={{ backgroundColor: column.color }}>
@@ -116,6 +114,8 @@ function Board() {
         </div>
       </div>
 
+      <hr className="board-separator" />
+
       {/* Progress Bar */}
       <div className="board-progress-section">
         <div className="progress-label">
@@ -129,21 +129,29 @@ function Board() {
           />
         </div>
       </div>
+      
+      <hr className="board-separator" />
 
       {/* Header del Board */}
       <div className="board-header">
         <div className="board-header-content">
           <h1 className="board-title">
-            <span className="board-icon">📊</span>
+            <span className="board-icon">
+              <div className="board-icon-wrapper">
+              <ListAltIcon fontSize="large"/>
+              </div>
+            </span>
             Tareas
           </h1>
         </div>
-        
+
         {/* Stats Cards */}
         <div className="board-stats">
           <div className="board-stat-card">
             <div className="stat-icon-wrapper stat-total">
-              <span className="stat-icon">📋</span>
+              <span className="stat-icon">
+                <AssignmentIcon fontSize="large"/>
+              </span>
             </div>
             <div className="stat-info">
               <span className="stat-value">{stats.total}</span>
@@ -153,7 +161,9 @@ function Board() {
           
           <div className="board-stat-card">
             <div className="stat-icon-wrapper stat-progress">
-              <span className="stat-icon">⚡</span>
+              <span className="stat-icon">
+                <OfflineBoltIcon fontSize="large"/>
+              </span>
             </div>
             <div className="stat-info">
               <span className="stat-value">{stats.inProgress}</span>
@@ -163,7 +173,9 @@ function Board() {
           
           <div className="board-stat-card">
             <div className="stat-icon-wrapper stat-completed">
-              <span className="stat-icon">✓</span>
+              <span className="stat-icon">
+                <CheckCircleIcon fontSize="large"/>
+              </span>
             </div>
             <div className="stat-info">
               <span className="stat-value">{stats.progress}%</span>

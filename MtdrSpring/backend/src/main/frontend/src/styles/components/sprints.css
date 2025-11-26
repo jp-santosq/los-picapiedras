@@ -63,13 +63,15 @@
 }
 
 .hero-refresh {
-  width: 48px;
+  min-width: 64px;
+  width: auto;
   height: 48px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 16px rgba(32, 69, 143, 0.15);
+  flex: 0 0 64px;
 }
 
 .hero-refresh svg {
@@ -78,6 +80,25 @@
 
 .hero-refresh:hover {
   box-shadow: 0 12px 24px rgba(32, 69, 143, 0.2);
+}
+
+/* Refresh icon styling to match Tasks page */
+.sprints-page .hero-refresh .refresh-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: #2C3A8C;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.sprints-page .hero-refresh:hover .refresh-icon {
+  transform: rotate(20deg) scale(1.06);
+  color: #083D77;
+}
+
+.sprints-page .hero-refresh:hover {
+  background-color: #155fa058;
+  border-color: #124e8a4e;
 }
 
 .stats-panel {
@@ -292,18 +313,23 @@
   margin: 0;
 }
 
-.empty-graphic {
-  width: 120px;
-  height: 80px;
-  border-radius: 16px;
-  border: 2px dashed #d5dae6;
-  background: repeating-linear-gradient(
-    135deg,
-    rgba(213, 218, 230, 0.25),
-    rgba(213, 218, 230, 0.25) 10px,
-    rgba(255, 255, 255, 0.25) 10px,
-    rgba(255, 255, 255, 0.25) 20px
-  );
+/* Styling for MUI icons placed inside the empty graphic (e.g. ReportIcon) */
+.empty-graphic .MuiSvgIcon-root,
+.empty-graphic svg {
+  display: block;
+  margin: 6px auto 0;
+  width: 56px;
+  height: 56px;
+  font-size: 56px; /* ensures MUI icon respects size */
+  color: rgba(44, 58, 140, 0.12);
+  transition: transform 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+  opacity: 0.95;
+}
+
+.empty-graphic .MuiSvgIcon-root:hover,
+.empty-graphic svg:hover {
+  transform: translateY(-4px) scale(1.02);
+  color: rgba(44, 58, 140, 0.22);
 }
 
 .empty-state h3 {
