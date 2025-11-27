@@ -3,12 +3,12 @@ import axios from 'axios';
 import { TaskStatus } from '../components/enums.tsx';
 import AddTaskToListModal from '../components/AddTaskToListModal.tsx';
 import TaskAssignmentBoard from '../components/TaskAssignmentBoard.tsx';
-import CreateSprintForGenerator from '../components/CreateSprintForGenerator.tsx';
+import CreateSprintForGenerator, { SprintData } from '../components/CreateSprintForGenerator.tsx';
 import '../styles/components/sprintGenerator.css';
 
 interface UploadModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: () => void; 
   onContinue: (file: File) => void;
 }
 
@@ -649,7 +649,7 @@ const SprintGenerator: React.FC = () => {
   const [isAssignmentBoardOpen, setIsAssignmentBoardOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [tempTasks, setTempTasks] = useState<TempTask[]>([]);
-  const [currentSprintId, setCurrentSprintId] = useState<number | null>(null);
+  const [sprintData, setSprintData] = useState<SprintData | null>(null); // Guardar datos del sprint sin crearlo
 
   const handleDownloadTemplate = () => {
     // Ruta al documento que subirás en tu proyecto
@@ -680,25 +680,19 @@ const SprintGenerator: React.FC = () => {
     // TODO: Abrir el siguiente modal para procesar con IA
   };
 
-  const handleSprintCreated = (sprintId: number) => {
-    setCurrentSprintId(sprintId);
+  const handleSprintDataCaptured = (capturedSprintData: SprintData) => {
+    setSprintData(capturedSprintData);
     setIsSprintCreateModalOpen(false);
     // Abrir el modal de revisión de tareas
     setIsTasksReviewModalOpen(true);
   };
 
   const handleTasksReviewContinue = (tasks: TempTask[]) => {
-    // Asignar el sprintId a todas las tareas
-    const tasksWithSprint = tasks.map(task => ({
-      ...task,
-      sprintId: currentSprintId || undefined
-    }));
-
-    setTempTasks(tasksWithSprint);
+    // Guardar las tareas sin sprintId aún (el sprint no se ha creado)
+    setTempTasks(tasks);
     setIsTasksReviewModalOpen(false);
     
     console.log('Tareas finales para procesar:', tasks);
-    // TODO: Aquí abrirás el siguiente modal
     // Abrir el tablero de asignación
     setIsAssignmentBoardOpen(true);
   };
@@ -707,7 +701,7 @@ const SprintGenerator: React.FC = () => {
     setIsAssignmentBoardOpen(false);
     setTempTasks([]);
     setUploadedFile(null);
-    setCurrentSprintId(null);
+    setSprintData(null);
     // Aquí puedes agregar navegación o mostrar mensaje de éxito
   };
 
@@ -792,7 +786,7 @@ const SprintGenerator: React.FC = () => {
       <CreateSprintForGenerator
         isOpen={isSprintCreateModalOpen}
         onClose={() => setIsSprintCreateModalOpen(false)}
-        onSprintCreated={handleSprintCreated}
+        onSprintDataCaptured={handleSprintDataCaptured}
       />
 
       {/* Modal de revisión de tareas */}
@@ -808,6 +802,8 @@ const SprintGenerator: React.FC = () => {
         isOpen={isAssignmentBoardOpen}
         onClose={handleAssignmentComplete}
         tasks={tempTasks}
+        projectId={sprintData?.proyectoId || 1}
+        sprintData={sprintData}
       />
     </div>
   );

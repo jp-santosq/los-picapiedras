@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { TempTask } from '../pages/SprintGenerator.tsx';
 import { useTasks } from '../context/TaskContext.tsx';
+import { SprintData } from './CreateSprintForGenerator.tsx';
 import '../styles/components/taskAssignmentBoard.css';
 
 interface TeamMember {
@@ -31,12 +32,16 @@ interface TaskAssignmentBoardProps {
   isOpen: boolean;
   onClose: () => void;
   tasks: TempTask[];
+  projectId: number;
+  sprintData: SprintData | null;
 }
 
 const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
   isOpen,
   onClose,
-  tasks: initialTasks
+  tasks: initialTasks,
+  projectId,
+  sprintData
 }) => {
   const { addTask } = useTasks();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -109,10 +114,7 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
     setError(null);
     
     try {
-      // TODO: Obtener el proyectoId del contexto o estado global
-      const proyectoId = 1; // Por ahora hardcodeado, cambiar por el ID real del proyecto
-      
-      const response = await axios.get(`/usuarioProyecto/proyecto/${proyectoId}`);
+      const response = await axios.get(`/usuarioProyecto/proyecto/${projectId}`);
       const members: TeamMember[] = response.data;
       
       setTeamMembers(members);
@@ -179,22 +181,42 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
         return;
       }
 
-      // Crear todas las tareas en la base de datos
+      // Verificar que tengamos los datos del sprint
+      if (!sprintData) {
+        setError('No se encontraron los datos del sprint');
+        setSaving(false);
+        return;
+      }
+
+      // PASO 1: Crear el sprint primero
+      console.log('Creando sprint con datos:', sprintData);
+      await axios.post('/sprint/add', sprintData);
+      
+      // PASO 2: Obtener el ID del sprint recién creado
+      const sprintsResponse = await axios.get('/sprint/all');
+      const sprints = sprintsResponse.data;
+      const sortedSprints = [...sprints].sort((a: any, b: any) => b.id - a.id);
+      const newSprintId = sortedSprints[0].id;
+      
+      console.log('Sprint creado con ID:', newSprintId);
+
+      // PASO 3: Crear todas las tareas con el sprintId
       const promises: Promise<void>[] = [];
 
       Object.entries(taskAssignments).forEach(([memberId, tasks]) => {
-        tasks.forEach(task => {
-          const taskWithResponsible = {
+        tasks.forEach((task: TempTask) => {
+          const taskWithSprintAndResponsible = {
             ...task,
+            sprintId: newSprintId, // Asignar el ID del sprint recién creado
             responsibleId: parseInt(memberId)
           };
-          promises.push(addTask(taskWithResponsible));
+          promises.push(addTask(taskWithSprintAndResponsible));
         });
       });
 
       await Promise.all(promises);
 
-      console.log('Todas las tareas fueron creadas exitosamente');
+      console.log('Sprint y todas las tareas fueron creadas exitosamente');
       
       // Cerrar el modal
       onClose();
@@ -203,8 +225,8 @@ const TaskAssignmentBoard: React.FC<TaskAssignmentBoardProps> = ({
       alert('¡Sprint planificado exitosamente! Todas las tareas han sido asignadas.');
       
     } catch (err) {
-      console.error('Error al guardar las tareas:', err);
-      setError('Error al guardar las tareas en la base de datos');
+      console.error('Error al guardar el sprint y las tareas:', err);
+      setError('Error al guardar el sprint y las tareas en la base de datos');
     } finally {
       setSaving(false);
     }

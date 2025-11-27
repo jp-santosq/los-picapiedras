@@ -1,26 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext.tsx';
 import '../styles/components/modal.css';
+
+export interface SprintData {
+  fechaInicio: string;
+  fechaFinEstimada: string;
+  proyectoId: number;
+}
 
 interface CreateSprintForGeneratorProps {
   isOpen: boolean;
   onClose: () => void;
-  onSprintCreated: (sprintId: number) => void;
+  onSprintDataCaptured: (sprintData: SprintData) => void;
 }
 
 const CreateSprintForGenerator: React.FC<CreateSprintForGeneratorProps> = ({
   isOpen,
   onClose,
-  onSprintCreated
+  onSprintDataCaptured
 }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     fechaInicio: '',
     fechaFinEstimada: '',
-    proyectoId: 1 // Hardcoded como solicitaste
+    proyectoId: 0 // Se cargará dinámicamente
   });
   
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingProject, setLoadingProject] = useState(true);
+
+  // Obtener el proyecto del usuario al montar el componente
+  useEffect(() => {
+    const fetchUserProject = async () => {
+      if (!user) return;
+
+      try {
+        setLoadingProject(true);
+        
+        // Primero intentar obtener proyectos como administrador
+        const responseAdmin = await axios.get(`/proyecto/administrador/${user.id}`);
+        
+        if (responseAdmin.data && responseAdmin.data.length > 0) {
+          // Usuario es administrador de al menos un proyecto
+          setFormData(prev => ({
+            ...prev,
+            proyectoId: responseAdmin.data[0].id
+          }));
+          return;
+        }
+        
+        // Si no es admin, obtener proyectos como miembro
+        const responseMiembro = await axios.get(`/usuarioProyecto/usuario/${user.id}`);
+        
+        if (responseMiembro.data && responseMiembro.data.length > 0) {
+          // Usuario es miembro de al menos un proyecto
+          setFormData(prev => ({
+            ...prev,
+            proyectoId: responseMiembro.data[0].proyecto.id
+          }));
+        } else {
+          setError('No tienes proyectos asignados. Contacta al administrador.');
+        }
+      } catch (err: any) {
+        console.error('Error al obtener proyecto del usuario:', err);
+        setError('Error al cargar tu proyecto');
+      } finally {
+        setLoadingProject(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchUserProject();
+    }
+  }, [user, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,24 +112,6 @@ const CreateSprintForGenerator: React.FC<CreateSprintForGeneratorProps> = ({
     return true;
   };
 
-  const getLatestSprintId = async (): Promise<number> => {
-    try {
-      const response = await axios.get('/sprint/all');
-      const sprints = response.data;
-      
-      if (sprints && sprints.length > 0) {
-        // Ordenar por ID descendente y obtener el último
-        const sortedSprints = [...sprints].sort((a, b) => b.id - a.id);
-        return sortedSprints[0].id;
-      }
-      
-      return 0;
-    } catch (error) {
-      console.error('Error obteniendo sprints:', error);
-      throw error;
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -85,50 +120,34 @@ const CreateSprintForGenerator: React.FC<CreateSprintForGeneratorProps> = ({
       return;
     }
 
-    setLoading(true);
-    
-    try {
-      // Crear el sprint
-      const sprintDTO = {
-        fechaInicio: formData.fechaInicio,
-        fechaFinEstimada: formData.fechaFinEstimada,
-        proyectoId: formData.proyectoId
-      };
+    // No crear el sprint aún, solo pasar los datos al siguiente paso
+    const sprintData: SprintData = {
+      fechaInicio: formData.fechaInicio,
+      fechaFinEstimada: formData.fechaFinEstimada,
+      proyectoId: formData.proyectoId
+    };
 
-      console.log('Creando sprint con datos:', sprintDTO);
-      
-      await axios.post('/sprint/add', sprintDTO);
-      
-      // Obtener el ID del sprint recién creado
-      const newSprintId = await getLatestSprintId();
-      
-      console.log('Sprint creado con ID:', newSprintId);
-      
-      // Resetear formulario
-      setFormData({
-        fechaInicio: '',
-        fechaFinEstimada: '',
-        proyectoId: 1
-      });
-      
-      // Notificar al componente padre con el ID del sprint
-      onSprintCreated(newSprintId);
-      
-    } catch (err: any) {
-      console.error('Error al crear sprint:', err);
-      setError(err.response?.data?.message || 'Error al crear el sprint');
-    } finally {
-      setLoading(false);
-    }
+    console.log('Datos del sprint capturados:', sprintData);
+    
+    // Resetear formulario (mantener el proyectoId del usuario)
+    setFormData(prev => ({
+      fechaInicio: '',
+      fechaFinEstimada: '',
+      proyectoId: prev.proyectoId
+    }));
+    
+    // Pasar los datos al siguiente paso
+    onSprintDataCaptured(sprintData);
   };
 
   const handleClose = () => {
     setError(null);
-    setFormData({
+    // Resetear formulario (mantener el proyectoId del usuario)
+    setFormData(prev => ({
       fechaInicio: '',
       fechaFinEstimada: '',
-      proyectoId: 1
-    });
+      proyectoId: prev.proyectoId
+    }));
     onClose();
   };
 
@@ -148,23 +167,28 @@ const CreateSprintForGenerator: React.FC<CreateSprintForGeneratorProps> = ({
           <button className="modal-close-btn" onClick={handleClose}>×</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
-          {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
-
-          <div className="sprint-info-box">
-            <div className="info-icon">ℹ️</div>
-            <div>
-              <p className="info-title">¿Qué es un Sprint?</p>
-              <p className="info-text">
-                Un sprint es un período de tiempo fijo (generalmente 1-4 semanas) donde tu equipo 
-                trabajará en un conjunto específico de tareas.
-              </p>
-            </div>
+        {loadingProject ? (
+          <div className="modal-form" style={{ textAlign: 'center', padding: '2rem' }}>
+            <p>Cargando información del proyecto...</p>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="modal-form">
+            {error && (
+              <div className="alert alert-error">
+                {error}
+              </div>
+            )}
+
+            <div className="sprint-info-box">
+              <div className="info-icon">ℹ️</div>
+              <div>
+                <p className="info-title">¿Qué es un Sprint?</p>
+                <p className="info-text">
+                  Un sprint es un período de tiempo fijo (generalmente 1-4 semanas) donde tu equipo 
+                  trabajará en un conjunto específico de tareas.
+                </p>
+              </div>
+            </div>
 
           <div className="form-group">
             <label htmlFor="fechaInicio">
@@ -223,19 +247,20 @@ const CreateSprintForGenerator: React.FC<CreateSprintForGeneratorProps> = ({
               type="button"
               onClick={handleClose}
               className="btn btn-secondary"
-              disabled={loading}
+              disabled={formData.proyectoId === 0}
             >
               Cancelar
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading}
+              disabled={formData.proyectoId === 0}
             >
-              {loading ? 'Creando Sprint...' : 'Continuar →'}
+              Continuar →
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   );
