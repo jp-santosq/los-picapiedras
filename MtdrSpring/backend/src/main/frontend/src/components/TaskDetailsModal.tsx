@@ -3,6 +3,7 @@ import { Task } from '../context/TaskContext.tsx';
 import { useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import { useUsers } from '../context/UserContext.tsx';
+import { useSprints } from '../context/SprintContext.tsx';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import InfoIcon from '@mui/icons-material/Info';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -22,13 +23,24 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 }) => {
   const { updateTaskState } = useTasks();
   const { getUserById } = useUsers();
+  const { sprints } = useSprints();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen || !task) return null;
 
-  const responsible = getUserById(task.responsibleId);
-  const responsibleLabel = responsible ? responsible.name : (task.responsibleId && task.responsibleId !== 0 ? `#${task.responsibleId}` : 'Sin asignar');
+  // Obtener nombre del responsable
+  const getResponsibleName = (responsibleId: number | null | undefined): string => {
+    if (!responsibleId) return 'Sin asignar';
+    const responsible = getUserById(responsibleId);
+    return responsible?.name || 'Desconocido';
+  };
+
+  const responsibleName = getResponsibleName(task.responsibleId);
+
+  // Obtener información del sprint
+  const sprint = task.sprintId ? sprints.find(s => s.id === task.sprintId) : null;
+  const sprintLabel = sprint ? `Sprint #${sprint.id}` : 'Sin Sprint';
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -145,6 +157,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 <span className="detail-label">Proyecto:</span>
                 <span className="detail-value">{task.projectId}</span>
               </div>
+              <div className="detail-item">
+                <span className="detail-label">Sprint:</span>
+                <span className="detail-value">{sprintLabel}</span>
+              </div>
             </div>
           </div>
 
@@ -166,7 +182,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <div className="details-grid">
               <div className="detail-item">
                 <span className="detail-label">Responsable:</span>
-                <span className="detail-value">{responsibleLabel}</span>
+                <span className="detail-value">{responsibleName}</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">ID del Responsable:</span>
