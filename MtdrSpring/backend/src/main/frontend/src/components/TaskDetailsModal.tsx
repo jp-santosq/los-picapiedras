@@ -4,6 +4,7 @@ import { useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
+import { useProjects } from '../context/ProjectContext.tsx';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import InfoIcon from '@mui/icons-material/Info';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -24,6 +25,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const { updateTaskState } = useTasks();
   const { getUserById } = useUsers();
   const { sprints } = useSprints();
+  const { getProjectById } = useProjects();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +38,15 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     return responsible?.name || 'Desconocido';
   };
 
+  // Obtener nombre del proyecto
+  const getProjectName = (projectId: number | null | undefined): string => {
+    if (!projectId) return 'Sin proyecto';
+    const project = getProjectById(projectId);
+    return project?.nombreProyecto || `Proyecto #${projectId}`;
+  };
+
   const responsibleName = getResponsibleName(task.responsibleId);
+  const projectName = getProjectName(task.projectId);
 
   // Obtener información del sprint
   const sprint = task.sprintId ? sprints.find(s => s.id === task.sprintId) : null;
@@ -155,7 +165,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               </div>
               <div className="detail-item">
                 <span className="detail-label">Proyecto:</span>
-                <span className="detail-value">{task.projectId}</span>
+                <span className="detail-value">{projectName}</span>
               </div>
               <div className="detail-item">
                 <span className="detail-label">Sprint:</span>

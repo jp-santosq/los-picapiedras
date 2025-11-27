@@ -255,7 +255,7 @@ const Tasks: React.FC = () => {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombre</th>
+                  <th>Nombre</th> 
                   <th>Responsable</th>
                   <th>Sprint</th>
                   <th>Estado</th>

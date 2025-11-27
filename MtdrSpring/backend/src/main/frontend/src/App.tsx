@@ -9,6 +9,7 @@ David Martinez 15/10/2025
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
 import { SprintsProvider } from "./context/SprintContext.tsx";
+import { ProjectProvider } from "./context/ProjectContext.tsx";
 import Login from "./pages/Login.tsx";
 import NavBar from "./components/NavBar.tsx";
 import "./styles/index.css";
@@ -50,13 +51,15 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <UserProvider>
-        <AuthProvider>
-          <TasksProvider>
-            <SprintsProvider>
-              <AppContent />
-            </SprintsProvider>
-          </TasksProvider>
-        </AuthProvider>
+        <ProjectProvider>
+          <AuthProvider>
+            <TasksProvider>
+              <SprintsProvider>
+                <AppContent />
+              </SprintsProvider>
+            </TasksProvider>
+          </AuthProvider>
+        </ProjectProvider>
       </UserProvider>
     </ThemeProvider>
   );

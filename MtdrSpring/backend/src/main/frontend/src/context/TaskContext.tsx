@@ -89,7 +89,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         status: tarea.estadoTareaId
           ? estadoMapFrontend[tarea.estadoTareaId] || TaskStatus.TODO
           : TaskStatus.TODO,
-        projectId: tarea.proyecto?.id || 0,
+        projectId: tarea.proyectoId || 0,
         sprintId: tarea.sprintId || null,
         responsibleId: tarea.desarrolladorId || 0,
         userStoryId: tarea.historiaUsuarioId || 0,
