@@ -52,18 +52,21 @@ public class SprintPlanningService {
     private final String apiKey;
     private final String apiUrl;
     private final String model;
+    private final RagService ragService;
 
     public SprintPlanningService(
             RestTemplateBuilder restTemplateBuilder,
             ObjectMapper objectMapper,
             @Value("${openai.api.key:}") String apiKey,
             @Value("${openai.api.url:https://api.openai.com/v1/chat/completions}") String apiUrl,
-            @Value("${openai.model:gpt-4o-mini}") String model) {
+            @Value("${openai.model:gpt-4o-mini}") String model,
+            RagService ragService) {
         this.restTemplate = restTemplateBuilder.build();
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
         this.apiUrl = apiUrl;
         this.model = model;
+        this.ragService = ragService;
     }
 
     public List<TareaDTO> generarTareas(String descripcionSprint) {
@@ -75,10 +78,11 @@ public class SprintPlanningService {
         }
 
         try {
+            String context = ragService.buildContextForPrompt(descripcionSprint, 4);
             Map<String, Object> payload = new HashMap<>();
             payload.put("model", model);
             payload.put("temperature", 0.2);
-            payload.put("messages", buildMessages(descripcionSprint));
+            payload.put("messages", buildMessages(descripcionSprint, context));
             payload.put("response_format", Map.of("type", "json_object"));
 
             HttpHeaders headers = new HttpHeaders();
@@ -102,12 +106,15 @@ public class SprintPlanningService {
         }
     }
 
-    private List<Map<String, String>> buildMessages(String descripcionSprint) {
-        String userPrompt = descripcionSprint + "\n\n" + JSON_FORMAT_INSTRUCTIONS;
+    private List<Map<String, String>> buildMessages(String descripcionSprint, String context) {
+        String contextBlock = StringUtils.hasText(context)
+                ? "Contexto RAG:\n" + context + "\n\n"
+                : "Contexto RAG: sin datos cargados todavía.\n\n";
+        String userPrompt = contextBlock + descripcionSprint + "\n\n" + JSON_FORMAT_INSTRUCTIONS;
         return List.of(
                 Map.of(
                         "role", "system",
-                        "content", "Eres un project manager senior que desglosa requisitos en tareas técnicas para un equipo de desarrollo. Responde únicamente en JSON."),
+                        "content", "Eres un project manager senior que desglosa requisitos en tareas técnicas para un equipo de desarrollo. Usa siempre el contexto si está presente y responde únicamente en JSON."),
                 Map.of(
                         "role", "user",
                         "content", userPrompt));

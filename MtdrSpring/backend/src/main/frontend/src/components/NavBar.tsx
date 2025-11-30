@@ -6,6 +6,7 @@ import KPIs from "../pages/KPIs.tsx";
 import About from "../pages/AboutPage.tsx";
 import Team from "../pages/Team.tsx";
 import SprintGenerator from '../pages/SprintGenerator.tsx';
+import RagUpload from '../pages/RagUpload.tsx';
 import "../styles/components/navbar.css";
 import oracle from "../images/Oracle-Logo.png";
 import { useState } from "react";
@@ -26,6 +27,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useAuth } from "../context/AuthContext.tsx";
 import Profile from "../pages/Profile.tsx";
 
@@ -123,6 +125,14 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
+                <ListItemButton component={Link} to="/Knowledge" onClick={handleToggleDrawer(false)}>
+                  <ListItemIcon>
+                    <UploadFileIcon className="drawer-icon" />
+                  </ListItemIcon>
+                  <ListItemText primary="RAG Knowledge" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
                 <ListItemButton component={Link} to="/KPIs" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <QueryStatsIcon className="drawer-icon" />
@@ -161,6 +171,7 @@ function NavBar() {
           <Route path="/About-page" element={<About />} />
           <Route path="/Team" element={<Team/>}/>
           <Route path="/SprintGenerator" element={<SprintGenerator />} />
+          <Route path="/Knowledge" element={<RagUpload />} />
           <Route path="/Profile" element={<Profile />} />
 
         </Routes>
