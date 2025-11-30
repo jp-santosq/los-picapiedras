@@ -11,5 +11,6 @@ public enum ConversationState {
     AWAITING_END_DATE,       // Esperando fecha estimada de fin
     AWAITING_PRIORITY,       // Esperando prioridad
     AWAITING_DEVELOPER,      // Esperando desarrollador
-    AWAITING_PROJECT         // Esperando proyecto
+    AWAITING_PROJECT,        // Esperando proyecto
+    RAG_CHAT                 // Modo chat RAG
 }

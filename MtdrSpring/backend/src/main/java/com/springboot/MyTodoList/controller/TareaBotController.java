@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import com.springboot.MyTodoList.service.TareaService;
 import com.springboot.MyTodoList.service.UsuarioService;
 import com.springboot.MyTodoList.service.ProyectoService;
+import com.springboot.MyTodoList.service.RagChatService;
 import com.springboot.MyTodoList.util.TareaBotActions;
 
 @Component
@@ -22,6 +23,7 @@ public class TareaBotController extends TelegramLongPollingBot {
     private final TareaService tareaService;
     private final UsuarioService usuarioService;
     private final ProyectoService proyectoService;
+    private final RagChatService ragChatService;
 
     @Value("${telegram.bot.name}")
     private String botUsername;
@@ -35,12 +37,14 @@ public class TareaBotController extends TelegramLongPollingBot {
             @Value("${telegram.bot.token}") String botToken,
             TareaService tareaService,
             UsuarioService usuarioService,
-            ProyectoService proyectoService) {
+            ProyectoService proyectoService,
+            RagChatService ragChatService) {
         this.botUsername = botUsername;
         this.botToken = botToken;
         this.tareaService = tareaService;
         this.usuarioService = usuarioService;
         this.proyectoService = proyectoService;
+        this.ragChatService = ragChatService;
     }
 
     @Override
@@ -68,12 +72,13 @@ public class TareaBotController extends TelegramLongPollingBot {
         logger.info("Received message: '{}' from chatId {}", text, chatId);
 
         // Create the bot actions handler with all required services
-        TareaBotActions actions = new TareaBotActions(this, tareaService, usuarioService, proyectoService);
+        TareaBotActions actions = new TareaBotActions(this, tareaService, usuarioService, proyectoService, ragChatService);
         actions.setRequestText(text);
         actions.setChatId(chatId);
 
         // Execute bot actions in priority order
         actions.fnStart();
+        actions.fnRagMode();
         actions.fnListAll();
         actions.fnAddItem();
         actions.fnDone();

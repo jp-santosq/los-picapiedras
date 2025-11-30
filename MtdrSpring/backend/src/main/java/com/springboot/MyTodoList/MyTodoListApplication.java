@@ -15,6 +15,7 @@ import com.springboot.MyTodoList.controller.TareaBotController;
 import com.springboot.MyTodoList.service.TareaService;
 import com.springboot.MyTodoList.service.UsuarioService;
 import com.springboot.MyTodoList.service.ProyectoService;
+import com.springboot.MyTodoList.service.RagChatService;
 import com.springboot.MyTodoList.util.BotMessages;
 
 @SpringBootApplication
@@ -31,6 +32,9 @@ public class MyTodoListApplication implements CommandLineRunner {
 	@Autowired
 	private ProyectoService proyectoService;
 
+	@Autowired
+	private RagChatService ragChatService;
+
 	@Value("${telegram.bot.token}")
 	private String telegramBotToken;
 
@@ -46,7 +50,7 @@ public class MyTodoListApplication implements CommandLineRunner {
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 			telegramBotsApi.registerBot(new TareaBotController(botName, telegramBotToken, 
-					tareaService, usuarioService, proyectoService));
+					tareaService, usuarioService, proyectoService, ragChatService));
 			logger.info(BotMessages.BOT_REGISTERED_STARTED.getMessage());
 		} catch (TelegramApiException e) {
 			logger.error("Error registering Telegram bot", e);

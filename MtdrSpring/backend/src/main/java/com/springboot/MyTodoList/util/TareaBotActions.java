@@ -4,6 +4,7 @@ import com.springboot.MyTodoList.model.*;
 import com.springboot.MyTodoList.service.TareaService;
 import com.springboot.MyTodoList.service.UsuarioService;
 import com.springboot.MyTodoList.service.ProyectoService;
+import com.springboot.MyTodoList.service.RagChatService;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -35,14 +36,17 @@ public class TareaBotActions {
     private final TareaService tareaService;
     private final UsuarioService usuarioService;
     private final ProyectoService proyectoService;
+    private final RagChatService ragChatService;
     private boolean exit = false;
 
     public TareaBotActions(TelegramLongPollingBot bot, TareaService tareaService, 
-                          UsuarioService usuarioService, ProyectoService proyectoService) {
+                          UsuarioService usuarioService, ProyectoService proyectoService,
+                          RagChatService ragChatService) {
         this.bot = bot;
         this.tareaService = tareaService;
         this.usuarioService = usuarioService;
         this.proyectoService = proyectoService;
+        this.ragChatService = ragChatService;
     }
 
     public void setRequestText(String text) { this.requestText = text; }
@@ -108,6 +112,10 @@ public class TareaBotActions {
         row2.add(new KeyboardButton(BotLabels.SHOW_MAIN_SCREEN.getLabel()));
         row2.add(new KeyboardButton(BotLabels.HIDE_MAIN_SCREEN.getLabel()));
         rows.add(row2);
+
+        KeyboardRow row3 = new KeyboardRow();
+        row3.add(new KeyboardButton(BotLabels.RAG.getLabel()));
+        rows.add(row3);
 
         keyboard.setKeyboard(rows);
         sendMessage(BotMessages.HELLO_MYTODO_BOT.getMessage(), keyboard);
@@ -248,6 +256,18 @@ public class TareaBotActions {
         }
     }
 
+    public void fnRagMode() {
+        if (!(requestText.equalsIgnoreCase(BotLabels.RAG.getLabel())
+                || requestText.equalsIgnoreCase(BotCommands.RAG_COMMAND.getCommand())) || exit) {
+            return;
+        }
+
+        ConversationManager.clearConversation(chatId);
+        ConversationManager.setState(chatId, ConversationState.RAG_CHAT);
+        sendMessageWithRemoveKeyboard(BotMessages.RAG_WELCOME.getMessage());
+        exit = true;
+    }
+
     // -------------------------------------------------------------------
     // Conversational Flow Handler
     // -------------------------------------------------------------------
@@ -283,6 +303,9 @@ public class TareaBotActions {
                 break;
             case AWAITING_PROJECT:
                 handleProject();
+                break;
+            case RAG_CHAT:
+                handleRagChat();
                 break;
             default:
                 // No hay conversación activa, ignorar
@@ -482,6 +505,12 @@ public class TareaBotActions {
             ConversationManager.clearConversation(chatId);
             exit = true;
         }
+    }
+
+    private void handleRagChat() {
+        String reply = ragChatService.chatWithContext(requestText);
+        sendMessage(reply);
+        exit = true;
     }
 
     public void fnElse() {
