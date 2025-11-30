@@ -100,20 +100,6 @@ const RagUpload: React.FC = () => {
             Sube documentos con especificaciones, estándares o user stories. Crearemos embeddings y los
             usaremos como contexto en el generador automático de sprints.
           </p>
-          <div className="hero-actions">
-            <button className="btn btn-primary" onClick={() => fileInputRef.current?.click()}>
-              <CloudUploadIcon /> Cargar archivo
-            </button>
-            <button
-              className="btn btn-ghost"
-              onClick={() => {
-                setContextQuery('');
-                setContextPreview('');
-              }}
-            >
-              Limpiar consulta
-            </button>
-          </div>
         </div>
         <div className="hero-card">
           <div className="hero-card-icon">
