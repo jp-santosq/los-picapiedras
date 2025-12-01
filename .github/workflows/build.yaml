@@ -59,20 +59,14 @@ jobs:
           echo "${{ secrets.APP_PROPS_B64 }}" | base64 -d > application.properties
           echo "${{ secrets.SPRING_YAML_B64 }}" | base64 -d > todolistapp-springboot.yaml
           echo "✅ Restored application.properties and todolistapp-springboot.yaml"
-          
-      - name: Configure kubectl for OKE
-        id: kubectl-oke-action
-        uses: oracle-actions/configure-kubectl-oke@v1.5.0
-        with:
-          cluster: ${{ secrets.OCI_CLUSTER_OCID }}
-      
-      - name: UN-Deploy to Kubernetes
-        run: |
-          echo "🧹 Eliminando recursos anteriores..."
-          kubectl -n mtdrworkshop delete deployment todolistapp-springboot-deployment || true
-          kubectl -n mtdrworkshop delete service todolistapp-springboot-service || true
-          echo "✅ Recursos eliminados correctamente."
 
+      - name: Run backend tests (JUnit/Mockito)
+        env:
+          CI: false
+        run: |
+          cd MtdrSpring/backend
+          mvn -B test
+          
       - name: Build backend
         env:
           CI: false
@@ -80,8 +74,23 @@ jobs:
           cd MtdrSpring
           source env.sh
           (cd backend; source build.sh)
+
+      - name: Configure kubectl for OKE
+        id: kubectl-oke-action
+        uses: oracle-actions/configure-kubectl-oke@v1.5.0
+        with:
+          cluster: ${{ secrets.OCI_CLUSTER_OCID }}
+      
+      - name: UN-Deploy to Kubernetes
+        if: success()
+        run: |
+          echo "🧹 Eliminando recursos anteriores..."
+          kubectl -n mtdrworkshop delete deployment todolistapp-springboot-deployment || true
+          kubectl -n mtdrworkshop delete service todolistapp-springboot-service || true
+          echo "✅ Recursos eliminados correctamente."
       
       - name: Deploy
+        if: success()
         run: |
           cd MtdrSpring
           source env.sh
