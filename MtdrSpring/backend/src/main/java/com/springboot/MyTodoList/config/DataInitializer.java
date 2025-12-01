@@ -52,17 +52,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // ✅ PRIMERO: Crear tabla vectorial (del commit de tu compañero)
         createVectorTable();
         
-        // ✅ Verificación robusta para evitar duplicados
+
         boolean datosYaExisten = usuarioRepository.count() > 0 || 
                                  proyectoRepository.count() > 0 ||
                                  estadoTareaRepository.count() > 0;
         
         if (datosYaExisten) {
             System.out.println("⚠️ Datos ya inicializados, saltando carga de datos...");
-            // Aún así creamos los procedimientos KPI si no existen
             createKpiProceduresFromFile();
             return;
         }
@@ -263,7 +261,6 @@ public class DataInitializer implements CommandLineRunner {
         createKpiProceduresFromFile();
     }
 
-    // ✅ MÉTODO DE TU COMPAÑERO - NO BORRAR
     private void createVectorTable() {
         String createTable =
                 "BEGIN\n" +
