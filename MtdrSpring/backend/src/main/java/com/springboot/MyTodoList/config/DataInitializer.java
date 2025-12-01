@@ -53,36 +53,34 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         createVectorTable();
+        
 
-        // Evitar duplicar datos
-        if (proyectoRepository.findAll().stream()
-                .anyMatch(p -> "Oracle Java Bot".equals(p.getNombreProyecto()))) {
-            System.out.println("El proyecto 'Oracle Java Bot' ya existe, saltando inicialización...");
+        boolean datosYaExisten = usuarioRepository.count() > 0 || 
+                                 proyectoRepository.count() > 0 ||
+                                 estadoTareaRepository.count() > 0;
+        
+        if (datosYaExisten) {
+            System.out.println("⚠️ Datos ya inicializados, saltando carga de datos...");
+            createKpiProceduresFromFile();
             return;
         }
 
-        System.out.println("Iniciando carga de datos...");
+        System.out.println("🚀 Iniciando carga de datos iniciales...");
 
-        // Crear roles si no existen
-        Rol superadmin = rolRepository.findById(1L).orElseGet(() -> {
-            Rol rol = new Rol();
-            rol.setNombreRol("Superadmin");
-            return rolRepository.save(rol);
-        });
+        // Crear roles
+        Rol superadmin = new Rol();
+        superadmin.setNombreRol("Superadmin");
+        superadmin = rolRepository.save(superadmin);
 
-        Rol admin = rolRepository.findById(2L).orElseGet(() -> {
-            Rol rol = new Rol();
-            rol.setNombreRol("Administrador");
-            return rolRepository.save(rol);
-        });
+        Rol admin = new Rol();
+        admin.setNombreRol("Administrador");
+        admin = rolRepository.save(admin);
 
-        Rol dev = rolRepository.findById(3L).orElseGet(() -> {
-            Rol rol = new Rol();
-            rol.setNombreRol("Desarrollador");
-            return rolRepository.save(rol);
-        });
+        Rol dev = new Rol();
+        dev.setNombreRol("Desarrollador");
+        dev = rolRepository.save(dev);
 
-        System.out.println("✓ Roles verificados/creados correctamente");
+        System.out.println("✓ Roles creados correctamente");
 
         // Usuarios
         Usuario jose = new Usuario();
@@ -125,6 +123,8 @@ public class DataInitializer implements CommandLineRunner {
         christel.setRol(superadmin);
         usuarioRepository.save(christel);
 
+        System.out.println("✓ Usuarios creados correctamente");
+
         // Estados de tarea
         EstadoTarea pendiente = new EstadoTarea();
         pendiente.setNombreEstado("Pendiente");
@@ -142,11 +142,15 @@ public class DataInitializer implements CommandLineRunner {
         completado.setNombreEstado("Completado");
         estadoTareaRepository.save(completado);
 
+        System.out.println("✓ Estados de tarea creados correctamente");
+
         // Proyecto
         Proyecto proyecto = new Proyecto();
         proyecto.setNombreProyecto("Oracle Java Bot");
         proyecto.setAdministrador(jose);
         proyectoRepository.save(proyecto);
+
+        System.out.println("✓ Proyecto creado correctamente");
 
         // Sprints
         Sprint sprint1 = new Sprint();
@@ -161,12 +165,16 @@ public class DataInitializer implements CommandLineRunner {
         sprint2.setProyecto(proyecto);
         sprintRepository.save(sprint2);
 
+        System.out.println("✓ Sprints creados correctamente");
+
         // Historia de usuario
         HistoriaUsuario historia = new HistoriaUsuario();
         historia.setTitulo("Oracle Java Bot");
         historia.setDescripcion("Como usuario quiero manejar mi proyecto para llevar control");
         historia.setProyecto(proyecto);
         historiaUsuarioRepository.save(historia);
+
+        System.out.println("✓ Historia de usuario creada correctamente");
 
         // Tareas
         Tarea tarea1 = new Tarea();
@@ -247,7 +255,9 @@ public class DataInitializer implements CommandLineRunner {
         tarea6.setHistoriaUsuario(historia);
         tareaRepository.save(tarea6);
 
-        System.out.println("Datos cargados exitosamente!");
+        System.out.println("✓ Tareas creadas correctamente");
+        System.out.println("✅ Datos cargados exitosamente!");
+        
         createKpiProceduresFromFile();
     }
 
@@ -301,16 +311,14 @@ public class DataInitializer implements CommandLineRunner {
                 while (scanner.hasNext()) {
                     String ddl = scanner.next().trim();
                     if (!ddl.isEmpty()) {
-                        jdbcTemplate.execute(ddl);  // ✅ Works for Oracle DDL and PL/SQL
-                        System.out.println("✓ Executed block successfully.");
+                        jdbcTemplate.execute(ddl);
+                        System.out.println("✓ Bloque SQL ejecutado correctamente");
                     }
                 }
             }
-            System.out.println("✓ KPI procedures created from file successfully.");
-            } catch (Exception e) {
-            System.err.println("⚠️ Failed to load KPI procedures file: " + e.getMessage());
+            System.out.println("✅ Procedimientos KPI creados exitosamente desde archivo");
+        } catch (Exception e) {
+            System.err.println("⚠️ Error al cargar procedimientos KPI: " + e.getMessage());
         }
-}
-
-
+    }
 }
