@@ -869,6 +869,11 @@ public class TareaControllerTest {
 
     @Test
     void testHistoriaUsuarioController_CreateProyectoNoEncontrado() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 25: HistoriaUsuario - Proyecto No Encontrado      │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         HistoriaUsuarioController controller = new HistoriaUsuarioController();
         // Inyectamos mocks a mano (solo para este test)
         ReflectionTestUtils.setField(controller, "repository", historiaUsuarioRepository);
@@ -890,6 +895,10 @@ public class TareaControllerTest {
     // ProyectoController – Agregar proyecto exitosamente
     @Test
     void testProyectoController_AddProyectoExito() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 26: ProyectoController - Agregar Proyecto ÉXITO   │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         ProyectoController controller = new ProyectoController();
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
         ReflectionTestUtils.setField(controller, "usuarioRepository", usuarioRepository);
@@ -922,6 +931,10 @@ public class TareaControllerTest {
     // EstadoTareaController – Obtener todos los estados de tarea
     @Test
     void testEstadoTareaController_GetTareasDevuelveEstados() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 27: EstadoTareaController - Obtener Todos         │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         EstadoTareaController controller = new EstadoTareaController();
         ReflectionTestUtils.setField(controller, "estadoTareaService", estadoTareaService);
 
@@ -939,6 +952,11 @@ public class TareaControllerTest {
     // UsuarioProyectoController – Añadir relación exitosa
     @Test
     void testUsuarioProyectoController_AddUsuarioProyectoExito() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 28: UsuarioProyectoController - Añadir Relación   │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         UsuarioProyectoController controller = new UsuarioProyectoController();
         ReflectionTestUtils.setField(controller, "usuarioProyectoService", usuarioProyectoService);
 
@@ -960,6 +978,11 @@ public class TareaControllerTest {
     // SprintController – No existe sprint para update
     @Test
     void testSprintController_UpdateSprintNotFound() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 29: SprintController - Update Sprint Not Found    │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         SprintController controller = new SprintController();
         ReflectionTestUtils.setField(controller, "sprintService", sprintService);
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
@@ -974,6 +997,10 @@ public class TareaControllerTest {
     //UsuarioController – Buscar usuarios por rol retorna vacío
     @Test
     void testUsuarioController_GetUsuarioByRolId_Empty() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 30: UsuarioController - GetByRolId Vacío          │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         UsuarioController controller = new UsuarioController();
         ReflectionTestUtils.setField(controller, "usuarioService", usuarioService);
 
@@ -988,6 +1015,11 @@ public class TareaControllerTest {
     //ProyectoController – getAllProyectos retorna 204 si no hay proyectos
     @Test
     void testProyectoController_GetAllProyectos_NoContent() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 31: ProyectoController - GetAll No Content        │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         ProyectoController controller = new ProyectoController();
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
         ReflectionTestUtils.setField(controller, "usuarioRepository", usuarioRepository);
@@ -1002,6 +1034,11 @@ public class TareaControllerTest {
     //EstadoTareaController – Intentar actualizar estado inexistente
     @Test
     void testEstadoTareaController_UpdateEstadoTarea_NotFound() {
+        logger. info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 32: EstadoTareaController - Update Not Found      │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         EstadoTareaController controller = new EstadoTareaController();
         ReflectionTestUtils.setField(controller, "estadoTareaService", estadoTareaService);
 
@@ -1014,7 +1051,13 @@ public class TareaControllerTest {
 
     //UsuarioProyectoController – Obtener proyectos por usuario con info completa
     @Test
+    
     void testUsuarioProyectoController_GetProyectosByUsuario_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 33: UsuarioProyectoController - GetByUsuario OK   │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         UsuarioProyectoController controller = new UsuarioProyectoController();
         ReflectionTestUtils.setField(controller, "usuarioProyectoService", usuarioProyectoService);
 
@@ -1041,6 +1084,11 @@ public class TareaControllerTest {
     //SprintController – Completar sprint existente 
     @Test
     void testSprintController_CompleteSprint_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 34: SprintController - Completar Sprint OK        │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         SprintController controller = new SprintController();
         ReflectionTestUtils.setField(controller, "sprintService", sprintService);
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
@@ -1061,6 +1109,10 @@ public class TareaControllerTest {
     //UsuarioController – Añadir un usuario exitosamente 
     @Test
     void testUsuarioController_AddUsuario_Exito() throws Exception {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 35: UsuarioController - Añadir Usuario ÉXITO      │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         UsuarioController controller = new UsuarioController();
         ReflectionTestUtils.setField(controller, "usuarioService", usuarioService);
 
@@ -1081,6 +1133,10 @@ public class TareaControllerTest {
     //UsuarioController – Obtener todos los usuarios 
     @Test
     void testUsuarioController_GetAllUsers() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 36: UsuarioController - Obtener Todos             │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         UsuarioController controller = new UsuarioController();
         ReflectionTestUtils.setField(controller, "usuarioService", usuarioService);
 
@@ -1100,6 +1156,10 @@ public class TareaControllerTest {
     //ProyectoController – Obtener proyectos por administrador 
     @Test
     void testProyectoController_GetProyectosByAdministrador_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 37: ProyectoController - GetByAdmin OK            │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         ProyectoController controller = new ProyectoController();
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
         ReflectionTestUtils.setField(controller, "usuarioRepository", usuarioRepository);
@@ -1119,6 +1179,10 @@ public class TareaControllerTest {
     //ProyectoController – Obtener proyectos por administrador (vacío) 
     @Test
     void testProyectoController_GetProyectosByAdministrador_Empty() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 38: ProyectoController - GetByAdmin Vacío         │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         ProyectoController controller = new ProyectoController();
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
         ReflectionTestUtils.setField(controller, "usuarioRepository", usuarioRepository);
@@ -1133,6 +1197,11 @@ public class TareaControllerTest {
     //HistoriaUsuarioController – Get by id no encontrado 
     @Test
     void testHistoriaUsuarioController_GetById_NotFound() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 39: HistoriaUsuarioController - GetById NotFound  │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         HistoriaUsuarioController controller = new HistoriaUsuarioController();
         ReflectionTestUtils.setField(controller, "repository", historiaUsuarioRepository);
         ReflectionTestUtils.setField(controller, "proyectoRepository", proyectoRepository);
@@ -1146,6 +1215,10 @@ public class TareaControllerTest {
     // HistoriaUsuarioController – Eliminar historia exitosa 
     @Test
     void testHistoriaUsuarioController_Delete_Exito() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 40: HistoriaUsuarioController - Delete ÉXITO      │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         HistoriaUsuarioController controller = new HistoriaUsuarioController();
         ReflectionTestUtils.setField(controller, "repository", historiaUsuarioRepository);
         ReflectionTestUtils.setField(controller, "proyectoRepository", proyectoRepository);
@@ -1160,6 +1233,11 @@ public class TareaControllerTest {
     //HistoriaUsuarioController – Eliminar historia no existente 
     @Test
     void testHistoriaUsuarioController_Delete_NotFound() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 41: HistoriaUsuarioController - Delete NotFound   │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         HistoriaUsuarioController controller = new HistoriaUsuarioController();
         ReflectionTestUtils.setField(controller, "repository", historiaUsuarioRepository);
         ReflectionTestUtils.setField(controller, "proyectoRepository", proyectoRepository);
@@ -1174,6 +1252,11 @@ public class TareaControllerTest {
     //EstadoTareaController – Agregar estado tarea exitoso 
     @Test
     void testEstadoTareaController_AddEstadoTarea_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 42: EstadoTareaController - Agregar Estado OK     │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         EstadoTareaController controller = new EstadoTareaController();
         ReflectionTestUtils.setField(controller, "estadoTareaService", estadoTareaService);
 
@@ -1189,6 +1272,11 @@ public class TareaControllerTest {
     //EstadoTareaController – Error interno al agregar estado tarea
     @Test
     void testEstadoTareaController_AddEstadoTarea_Error() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 43: EstadoTareaController - Agregar Estado Error  │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         EstadoTareaController controller = new EstadoTareaController();
         ReflectionTestUtils.setField(controller, "estadoTareaService", estadoTareaService);
 
@@ -1203,6 +1291,10 @@ public class TareaControllerTest {
     //SprintController – Obtener sprint por id existente 
     @Test
     void testSprintController_GetSprintById_Exito() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 44: SprintController - GetSprintById ÉXITO        │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         SprintController controller = new SprintController();
         ReflectionTestUtils.setField(controller, "sprintService", sprintService);
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
@@ -1220,6 +1312,10 @@ public class TareaControllerTest {
     //SprintController – Obtener todos los sprints correctamente
     @Test
     void testSprintController_GetAllSprints_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 45: SprintController - GetAllSprints OK           │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         SprintController controller = new SprintController();
         ReflectionTestUtils.setField(controller, "sprintService", sprintService);
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
@@ -1239,6 +1335,11 @@ public class TareaControllerTest {
     //SprintController – Obtener sprints por proyecto id 
     @Test
     void testSprintController_GetSprintsByProyectoId_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger. info("│  TEST 46: SprintController - GetByProyectoId OK        │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         SprintController controller = new SprintController();
         ReflectionTestUtils.setField(controller, "sprintService", sprintService);
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
@@ -1257,6 +1358,11 @@ public class TareaControllerTest {
     //ProyectoController – Excepción al agregar proyecto 
     @Test
     void testProyectoController_AddProyectoException() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 47: ProyectoController - AddProyecto Exception    │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         ProyectoController controller = new ProyectoController();
         ReflectionTestUtils.setField(controller, "proyectoService", proyectoService);
         ReflectionTestUtils.setField(controller, "usuarioRepository", usuarioRepository);
@@ -1278,6 +1384,10 @@ public class TareaControllerTest {
     //HistoriaUsuarioController – Obtener todas las historias retorna lista
     @Test
     void testHistoriaUsuarioController_GetAll_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 48: HistoriaUsuarioController - GetAll OK         │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         HistoriaUsuarioController controller = new HistoriaUsuarioController();
         ReflectionTestUtils.setField(controller, "repository", historiaUsuarioRepository);
         ReflectionTestUtils.setField(controller, "proyectoRepository", proyectoRepository);
@@ -1294,6 +1404,11 @@ public class TareaControllerTest {
     // === 5. EstadoTareaController – Actualizar estado tarea exitosamente ===
     @Test
     void testEstadoTareaController_UpdateEstadoTarea_OK() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 49: EstadoTareaController - Update Estado OK      │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
+
         EstadoTareaController controller = new EstadoTareaController();
         ReflectionTestUtils.setField(controller, "estadoTareaService", estadoTareaService);
 
@@ -1309,6 +1424,10 @@ public class TareaControllerTest {
     //UsuarioProyectoController – Obtener usuarios por proyecto vacío
     @Test
     void testUsuarioProyectoController_GetUsuariosByProyecto_Empty() {
+        logger.info("");
+        logger.info("┌─────────────────────────────────────────────────────────┐");
+        logger.info("│  TEST 50: UsuarioProyectoController - GetByProy Vacío   │");
+        logger.info("└─────────────────────────────────────────────────────────┘");
         UsuarioProyectoController controller = new UsuarioProyectoController();
         ReflectionTestUtils.setField(controller, "usuarioProyectoService", usuarioProyectoService);
 
