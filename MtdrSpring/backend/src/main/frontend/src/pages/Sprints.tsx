@@ -1,14 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSprints } from '../context/SprintContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
+import { ROL } from '../components/enums.tsx';
 import SprintCard from '../components/Sprint/SprintCard.tsx';
 import CreateSprintModal from '../components/Sprint/CreateSprintModal.tsx';
 import SprintDetailsModal from '../components/Sprint/SprintDetailsModal.tsx';
 import ReplayIcon from '@mui/icons-material/Replay';
 import ReportIcon from '@mui/icons-material/Report';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import '../styles/components/sprints.css';
 
 const Sprints: React.FC = () => {
   const { sprints, loading, error, refreshSprints } = useSprints();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -99,12 +105,24 @@ const Sprints: React.FC = () => {
           >
           <ReplayIcon className="refresh-icon" fontSize="small" />
           </button>
-          <button
-            className="btn btn-primary hero-create"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            + Crear Sprint
-          </button>
+          {(user?.rol === ROL.ADMINISTRADOR || user?.rol === ROL.SUPERADMIN) && (
+            <>
+              <button
+                className="btn btn-primary hero-create"
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                + Crear Sprint
+              </button>
+              <button
+                className="btn btn-primary hero-create"
+                onClick={() => navigate('/SprintGenerator')}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <AutoAwesomeIcon fontSize="small" />
+                Sprint Generator
+              </button>
+            </>
+          )}
         </div>
       </section>
 

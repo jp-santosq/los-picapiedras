@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSprints } from '../../context/SprintContext.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
+import { ROL } from '../enums.tsx';
 import '../../styles/components/sprintCard.css';
 
 interface SprintCardProps {
@@ -9,6 +11,7 @@ interface SprintCardProps {
 
 const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
   const { completeSprint } = useSprints();
+  const { user } = useAuth();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -66,7 +69,7 @@ const SprintCard: React.FC<SprintCardProps> = ({ sprint, onClick }) => {
         </div>
         <div className="sprint-duration">
           <span className="duration-text">{duration} días</span>
-          {!sprint.fechaFinReal && (
+          {!sprint.fechaFinReal && (user?.rol === ROL.ADMINISTRADOR || user?.rol === ROL.SUPERADMIN) && (
             <button
               className="btn-complete-sprint"
               onClick={handleCompleteSprint}
