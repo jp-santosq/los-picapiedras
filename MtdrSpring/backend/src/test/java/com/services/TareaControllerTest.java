@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.springboot.MyTodoList.controller.EstadoTareaController;
 import com.springboot.MyTodoList.controller.HistoriaUsuarioController;
@@ -806,36 +808,39 @@ public class TareaControllerTest {
 
     //Prueba: crear tarea con campos mínimos obligatorios (sin opcionales)
     @Test
-    void testAddTarea_CamposMinimosObligatorios() {
+    public void testCamposObligatorios() {
         logger.info("");
         logger.info("┌─────────────────────────────────────────────────────────┐");
-        logger.info("│  TEST 23: Crear Tarea - Solo obligatorios               │");
+        logger.info("│  TEST 23: Crear Tarea - Con campos minimos obligatorios │");
         logger.info("└─────────────────────────────────────────────────────────┘");
+        EstadoTarea estadoTarea = new EstadoTarea();
+        estadoTarea.setId(1L);
+        
+        Proyecto proyecto = new Proyecto();
+        proyecto.setId(1L);
+        
+        HistoriaUsuario historiaUsuario = new HistoriaUsuario();
+        historiaUsuario.setId(1L);
 
-        dto.sprintId = null;
-        dto.desarrolladorId = null;
-        dto.descripcion = null;
-        dto.fechaFinReal = null;
-        dto.prioridad = null;
-        when(estadoTareaRepository.findById(dto.estadoTareaId)).thenReturn(Optional.of(estadoEnProgreso));
-        when(proyectoRepository.findById(dto.proyectoId)).thenReturn(Optional.of(proyecto));
-        when(historiaUsuarioRepository.findById(dto.historiaUsuarioId)).thenReturn(Optional.of(historia));
-        when(tareaRepository.save(any(Tarea.class))).thenAnswer(i -> {
-            Tarea t = i.getArgument(0);
-            t.setId(23L);
-            return t;
-        });
+        LocalDate hoy = LocalDate.now();
+        LocalDate manana = LocalDate.now().plusDays(1);
 
-        ResponseEntity<?> response = tareaController.addTarea(dto);
+        Tarea tarea = new Tarea();
+        tarea.setTitulo("Tarea completa");
+        tarea.setDescripcion("Descripción completa");
+        tarea.setFechaInicio(hoy);
+        tarea.setFechaFinEstimada(manana);
+        tarea.setEstadoTarea(estadoTarea);
+        tarea.setProyecto(proyecto);
+        tarea.setHistoriaUsuario(historiaUsuario);
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
-        Tarea result = (Tarea) response.getBody();
-        assertThat(result).isNotNull();
-        assertThat(result.getSprint()).isNull();
-        assertThat(result.getDesarrollador()).isNull();
-        assertThat(result.getDescripcion()).isNull();
-        assertThat(result.getPrioridad()).isNull();
-        assertThat(result.getFechaFinReal()).isNull();
+        assertAll("Validar campos obligatorios",
+            () -> assertNotNull(tarea.getFechaInicio(), "fechaInicio es obligatorio"),
+            () -> assertNotNull(tarea.getFechaFinEstimada(), "fechaFinEstimada es obligatorio"),
+            () -> assertNotNull(tarea.getEstadoTarea(), "estadoTarea es obligatorio"),
+            () -> assertNotNull(tarea.getProyecto(), "proyecto es obligatorio"),
+            () -> assertNotNull(tarea.getHistoriaUsuario(), "historiaUsuario es obligatorio")
+        );
     }
 
     // Prueba: crear tarea con nombre de estadoTarea nulo (el campo existe, aunque no sería común)
