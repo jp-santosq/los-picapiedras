@@ -832,7 +832,7 @@ public class TareaControllerTest {
         tarea.setFechaFinEstimada(manana);
         tarea.setEstadoTarea(estadoTarea);
         tarea.setProyecto(proyecto);
-        tarea.setHistoriaUsuario(null);
+        tarea.setHistoriaUsuario(historiaUsuario);
 
         assertAll("Validar campos obligatorios",
             () -> assertNotNull(tarea.getFechaInicio(), "fechaInicio es obligatorio"),
