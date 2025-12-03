@@ -237,7 +237,7 @@ const KPIs: React.FC = () => {
             onClick={() => setActiveTab('developers')}
             className={`tab-button ${activeTab === 'developers' ? 'active' : ''}`}
           >
-            Desarrolladores
+            {isDeveloper ? 'Mis Métricas' : 'Desarrolladores'}
           </button>
         </div>
       </div>

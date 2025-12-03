@@ -21,11 +21,13 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useAuth } from "../context/AuthContext.tsx";
+import { ROL } from "./enums.tsx";
+import Profile from "../pages/Profile.tsx";
 
 function NavBar() {
   const [open, setOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleToggleDrawer = (value: boolean) => () => setDrawerOpen(value);
@@ -105,14 +107,16 @@ function NavBar() {
                   <ListItemText primary="Teams" />
                 </ListItemButton>
               </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/sprintgenerator" onClick={handleToggleDrawer(false)}>
-                  <ListItemIcon>
-                    <AutoAwesomeIcon className="drawer-icon" />
-                  </ListItemIcon>
-                  <ListItemText primary="Sprint Generator" />
-                </ListItemButton>
-              </ListItem>
+              {(user?.rol === ROL.ADMINISTRADOR || user?.rol === ROL.SUPERADMIN) && (
+                <ListItem disablePadding>
+                  <ListItemButton component={Link} to="/SprintGenerator" onClick={handleToggleDrawer(false)}>
+                    <ListItemIcon>
+                      <AutoAwesomeIcon className="drawer-icon" />
+                    </ListItemIcon>
+                    <ListItemText primary="Sprint Generator" />
+                  </ListItemButton>
+                </ListItem>
+              )}
               <ListItem disablePadding>
                 <ListItemButton component={Link} to="/app/knowledge" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
