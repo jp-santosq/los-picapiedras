@@ -46,6 +46,7 @@ function SuperAdmin() {
   const [miembrosProyecto, setMiembrosProyecto] = useState<UsuarioProyecto[]>([]);
   const [loadingMiembros, setLoadingMiembros] = useState(false);
   const [selectedDesarrollador, setSelectedDesarrollador] = useState("");
+  const [addingMember, setAddingMember] = useState(false);
   const [nuevoProyecto, setNuevoProyecto] = useState({
     nombreProyecto: "",
     administradorId: ""
@@ -73,7 +74,8 @@ function SuperAdmin() {
 
   const fetchAdministradores = async () => {
     try {
-      const response = await axios.get("/usuario/rol/1");
+      // Obtener usuarios con rol ID 2 (administradores)
+      const response = await axios.get("/usuario/rol/2");
       setAdministradores(response.data);
     } catch (error) {
       console.error("Error al cargar administradores:", error);
@@ -146,6 +148,9 @@ function SuperAdmin() {
       return;
     }
 
+    setAddingMember(true);
+    setError("");
+
     try {
       await axios.post("/usuarioProyecto/add", {
         idUsuario: parseInt(selectedDesarrollador),
@@ -161,6 +166,8 @@ function SuperAdmin() {
     } catch (error) {
       console.error("Error al agregar miembro:", error);
       setError("Error al agregar el desarrollador al proyecto");
+    } finally {
+      setAddingMember(false);
     }
   };
 
@@ -539,13 +546,13 @@ function SuperAdmin() {
               <button
                 className="superadmin-btn superadmin-btn-primary"
                 onClick={handleAddMember}
-                disabled={!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0}
+                disabled={!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0 || addingMember}
                 style={{
-                  opacity: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0) ? 0.5 : 1,
-                  cursor: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0) ? 'not-allowed' : 'pointer'
+                  opacity: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0 || addingMember) ? 0.5 : 1,
+                  cursor: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0 || addingMember) ? 'not-allowed' : 'pointer'
                 }}
               >
-                Agregar
+                {addingMember ? 'Agregando...' : 'Agregar'}
               </button>
             </div>
           </div>
