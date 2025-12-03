@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 import com.springboot.MyTodoList.model.*;
 import com.springboot.MyTodoList.repository.*;
 import java.io.InputStream;
@@ -53,7 +54,11 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         createVectorTable();
-        
+
+        if (!acquireInitializationLock()) {
+            System.out.println("⚠️ Otro pod ya ejecutó la carga inicial, se omite este arranque.");
+            return;
+        }
 
         boolean datosYaExisten = usuarioRepository.count() > 0 || 
                                  proyectoRepository.count() > 0 ||
@@ -261,6 +266,25 @@ public class DataInitializer implements CommandLineRunner {
         createKpiProceduresFromFile();
     }
 
+    /**
+     * Usa una tabla de lock en base de datos para garantizar que solo un pod
+     * ejecute la inicialización. El resto detecta la fila ya insertada y no
+     * continúa con el seeding.
+     */
+    private boolean acquireInitializationLock() {
+        createInitLockTable();
+        try {
+            jdbcTemplate.update("INSERT INTO app_init_lock (id, locked_at) VALUES (1, SYSTIMESTAMP)");
+            return true;
+        } catch (DataIntegrityViolationException e) {
+            // Otro pod ya insertó la fila (PK duplicada)
+            return false;
+        } catch (Exception e) {
+            System.err.println("⚠️ No se pudo obtener el lock de inicialización: " + e.getMessage());
+            return false;
+        }
+    }
+
     private void createVectorTable() {
         String createTable =
                 "BEGIN\n" +
@@ -299,6 +323,28 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("✓ Tabla vectorial 'rag_document_chunk' lista para embeddings.");
         } catch (Exception e) {
             System.err.println("⚠️ No se pudo crear la tabla de vectores: " + e.getMessage());
+        }
+    }
+
+    private void createInitLockTable() {
+        String createTable =
+                "BEGIN\n" +
+                "    EXECUTE IMMEDIATE '\n" +
+                "        CREATE TABLE app_init_lock (\n" +
+                "            id NUMBER PRIMARY KEY,\n" +
+                "            locked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n" +
+                "        )';\n" +
+                "EXCEPTION\n" +
+                "    WHEN OTHERS THEN\n" +
+                "        IF SQLCODE != -955 THEN\n" +
+                "            RAISE;\n" +
+                "        END IF;\n" +
+                "END;";
+
+        try {
+            jdbcTemplate.execute(createTable);
+        } catch (Exception e) {
+            System.err.println("⚠️ No se pudo asegurar tabla de lock: " + e.getMessage());
         }
     }
 
