@@ -212,7 +212,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
         console.log("Actualizando tarea con DTO:", dto);
 
-        await axios.put(`/tarea/${taskId}`, dto);
+        await axios.put(`/tarea/update/${taskId}`, dto);
 
         console.log("Tarea actualizada exitosamente");
         

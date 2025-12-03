@@ -98,7 +98,7 @@ function NavBar() {
                   <ListItemIcon>
                     <TaskIcon className="drawer-icon" />
                   </ListItemIcon>
-                  <ListItemText primary="Tareas" />
+                  <ListItemText primary="Tasks" />
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>

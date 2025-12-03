@@ -6,7 +6,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  rol: ROL;
+  rol: number; // Cambiado a number porque se mapea desde rolId
 }
 
 interface UserContextType {

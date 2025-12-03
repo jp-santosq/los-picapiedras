@@ -3,6 +3,8 @@ import { Task, useTasks } from '../context/TaskContext.tsx';
 import { TaskStatus } from './enums.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
+import { ROL } from './enums.tsx';
 import '../styles/components/modal.css';
 
 interface EditTaskModalProps {
@@ -19,8 +21,12 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const { updateTask } = useTasks();
   const { users } = useUsers();
   const { sprints } = useSprints();
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Determinar si el usuario es administrador
+  const isAdmin = user?.rol === ROL.ADMINISTRADOR || user?.rol === ROL.SUPERADMIN;
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -79,7 +85,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
       setError('Los story points deben ser un número positivo');
       return false;
     }
-    if (!formData.responsibleId || formData.responsibleId === 0) {
+    // Solo validar responsable si el usuario es admin
+    if (isAdmin && (!formData.responsibleId || formData.responsibleId === 0)) {
       setError('Debe asignar un responsable a la tarea');
       return false;
     }
@@ -104,9 +111,13 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         estimatedDate: formData.estimatedDate,
         storyPoints: formData.storyPoints,
         status: formData.status,
-        responsibleId: formData.responsibleId,
         sprintId: formData.sprintId || undefined
       };
+
+      // Solo los admins pueden cambiar el responsable
+      if (isAdmin) {
+        updatedData.responsibleId = formData.responsibleId;
+      }
 
       await updateTask(task.id, updatedData);
       console.log(`Tarea ${task.id} actualizada exitosamente`);
@@ -234,27 +245,31 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
             </div>
           </div>
 
-          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
-              <label htmlFor="edit-responsible">
-                Responsable <span className="required">*</span>
-              </label>
-              <select
-                id="edit-responsible"
-                name="responsibleId"
-                value={formData.responsibleId}
-                onChange={handleChange}
-                required
-                className="form-input"
-              >
-                <option value={0}>Seleccionar responsable</option>
-                {users.map(user => (
-                  <option key={user.id} value={user.id}>
-                    {user.name} - {user.email}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: isAdmin ? '1fr 1fr' : '1fr', gap: '1rem' }}>
+            {isAdmin && (
+              <div className="form-group">
+                <label htmlFor="edit-responsible">
+                  Responsable <span className="required">*</span>
+                </label>
+                <select
+                  id="edit-responsible"
+                  name="responsibleId"
+                  value={formData.responsibleId}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                >
+                  <option value={0}>Seleccionar responsable</option>
+                  {users
+                    .filter(u => u.rol === 3) // Filtrar solo desarrolladores (rol ID 3)
+                    .map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} - {user.email}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="edit-sprint">Sprint</label>
