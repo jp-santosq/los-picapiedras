@@ -1,36 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.tsx";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Avatar,
-  Divider,
-  Paper,
-  Alert,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Chip,
-  IconButton,
-} from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import FolderIcon from '@mui/icons-material/Folder';
-import CloseIcon from '@mui/icons-material/Close';
-import StarIcon from '@mui/icons-material/Star';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import LogoutIcon from '@mui/icons-material/Logout';
 import axios from "axios";
 import { ROL } from "./enums.tsx";
+import "../styles/components/superadmin.css";
 
 type Usuario = {
   id: number;
@@ -233,462 +205,353 @@ function SuperAdmin() {
 
   if (!user) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-        <Typography variant="h5">Debes iniciar sesión</Typography>
-      </Box>
+      <div className="superadmin-loading">
+        <p>Debes iniciar sesión</p>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ p: 4, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+    <div className="superadmin-container">
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-          Panel de Proyectos
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
+      <div className="superadmin-header">
+        <h1 className="superadmin-title">Panel de Proyectos</h1>
+        <div className="superadmin-actions">
+          <button
+            className="superadmin-btn superadmin-btn-primary"
             onClick={handleOpenDialog}
-            sx={{ 
-              backgroundColor: '#312D2A',
-              '&:hover': { backgroundColor: '#242220' }
-            }}
           >
+            <span>➕</span>
             Nuevo Proyecto
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<LogoutIcon />}
+          </button>
+          <button
+            className="superadmin-btn superadmin-btn-secondary"
             onClick={handleLogout}
-            sx={{ 
-              borderColor: '#312D2A',
-              color: '#312D2A',
-              '&:hover': { 
-                borderColor: '#242220',
-                backgroundColor: 'rgba(49, 45, 42, 0.04)'
-              }
-            }}
           >
+            <span>🚪</span>
             Cerrar Sesión
-          </Button>
-        </Box>
-      </Box>
+          </button>
+        </div>
+      </div>
 
       {/* Lista de Proyectos */}
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <Typography>Cargando proyectos...</Typography>
-        </Box>
+        <div className="superadmin-loading">
+          <p>Cargando proyectos...</p>
+        </div>
       ) : proyectos.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
-          <FolderIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary">
-            No hay proyectos registrados
-          </Typography>
-        </Paper>
+        <div className="superadmin-empty">
+          <div className="superadmin-empty-icon">📁</div>
+          <h2 className="superadmin-empty-title">No hay proyectos registrados</h2>
+        </div>
       ) : (
-        <Grid container spacing={3}>
+        <div className="superadmin-projects-grid">
           {proyectos.map((proyecto) => (
-            <Grid item xs={12} md={6} lg={4} key={proyecto.id}>
-              <Card 
-                sx={{ 
-                  height: '100%',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 4
-                  }
-                }}
-                onClick={() => handleOpenDetailDialog(proyecto)}
-              >
-                <CardContent>
-                  {/* Nombre del Proyecto */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <FolderIcon sx={{ color: getAdminColor(proyecto.administrador?.id || 0) }} />
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      {proyecto.nombreProyecto}
-                    </Typography>
-                  </Box>
+            <div
+              key={proyecto.id}
+              className="superadmin-project-card"
+              onClick={() => handleOpenDetailDialog(proyecto)}
+            >
+              {/* Nombre del Proyecto */}
+              <div className="project-card-header">
+                <span
+                  className="project-card-icon"
+                  style={{ color: getAdminColor(proyecto.administrador?.id || 0) }}
+                >
+                  📁
+                </span>
+                <h3 className="project-card-name">{proyecto.nombreProyecto}</h3>
+              </div>
 
-                  <Divider sx={{ my: 2 }} />
+              <div className="project-card-divider" />
 
-                  {/* Administrador */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <Avatar 
-                      sx={{ 
-                        width: 32, 
-                        height: 32,
-                        bgcolor: getAdminColor(proyecto.administrador?.id || 0)
-                      }}
-                    >
-                      {proyecto.administrador?.nombreUsuario?.charAt(0) || '?'}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="body2" fontWeight="bold">
-                        {proyecto.administrador?.nombreUsuario || 'Sin asignar'}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {proyecto.administrador?.correo || ''}
-                      </Typography>
-                    </Box>
-                  </Box>
+              {/* Administrador */}
+              <div className="project-card-admin">
+                <div
+                  className="project-card-avatar"
+                  style={{ backgroundColor: getAdminColor(proyecto.administrador?.id || 0) }}
+                >
+                  {proyecto.administrador?.nombreUsuario?.charAt(0) || '?'}
+                </div>
+                <div className="project-card-admin-info">
+                  <p className="project-card-admin-name">
+                    {proyecto.administrador?.nombreUsuario || 'Sin asignar'}
+                  </p>
+                  <p className="project-card-admin-email">
+                    {proyecto.administrador?.correo || ''}
+                  </p>
+                </div>
+              </div>
 
-                  {/* Info Sprints */}
-                  <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: 1, mb: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Sprints: <strong>{proyecto.sprints?.length || 0}</strong>
-                    </Typography>
-                  </Box>
+              {/* Info Sprints */}
+              <div className="project-card-info">
+                <p className="project-card-info-text">
+                  Sprints: <strong>{proyecto.sprints?.length || 0}</strong>
+                </p>
+              </div>
 
-                  {/* ID */}
-                  <Typography variant="caption" color="text.secondary">
-                    ID: {proyecto.id}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+              {/* ID */}
+              <p className="project-card-id">ID: {proyecto.id}</p>
+            </div>
           ))}
-        </Grid>
+        </div>
       )}
 
       {/* Dialog Crear Proyecto */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Crear Nuevo Proyecto</DialogTitle>
-        <DialogContent>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <TextField
-            fullWidth
-            label="Nombre del Proyecto"
-            value={nuevoProyecto.nombreProyecto}
-            onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, nombreProyecto: e.target.value })}
-            sx={{ mt: 2, mb: 2 }}
-          />
-          <FormControl fullWidth>
-            <InputLabel>Administrador del Proyecto</InputLabel>
-            <Select
-              value={nuevoProyecto.administradorId}
-              onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, administradorId: e.target.value })}
-              label="Administrador del Proyecto"
-            >
-              {administradores.map((admin) => (
-                <MenuItem key={admin.id} value={admin.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Avatar 
-                      sx={{ 
-                        width: 24, 
-                        height: 24, 
-                        fontSize: '0.875rem',
-                        bgcolor: getAdminColor(admin.id)
-                      }}
-                    >
-                      {admin.nombreUsuario.charAt(0)}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="body2">{admin.nombreUsuario}</Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {admin.correo}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button 
-            variant="contained" 
-            onClick={handleCreateProyecto}
-            sx={{ 
-              backgroundColor: '#312D2A',
-              '&:hover': { backgroundColor: '#242220' }
-            }}
-          >
-            Crear
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {openDialog && (
+        <div className="modal-overlay" onClick={handleCloseDialog}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Crear Nuevo Proyecto</h2>
+              <button className="modal-close-btn" onClick={handleCloseDialog}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {error && (
+                <div className="alert alert-error">
+                  <span className="alert-icon">⚠️</span>
+                  <p className="alert-text">{error}</p>
+                </div>
+              )}
+              <div className="form-group">
+                <label className="form-label">Nombre del Proyecto</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Ingrese el nombre del proyecto"
+                  value={nuevoProyecto.nombreProyecto}
+                  onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, nombreProyecto: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Administrador del Proyecto</label>
+                <select
+                  className="form-select"
+                  value={nuevoProyecto.administradorId}
+                  onChange={(e) => setNuevoProyecto({ ...nuevoProyecto, administradorId: e.target.value })}
+                >
+                  <option value="">Seleccionar administrador</option>
+                  {administradores.map((admin) => (
+                    <option key={admin.id} value={admin.id}>
+                      {admin.nombreUsuario} - {admin.correo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="superadmin-btn superadmin-btn-secondary" onClick={handleCloseDialog}>
+                Cancelar
+              </button>
+              <button className="superadmin-btn superadmin-btn-primary" onClick={handleCreateProyecto}>
+                Crear
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dialog Detalle del Proyecto con Miembros */}
-      <Dialog 
-        open={openDetailDialog} 
-        onClose={handleCloseDetailDialog} 
-        maxWidth="md" 
-        fullWidth
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FolderIcon sx={{ color: getAdminColor(selectedProyecto?.administrador?.id || 0) }} />
-            <Typography variant="h6" fontWeight="bold">
-              {selectedProyecto?.nombreProyecto}
-            </Typography>
-          </Box>
-          <IconButton onClick={handleCloseDetailDialog} size="small">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          {/* Mensaje de éxito */}
-          {successMessage && (
-            <Alert severity="success" sx={{ mb: 2 }}>
-              {successMessage}
-            </Alert>
-          )}
+      {openDetailDialog && selectedProyecto && (
+        <div className="modal-overlay" onClick={handleCloseDetailDialog}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                <span style={{ color: getAdminColor(selectedProyecto.administrador?.id || 0) }}>
+                  📁
+                </span>
+                {selectedProyecto.nombreProyecto}
+              </h2>
+              <button className="modal-close-btn" onClick={handleCloseDetailDialog}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {/* Mensaje de éxito */}
+              {successMessage && (
+                <div className="alert alert-success">
+                  <span className="alert-icon">✓</span>
+                  <p className="alert-text">{successMessage}</p>
+                </div>
+              )}
 
-          {/* Administrador destacado */}
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-              Administrador del Proyecto
-            </Typography>
-            <Card sx={{ 
-              backgroundColor: '#f8f9fa', 
-              border: '2px solid #312D2A'
-            }}>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
-                <Avatar 
-                  sx={{ 
-                    width: 48, 
-                    height: 48,
-                    bgcolor: getAdminColor(selectedProyecto?.administrador?.id || 0)
-                  }}
-                >
-                  {selectedProyecto?.administrador?.nombreUsuario?.charAt(0) || '?'}
-                </Avatar>
-                <Box sx={{ flex: 1 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="h6" fontWeight="bold">
-                      {selectedProyecto?.administrador?.nombreUsuario}
-                    </Typography>
-                    <Chip 
-                      icon={<StarIcon />} 
-                      label="Admin" 
-                      size="small" 
-                      sx={{ 
-                        backgroundColor: '#312D2A', 
-                        color: 'white',
-                        fontWeight: 'bold'
-                      }} 
-                    />
-                  </Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {selectedProyecto?.administrador?.correo}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-
-          <Divider sx={{ my: 3 }} />
-
-          {/* Miembros del Proyecto */}
-          <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Miembros del Proyecto ({miembrosProyecto.length})
-              </Typography>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<PersonAddIcon />}
-                onClick={handleOpenAddMemberDialog}
-                sx={{
-                  borderColor: '#312D2A',
-                  color: '#312D2A',
-                  '&:hover': {
-                    borderColor: '#242220',
-                    backgroundColor: 'rgba(49, 45, 42, 0.04)'
-                  }
-                }}
-              >
-                Agregar Miembro
-              </Button>
-            </Box>
-            
-            {loadingMiembros ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                <Typography>Cargando miembros...</Typography>
-              </Box>
-            ) : miembrosProyecto.length === 0 ? (
-              <Paper sx={{ p: 3, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
-                <Typography variant="body2" color="text.secondary">
-                  No hay miembros asignados a este proyecto
-                </Typography>
-              </Paper>
-            ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {miembrosProyecto.map((usuarioProyecto) => (
-                  <Card 
-                    key={usuarioProyecto.id}
-                    sx={{ 
-                      backgroundColor: isAdministrador(usuarioProyecto.usuario.id) 
-                        ? '#f8f9fa' 
-                        : 'white',
-                      border: isAdministrador(usuarioProyecto.usuario.id) 
-                        ? '1px solid #dee2e6' 
-                        : '1px solid #e0e0e0'
-                    }}
+              {/* Administrador destacado */}
+              <div className="detail-section">
+                <p className="detail-section-title">Administrador del Proyecto</p>
+                <div className="admin-card">
+                  <div
+                    className="admin-avatar"
+                    style={{ backgroundColor: getAdminColor(selectedProyecto.administrador?.id || 0) }}
                   >
-                    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
-                      <Avatar 
-                        sx={{ 
-                          width: 40, 
-                          height: 40,
-                          bgcolor: getAdminColor(usuarioProyecto.usuario.id)
-                        }}
-                      >
-                        {usuarioProyecto.usuario.nombreUsuario.charAt(0)}
-                      </Avatar>
-                      <Box sx={{ flex: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body1" fontWeight="medium">
-                            {usuarioProyecto.usuario.nombreUsuario}
-                          </Typography>
-                          {isAdministrador(usuarioProyecto.usuario.id) && (
-                            <Chip 
-                              icon={<StarIcon />} 
-                              label="Admin" 
-                              size="small" 
-                              sx={{ 
-                                backgroundColor: '#312D2A', 
-                                color: 'white',
-                                height: 20,
-                                fontSize: '0.7rem'
-                              }} 
-                            />
-                          )}
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {usuarioProyecto.usuario.correo}
-                        </Typography>
-                      </Box>
-                      <Chip 
-                        label={`Rol ID: ${usuarioProyecto.usuario.rol.id}`} 
-                        size="small" 
-                        variant="outlined"
-                      />
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            )}
-          </Box>
+                    {selectedProyecto.administrador?.nombreUsuario?.charAt(0) || '?'}
+                  </div>
+                  <div className="admin-info">
+                    <div className="admin-name-row">
+                      <h3 className="admin-name">
+                        {selectedProyecto.administrador?.nombreUsuario}
+                      </h3>
+                      <span className="admin-badge">
+                        ⭐ Admin
+                      </span>
+                    </div>
+                    <p className="admin-email">
+                      {selectedProyecto.administrador?.correo}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          {/* Información adicional del proyecto */}
-          <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid #e0e0e0' }}>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
-                  <Typography variant="caption" color="text.secondary">
-                    Sprints
-                  </Typography>
-                  <Typography variant="h6" fontWeight="bold">
-                    {selectedProyecto?.sprints?.length || 0}
-                  </Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
-                  <Typography variant="caption" color="text.secondary">
-                    ID del Proyecto
-                  </Typography>
-                  <Typography variant="h6" fontWeight="bold">
-                    {selectedProyecto?.id}
-                  </Typography>
-                </Paper>
-              </Grid>
-            </Grid>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailDialog}>Cerrar</Button>
-        </DialogActions>
-      </Dialog>
+              <div className="project-card-divider" style={{ margin: '2rem 0' }} />
+
+              {/* Miembros del Proyecto */}
+              <div className="detail-section">
+                <div className="members-header">
+                  <p className="members-count">
+                    Miembros del Proyecto ({miembrosProyecto.length})
+                  </p>
+                  <button
+                    className="superadmin-btn superadmin-btn-secondary"
+                    style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+                    onClick={handleOpenAddMemberDialog}
+                  >
+                    <span>➕</span>
+                    Agregar Miembro
+                  </button>
+                </div>
+
+                {loadingMiembros ? (
+                  <div className="superadmin-loading" style={{ minHeight: '150px' }}>
+                    <p>Cargando miembros...</p>
+                  </div>
+                ) : miembrosProyecto.length === 0 ? (
+                  <div className="members-empty">
+                    <p className="members-empty-text">
+                      No hay miembros asignados a este proyecto
+                    </p>
+                  </div>
+                ) : (
+                  <div className="members-list">
+                    {miembrosProyecto.map((usuarioProyecto) => (
+                      <div
+                        key={usuarioProyecto.id}
+                        className={`member-card ${isAdministrador(usuarioProyecto.usuario.id) ? 'is-admin' : ''}`}
+                      >
+                        <div
+                          className="member-avatar"
+                          style={{ backgroundColor: getAdminColor(usuarioProyecto.usuario.id) }}
+                        >
+                          {usuarioProyecto.usuario.nombreUsuario.charAt(0)}
+                        </div>
+                        <div className="member-info">
+                          <div className="member-name-row">
+                            <p className="member-name">
+                              {usuarioProyecto.usuario.nombreUsuario}
+                            </p>
+                            {isAdministrador(usuarioProyecto.usuario.id) && (
+                              <span className="member-badge">
+                                ⭐ Admin
+                              </span>
+                            )}
+                          </div>
+                          <p className="member-email">
+                            {usuarioProyecto.usuario.correo}
+                          </p>
+                        </div>
+                        <span className="member-role-badge">
+                          Rol ID: {usuarioProyecto.usuario.rol.id}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Información adicional del proyecto */}
+              <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #e2e8f0' }}>
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <p className="stat-label">Sprints</p>
+                    <p className="stat-value">{selectedProyecto.sprints?.length || 0}</p>
+                  </div>
+                  <div className="stat-card">
+                    <p className="stat-label">ID del Proyecto</p>
+                    <p className="stat-value">{selectedProyecto.id}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="superadmin-btn superadmin-btn-secondary" onClick={handleCloseDetailDialog}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dialog Agregar Miembro */}
-      <Dialog open={openAddMemberDialog} onClose={handleCloseAddMemberDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>Agregar Desarrollador al Proyecto</DialogTitle>
-        <DialogContent>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2, mt: 1 }}>
-              {error}
-            </Alert>
-          )}
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 2 }}>
-            Proyecto: <strong>{selectedProyecto?.nombreProyecto}</strong>
-          </Typography>
-
-          <FormControl fullWidth>
-            <InputLabel>Seleccionar Desarrollador</InputLabel>
-            <Select
-              value={selectedDesarrollador}
-              onChange={(e) => setSelectedDesarrollador(e.target.value)}
-              label="Seleccionar Desarrollador"
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 300,
-                  },
-                },
-              }}
-            >
-              {getDesarrolladoresDisponibles().length === 0 ? (
-                <MenuItem disabled>
-                  <Typography variant="body2" color="text.secondary">
-                    No hay desarrolladores disponibles
-                  </Typography>
-                </MenuItem>
-              ) : (
-                getDesarrolladoresDisponibles().map((dev) => (
-                  <MenuItem key={dev.id} value={dev.id}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Avatar 
-                        sx={{ 
-                          width: 24, 
-                          height: 24, 
-                          fontSize: '0.875rem',
-                          bgcolor: getAdminColor(dev.id)
-                        }}
-                      >
-                        {dev.nombreUsuario.charAt(0)}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body2">{dev.nombreUsuario}</Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {dev.correo}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </MenuItem>
-                ))
+      {openAddMemberDialog && (
+        <div className="modal-overlay" onClick={handleCloseAddMemberDialog}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Agregar Desarrollador al Proyecto</h2>
+              <button className="modal-close-btn" onClick={handleCloseAddMemberDialog}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              {error && (
+                <div className="alert alert-error">
+                  <span className="alert-icon">⚠️</span>
+                  <p className="alert-text">{error}</p>
+                </div>
               )}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddMemberDialog}>Cancelar</Button>
-          <Button 
-            variant="contained" 
-            onClick={handleAddMember}
-            disabled={!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0}
-            sx={{ 
-              backgroundColor: '#312D2A',
-              '&:hover': { backgroundColor: '#242220' }
-            }}
-          >
-            Agregar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+
+              <p style={{ fontSize: '0.875rem', color: '#718096', marginBottom: '1rem' }}>
+                Proyecto: <strong>{selectedProyecto?.nombreProyecto}</strong>
+              </p>
+
+              <div className="form-group">
+                <label className="form-label">Seleccionar Desarrollador</label>
+                <select
+                  className="form-select"
+                  value={selectedDesarrollador}
+                  onChange={(e) => setSelectedDesarrollador(e.target.value)}
+                >
+                  <option value="">Seleccionar desarrollador</option>
+                  {getDesarrolladoresDisponibles().length === 0 ? (
+                    <option disabled>No hay desarrolladores disponibles</option>
+                  ) : (
+                    getDesarrolladoresDisponibles().map((dev) => (
+                      <option key={dev.id} value={dev.id}>
+                        {dev.nombreUsuario} - {dev.correo}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="superadmin-btn superadmin-btn-secondary" onClick={handleCloseAddMemberDialog}>
+                Cancelar
+              </button>
+              <button
+                className="superadmin-btn superadmin-btn-primary"
+                onClick={handleAddMember}
+                disabled={!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0}
+                style={{
+                  opacity: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0) ? 0.5 : 1,
+                  cursor: (!selectedDesarrollador || getDesarrolladoresDisponibles().length === 0) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
