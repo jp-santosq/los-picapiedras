@@ -92,35 +92,46 @@ const RagUpload: React.FC = () => {
 
   return (
     <div className="rag-page">
-      <section className="rag-hero">
-        <div>
-          <p className="hero-eyebrow">Contexto para el generador</p>
-          <h1>Knowledge Upload</h1>
-          <p className="hero-copy">
+      <section className="page-hero">
+        <div className="hero-text">
+          <p className="hero-eyebrow">Base de conocimiento</p>
+          <h1 className="page-title">RAG Knowledge Upload</h1>
+          <p className="page-subtitle">
             Sube documentos con especificaciones, estándares o user stories. Crearemos embeddings y los
             usaremos como contexto en el generador automático de sprints.
           </p>
         </div>
-        <div className="hero-card">
-          <div className="hero-card-icon">
-            <AutoAwesomeIcon fontSize="large" />
-          </div>
-          <p className="hero-card-title">Tu RAG está activo</p>
-          <p className="hero-card-subtitle">
-            Cada archivo se trocea y se indexa con embeddings de OpenAI para enriquecer las respuestas del
-            generador.
-          </p>
-          <ul className="hero-card-meta">
-            <li>Formatos: .txt, .md, .docx</li>
-            <li>Chunks solapados para mejor búsqueda</li>
-            <li>Contexto inyectado en /tarea/plan-sprint</li>
-          </ul>
+        <div className="hero-actions">
+          <button
+            className="btn btn-primary hero-create"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <CloudUploadIcon fontSize="small" />
+            Subir Documento
+          </button>
         </div>
       </section>
 
-      <section className="rag-grid">
+      <div className="info-banner">
+        <div className="info-banner-icon">
+          <AutoAwesomeIcon />
+        </div>
+        <div className="info-banner-content">
+          <p className="info-banner-title">Tu RAG está activo</p>
+          <p className="info-banner-text">
+            Cada archivo se trocea y se indexa con embeddings de OpenAI para enriquecer las respuestas del generador.
+          </p>
+        </div>
+        <ul className="info-banner-meta">
+          <li>✓ Formatos: .txt, .md, .docx</li>
+          <li>✓ Chunks solapados para mejor búsqueda</li>
+          <li>✓ Contexto inyectado en /tarea/plan-sprint</li>
+        </ul>
+      </div>
+
+      <div className="content-grid">
         <div
-          className={`upload-card ${dragActive ? 'drag-active' : ''}`}
+          className={`content-card upload-card ${dragActive ? 'drag-active' : ''}`}
           onDragEnter={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -137,13 +148,14 @@ const RagUpload: React.FC = () => {
           }}
           onDrop={handleDrop}
         >
-          <div className="upload-header">
+          <div className="card-header">
             <div>
-              <p className="eyebrow">Carga de conocimiento</p>
-              <h2>Sube archivos para entrenar el contexto</h2>
-              <p className="upload-hint">Arrastra el archivo o haz clic para explorar</p>
+              <div className="card-icon-wrapper">
+                <CloudUploadIcon />
+              </div>
+              <h2 className="card-title">Carga de conocimiento</h2>
+              <p className="card-subtitle">Sube archivos para entrenar el contexto. Arrastra o haz clic para explorar</p>
             </div>
-            <CloudUploadIcon className="upload-icon" />
           </div>
 
           <div
@@ -197,16 +209,17 @@ const RagUpload: React.FC = () => {
           </div>
         </div>
 
-        <div className="context-card">
-          <div className="context-header">
+        <div className="content-card context-card">
+          <div className="card-header">
             <div>
-              <p className="eyebrow">Probar contexto</p>
-              <h2>Pregunta algo antes de generar</h2>
-              <p className="upload-hint">
+              <div className="card-icon-wrapper">
+                <SearchIcon />
+              </div>
+              <h2 className="card-title">Probar contexto</h2>
+              <p className="card-subtitle">
                 Consulta qué fragmentos devolvería el RAG con tu pregunta y verifícalo antes de generar tareas.
               </p>
             </div>
-            <SearchIcon className="upload-icon" />
           </div>
 
           <div className="context-form">
@@ -237,7 +250,7 @@ const RagUpload: React.FC = () => {
             )}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
