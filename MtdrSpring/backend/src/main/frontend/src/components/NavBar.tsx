@@ -1,12 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import Dashboard from "../pages/Dashboard.tsx";
-import Sprints from "../pages/Sprints.tsx";
-import Tasks from "../pages/Tasks.tsx";
-import KPIs from "../pages/KPIs.tsx";
-import About from "../pages/AboutPage.tsx";
-import Team from "../pages/Team.tsx";
-import SprintGenerator from '../pages/SprintGenerator.tsx';
-import RagUpload from '../pages/RagUpload.tsx';
+import { Link } from "react-router-dom";
 import "../styles/components/navbar.css";
 import oracle from "../images/Oracle-Logo.png";
 import { useState } from "react";
@@ -29,7 +21,6 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useAuth } from "../context/AuthContext.tsx";
-import Profile from "../pages/Profile.tsx";
 
 function NavBar() {
   const [open, setOpen] = useState(false);
@@ -62,8 +53,6 @@ function NavBar() {
 
   return (
     <>
-
-      <BrowserRouter>
         <div className="navbar-container">
           <img src={oracle} alt="Oracle Logo" className="oracle"/>
           <div>
@@ -85,7 +74,7 @@ function NavBar() {
           <div role="presentation" className = "drawer-container">
             <List>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <BarChartIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -93,7 +82,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/Sprints" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/sprints" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <AirlineStopsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -101,7 +90,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/Tasks" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/tasks" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <TaskIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -109,7 +98,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/Team" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/team" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <GroupsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -117,7 +106,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/SprintGenerator" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/sprintgenerator" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <AutoAwesomeIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -125,7 +114,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/Knowledge" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/knowledge" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <UploadFileIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -133,7 +122,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/KPIs" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/kpis" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <QueryStatsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -144,7 +133,7 @@ function NavBar() {
             <Divider />
             <List>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/Profile" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/app/profile" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <AccountBoxIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -162,20 +151,6 @@ function NavBar() {
             </List>
           </div>
         </Drawer>
-
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/Sprints" element={<Sprints />} />
-          <Route path="/Tasks" element={<Tasks />} />
-          <Route path="/KPIs" element={<KPIs />} />
-          <Route path="/About-page" element={<About />} />
-          <Route path="/Team" element={<Team/>}/>
-          <Route path="/SprintGenerator" element={<SprintGenerator />} />
-          <Route path="/Knowledge" element={<RagUpload />} />
-          <Route path="/Profile" element={<Profile />} />
-
-        </Routes>
-      </BrowserRouter>
     </>
   );
 }
