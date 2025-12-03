@@ -176,44 +176,86 @@ public class TareaController {
         }
     }
 
-    // Actualizar tarea
+    // Actualizar tarea completa
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateTarea(@PathVariable Long id, @RequestBody TareaDTO dto) {
-        return tareaRepository.findById(id)
-                .map(t -> {
-                    t.setTitulo(dto.titulo);
-                    t.setDescripcion(dto.descripcion);
-                    t.setFechaInicio(dto.fechaInicio);
-                    t.setFechaFinEstimada(dto.fechaFinEstimada);
-                    t.setFechaFinReal(dto.fechaFinReal);
-                    t.setPrioridad(dto.prioridad);
+        try {
+            Tarea tarea = tareaRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Tarea no encontrada con id: " + id));
 
-                    estadoTareaRepository.findById(dto.estadoTareaId)
-                            .ifPresent(t::setEstadoTarea);
+            // Actualizar campos básicos
+            tarea.setTitulo(dto.titulo);
+            tarea.setDescripcion(dto.descripcion);
+            tarea.setFechaInicio(dto.fechaInicio);
+            tarea.setFechaFinEstimada(dto.fechaFinEstimada);
+            tarea.setFechaFinReal(dto.fechaFinReal);
+            tarea.setPrioridad(dto.prioridad);
 
-                    proyectoRepository.findById(dto.proyectoId)
-                            .ifPresent(t::setProyecto);
+            // Actualizar EstadoTarea (obligatorio)
+            if (dto.estadoTareaId != null) {
+                EstadoTarea estado = estadoTareaRepository.findById(dto.estadoTareaId)
+                        .orElseThrow(() -> new RuntimeException("EstadoTarea no existe con id: " + dto.estadoTareaId));
+                tarea.setEstadoTarea(estado);
+            }
 
-                    if (dto.sprintId != null) {
-                        sprintRepository.findById(dto.sprintId).ifPresent(t::setSprint);
-                    } else {
-                        t.setSprint(null);
-                    }
+            // Actualizar Proyecto (obligatorio)
+            if (dto.proyectoId != null) {
+                Proyecto proyecto = proyectoRepository.findById(dto.proyectoId)
+                        .orElseThrow(() -> new RuntimeException("Proyecto no existe con id: " + dto.proyectoId));
+                tarea.setProyecto(proyecto);
+            }
 
-                    if (dto.desarrolladorId != null) {
-                        usuarioRepository.findById(dto.desarrolladorId).ifPresent(t::setDesarrollador);
-                    } else {
-                        t.setDesarrollador(null);
-                    }
+            // Actualizar Sprint (opcional)
+            if (dto.sprintId != null) {
+                Sprint sprint = sprintRepository.findById(dto.sprintId)
+                        .orElseThrow(() -> new RuntimeException("Sprint no existe con id: " + dto.sprintId));
+                tarea.setSprint(sprint);
+            } else {
+                tarea.setSprint(null);
+            }
 
-                    if (dto.historiaUsuarioId != null) {
-                        historiaUsuarioRepository.findById(dto.historiaUsuarioId)
-                                .ifPresent(t::setHistoriaUsuario);
-                    }
+            // Actualizar Desarrollador (opcional)
+            if (dto.desarrolladorId != null) {
+                Usuario usuario = usuarioRepository.findById(dto.desarrolladorId)
+                        .orElseThrow(() -> new RuntimeException("Usuario no existe con id: " + dto.desarrolladorId));
+                tarea.setDesarrollador(usuario);
+            } else {
+                tarea.setDesarrollador(null);
+            }
 
-                    return ResponseEntity.ok(tareaRepository.save(t));
-                })
-                .orElse(ResponseEntity.notFound().build());
+            // Actualizar HistoriaUsuario (obligatorio)
+            if (dto.historiaUsuarioId != null) {
+                HistoriaUsuario historia = historiaUsuarioRepository.findById(dto.historiaUsuarioId)
+                        .orElseThrow(() -> new RuntimeException("HistoriaUsuario no existe con id: " + dto.historiaUsuarioId));
+                tarea.setHistoriaUsuario(historia);
+            }
+
+            // Guardar y retornar
+            Tarea tareaActualizada = tareaRepository.save(tarea);
+            
+            // Crear DTO de respuesta
+            TareaDTO responseDto = new TareaDTO();
+            responseDto.id = tareaActualizada.getId();
+            responseDto.titulo = tareaActualizada.getTitulo();
+            responseDto.descripcion = tareaActualizada.getDescripcion();
+            responseDto.fechaInicio = tareaActualizada.getFechaInicio();
+            responseDto.fechaFinEstimada = tareaActualizada.getFechaFinEstimada();
+            responseDto.fechaFinReal = tareaActualizada.getFechaFinReal();
+            responseDto.prioridad = tareaActualizada.getPrioridad();
+            responseDto.estadoTareaId = tareaActualizada.getEstadoTarea() != null ? tareaActualizada.getEstadoTarea().getId() : null;
+            responseDto.proyectoId = tareaActualizada.getProyecto() != null ? tareaActualizada.getProyecto().getId() : null;
+            responseDto.sprintId = tareaActualizada.getSprint() != null ? tareaActualizada.getSprint().getId() : null;
+            responseDto.desarrolladorId = tareaActualizada.getDesarrollador() != null ? tareaActualizada.getDesarrollador().getId() : null;
+            responseDto.historiaUsuarioId = tareaActualizada.getHistoriaUsuario() != null ? tareaActualizada.getHistoriaUsuario().getId() : null;
+
+            return ResponseEntity.ok(responseDto);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar tarea: " + e.getMessage());
+        }
     }
 
     // Eliminar Tarea

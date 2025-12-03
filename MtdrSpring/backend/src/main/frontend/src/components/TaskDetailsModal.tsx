@@ -225,8 +225,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           <button onClick={onClose} className="btn btn-secondary">
             Cerrar
           </button>
-          <button onClick={handleEditClick} className="btn btn-primary">
-            <EditIcon fontSize="small" style={{ marginRight: '8px' }} />
+          <button onClick={handleEditClick} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <EditIcon fontSize="small" />
             Editar Tarea
           </button>
         </div>
