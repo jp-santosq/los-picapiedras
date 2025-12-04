@@ -655,7 +655,7 @@ const SprintGenerator: React.FC = () => {
     // Ruta al documento que subirás en tu proyecto
     // Coloca tu documento en la carpeta public, por ejemplo: public/templates/plantilla-sprint.docx
     const link = document.createElement('a');
-    link.href = './docs/plantilla.txt'; // Ajusta la ruta según donde coloques el archivo
+    link.href = '/docs/plantilla.txt'; // Ruta absoluta desde public para evitar redirecciones del router
     link.download = 'plantilla.txt';
     document.body.appendChild(link);
     link.click();
@@ -663,7 +663,7 @@ const SprintGenerator: React.FC = () => {
   };
 
   const handleViewTemplate = () =>   {
-    window.open('./docs/plantilla.txt', '_blank');
+    window.open('/docs/plantilla.txt', '_blank');
   };
 
   const handleStartPlanning = () => {
