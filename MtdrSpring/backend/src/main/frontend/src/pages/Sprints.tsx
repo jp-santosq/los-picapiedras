@@ -115,7 +115,7 @@ const Sprints: React.FC = () => {
               </button>
               <button
                 className="btn btn-primary hero-create"
-                onClick={() => navigate('/SprintGenerator')}
+                onClick={() => navigate('/app/sprintgenerator')}
                 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
               >
                 <AutoAwesomeIcon fontSize="small" />
