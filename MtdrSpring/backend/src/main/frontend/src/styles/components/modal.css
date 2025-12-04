@@ -17,7 +17,7 @@
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  max-width: 500px;
+  max-width: 700px;
   width: 100%;
   max-height: 90vh;
   display: flex;
@@ -26,7 +26,11 @@
 }
 
 .modal-large {
-  max-width: 700px;
+  max-width: 900px;
+}
+
+.modal-extra-large {
+  max-width: 1100px;
 }
 
 @keyframes modalSlideIn {
@@ -128,6 +132,12 @@
   font-size: 1rem;
   transition: all 0.2s;
   font-family: inherit;
+}
+
+textarea.form-input,
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
 }
 
 .form-input:focus {
@@ -374,11 +384,30 @@
 }
 
 
+@media (max-width: 1200px) {
+  .modal-content {
+    max-width: 90vw;
+  }
+
+  .modal-large {
+    max-width: 90vw;
+  }
+
+  .modal-extra-large {
+    max-width: 95vw;
+  }
+}
+
 @media (max-width: 768px) {
   .modal-content {
     max-width: 100%;
     margin: 0;
     border-radius: 0;
+  }
+
+  .modal-large,
+  .modal-extra-large {
+    max-width: 100%;
   }
 
   .modal-header {
