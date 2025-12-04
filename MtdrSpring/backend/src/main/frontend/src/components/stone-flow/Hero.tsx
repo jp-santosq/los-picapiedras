@@ -34,13 +34,20 @@ const Hero = () => {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
             <Link to="/app">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity text-lg px-8 py-6 shadow-lg">
+              <Button
+                size="lg"
+                className="landing-cta landing-cta-primary w-full sm:w-auto"
+              >
                 Ir a la App
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link to="/login">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Button
+                size="lg"
+                variant="outline"
+                className="landing-cta landing-cta-secondary w-full sm:w-auto"
+              >
                 Iniciar Sesión
               </Button>
             </Link>
