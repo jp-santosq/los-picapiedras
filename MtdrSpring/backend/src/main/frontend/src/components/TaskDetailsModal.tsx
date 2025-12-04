@@ -5,10 +5,12 @@ import { TaskStatus } from './enums.tsx';
 import { useUsers } from '../context/UserContext.tsx';
 import { useSprints } from '../context/SprintContext.tsx';
 import { useProjects } from '../context/ProjectContext.tsx';
+import EditTaskModal from './EditTaskModal.tsx';
 import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import InfoIcon from '@mui/icons-material/Info';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PersonIcon from '@mui/icons-material/Person';
+import EditIcon from '@mui/icons-material/Edit';
 import '../styles/components/modal.css';
 
 interface TaskDetailsModalProps {
@@ -28,6 +30,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const { getProjectById } = useProjects();
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!isOpen || !task) return null;
 
@@ -89,6 +92,14 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   };
 
   const statusStyle = getStatusColor(task.status);
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setIsEditModalOpen(false);
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -214,8 +225,19 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           <button onClick={onClose} className="btn btn-secondary">
             Cerrar
           </button>
+          <button onClick={handleEditClick} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <EditIcon fontSize="small" />
+            Editar Tarea
+          </button>
         </div>
       </div>
+
+      {/* Modal de edición */}
+      <EditTaskModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditClose}
+        task={task}
+      />
     </div>
   );
 };

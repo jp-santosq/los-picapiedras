@@ -707,23 +707,34 @@ const SprintGenerator: React.FC = () => {
 
   return (
     <div className="sprint-generator-page">
-      <div className="generator-container">
-        {/* Header con animación */}
-        <div className="generator-header">
-          <div className="header-icon">🤖</div>
-          <h1 className="generator-title">Planea tu Sprint con Ayuda de IA</h1>
-          <p className="generator-subtitle">
-            Deja que la inteligencia artificial te ayude a organizar y distribuir 
-            las tareas de tu próximo sprint de manera eficiente
+      {/* Hero Section */}
+      <section className="page-hero">
+        <div className="hero-text">
+          <p className="hero-eyebrow">Planificación inteligente</p>
+          <h1 className="page-title">Sprint Generator con IA</h1>
+          <p className="page-subtitle">
+            Utiliza inteligencia artificial para planificar y organizar las tareas de tu sprint de manera eficiente
           </p>
         </div>
+        <div className="hero-actions">
+          <button 
+            className="btn btn-primary hero-create"
+            onClick={handleStartPlanning}
+          >
+            ✨ Crear Sprint con IA
+          </button>
+        </div>
+      </section>
 
-        {/* Cards de acciones */}
-        <div className="actions-container">
+      {/* Action Cards */}
+      <div className="content-section">
+        <div className="actions-grid">
           <div className="action-card">
-            <div className="card-icon">📥</div>
-            <h3>Descarga la Plantilla</h3>
-            <p>
+            <div className="card-header">
+              <div className="card-icon">📥</div>
+              <h3 className="card-title">Plantilla de Requisitos</h3>
+            </div>
+            <p className="card-description">
               Descarga nuestro documento de ejemplo para conocer el formato 
               recomendado para planificar tu sprint
             </p>
@@ -736,25 +747,27 @@ const SprintGenerator: React.FC = () => {
             </button>
           </div>
 
-          <div className="action-card action-card-primary">
-            <div className="card-icon">🚀</div>
-            <h3>Comienza la Planificación</h3>
-            <p>
+          <div className="action-card">
+            <div className="card-header">
+              <div className="card-icon">🚀</div>
+              <h3 className="card-title">Iniciar Planificación</h3>
+            </div>
+            <p className="card-description">
               Sube tu documento con los requisitos y deja que la IA 
               te sugiera la mejor distribución de tareas
             </p>
             <button 
-              className="btn btn-primary btn-start"
+              className="btn btn-primary"
               onClick={handleStartPlanning}
             >
-              ✨ Empezar
+              Empezar ahora
             </button>
           </div>
         </div>
 
         {/* Información adicional */}
-        <div className="info-section">
-          <h3>¿Cómo funciona?</h3>
+        <div className="info-panel">
+          <h3 className="info-title">¿Cómo funciona?</h3>
           <div className="steps-grid">
             <div className="step-item">
               <div className="step-number">1</div>

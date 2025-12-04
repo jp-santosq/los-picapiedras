@@ -396,3 +396,84 @@
   font-weight: 600;
   font-size: 0.98rem;
 }
+
+/* Media Queries para fijar posición del ícono del menú */
+.navbar-boton-menu {
+  position: fixed;
+  left: 16px;
+  top: 11px;
+  z-index: 1200;
+  min-width: 48px;
+  height: 48px;
+}
+
+.navbar-container {
+  padding-left: 80px !important;
+}
+
+@media (max-width: 768px) {
+  .navbar-boton-menu {
+    left: 12px;
+    top: 8px;
+    min-width: 44px;
+    height: 44px;
+  }
+  
+  .navbar-boton-menu .menu-open-icon {
+    font-size: 30px !important;
+  }
+  
+  .navbar-container {
+    padding-left: 70px !important;
+    height: 60px;
+  }
+  
+  .oracle {
+    width: 45px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-boton-menu {
+    left: 8px;
+    top: 6px;
+    min-width: 40px;
+    height: 40px;
+  }
+  
+  .navbar-boton-menu .menu-open-icon {
+    font-size: 28px !important;
+  }
+  
+  .navbar-container {
+    padding-left: 60px !important;
+    height: 55px;
+    padding: 0.5rem;
+  }
+  
+  .oracle {
+    width: 40px;
+  }
+}
+
+@media (max-width: 320px) {
+  .navbar-boton-menu {
+    left: 6px;
+    top: 5px;
+    min-width: 36px;
+    height: 36px;
+  }
+  
+  .navbar-boton-menu .menu-open-icon {
+    font-size: 24px !important;
+  }
+  
+  .navbar-container {
+    padding-left: 50px !important;
+    height: 50px;
+  }
+  
+  .oracle {
+    width: 35px;
+  }
+}

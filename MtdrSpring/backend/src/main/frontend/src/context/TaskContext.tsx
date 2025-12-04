@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useState,
@@ -28,6 +28,7 @@ export interface Task {
 interface TasksContextProps {
   tasks: Task[];
   addTask: (task: Omit<Task, "id"> & { sprintId?: number }) => Promise<void>;
+  updateTask: (taskId: number, updatedTask: Partial<Task>) => Promise<void>;
   updateTaskState: (taskId: number, newState: TaskStatus) => void;
   refreshTasks: () => Promise<void>;
 }
@@ -184,9 +185,50 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     await fetchTareas();
   }, [fetchTareas]);
 
+  // Actualizar tarea completa
+  const updateTask = useCallback(
+    async (taskId: number, updatedTask: Partial<Task>) => {
+      const taskToUpdate = tasks.find((t) => t.id === taskId);
+      if (!taskToUpdate) {
+        throw new Error("Tarea no encontrada");
+      }
+
+      try {
+        const dto = {
+          titulo: updatedTask.name ?? taskToUpdate.name,
+          descripcion: updatedTask.description ?? taskToUpdate.description,
+          fechaInicio: updatedTask.startDate ?? taskToUpdate.startDate,
+          fechaFinEstimada: updatedTask.estimatedDate ?? taskToUpdate.estimatedDate,
+          fechaFinReal: updatedTask.endDate ?? taskToUpdate.endDate,
+          prioridad: updatedTask.storyPoints ?? taskToUpdate.storyPoints,
+          estadoTareaId: updatedTask.status 
+            ? estadoMapBackend[updatedTask.status] 
+            : estadoMapBackend[taskToUpdate.status],
+          proyectoId: updatedTask.projectId ?? taskToUpdate.projectId,
+          sprintId: updatedTask.sprintId ?? taskToUpdate.sprintId,
+          desarrolladorId: updatedTask.responsibleId ?? taskToUpdate.responsibleId,
+          historiaUsuarioId: updatedTask.userStoryId ?? taskToUpdate.userStoryId,
+        };
+
+        console.log("Actualizando tarea con DTO:", dto);
+
+        await axios.put(`/tarea/update/${taskId}`, dto);
+
+        console.log("Tarea actualizada exitosamente");
+        
+        // Recargar todas las tareas desde el backend
+        await fetchTareas();
+      } catch (error) {
+        console.error("Error al actualizar tarea:", error);
+        throw new Error("Error al actualizar la tarea. Ver consola para más detalles.");
+      }
+    },
+    [tasks, fetchTareas]
+  );
+
   return (
     <TasksContext.Provider
-      value={{ tasks, addTask, updateTaskState, refreshTasks }}
+      value={{ tasks, addTask, updateTask, updateTaskState, refreshTasks }}
     >
       {children}
     </TasksContext.Provider>

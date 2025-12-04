@@ -3,6 +3,7 @@ import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SearchIcon from '@mui/icons-material/Search';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import '../styles/components/rag.css';
@@ -17,6 +18,7 @@ type UploadState = 'idle' | 'uploading' | 'success' | 'error';
 
 const RagUpload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>('idle');
@@ -25,6 +27,10 @@ const RagUpload: React.FC = () => {
   const [contextQuery, setContextQuery] = useState('');
   const [contextPreview, setContextPreview] = useState('');
   const [contextLoading, setContextLoading] = useState(false);
+  const [chatQuestion, setChatQuestion] = useState('');
+  const [chatAnswer, setChatAnswer] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState('');
 
   const handleFile = (file: File) => {
     setSelectedFile(file);
@@ -83,6 +89,32 @@ const RagUpload: React.FC = () => {
     }
   };
 
+  const handleChatWithContext = async () => {
+    if (!chatQuestion.trim()) return;
+    setChatLoading(true);
+    setChatError('');
+    setChatAnswer('');
+    try {
+      const response = await axios.post<{ answer: string }>('/rag/chat', { question: chatQuestion });
+      setChatAnswer(response.data.answer || 'Sin respuesta del modelo.');
+    } catch (error: any) {
+      console.error('No se pudo obtener respuesta del chat', error);
+      const message =
+        error?.response?.data || 'Ocurrió un problema al consultar el chat con contexto.';
+      setChatError(typeof message === 'string' ? message : 'No se pudo obtener respuesta.');
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const handleChatChange = (value: string) => {
+    setChatQuestion(value);
+    if (chatInputRef.current) {
+      chatInputRef.current.style.height = 'auto';
+      chatInputRef.current.style.height = `${chatInputRef.current.scrollHeight}px`;
+    }
+  };
+
   const statusIcon = () => {
     if (uploadState === 'success') return <CheckCircleIcon className="status-icon success" />;
     if (uploadState === 'error') return <WarningAmberIcon className="status-icon error" />;
@@ -92,35 +124,90 @@ const RagUpload: React.FC = () => {
 
   return (
     <div className="rag-page">
-      <section className="rag-hero">
-        <div>
-          <p className="hero-eyebrow">Contexto para el generador</p>
-          <h1>Knowledge Upload</h1>
-          <p className="hero-copy">
+      <section className="page-hero">
+        <div className="hero-text">
+          <p className="hero-eyebrow">Base de conocimiento</p>
+          <h1 className="page-title">RAG Knowledge Upload</h1>
+          <p className="page-subtitle">
             Sube documentos con especificaciones, estándares o user stories. Crearemos embeddings y los
             usaremos como contexto en el generador automático de sprints.
           </p>
         </div>
-        <div className="hero-card">
-          <div className="hero-card-icon">
-            <AutoAwesomeIcon fontSize="large" />
-          </div>
-          <p className="hero-card-title">Tu RAG está activo</p>
-          <p className="hero-card-subtitle">
-            Cada archivo se trocea y se indexa con embeddings de OpenAI para enriquecer las respuestas del
-            generador.
-          </p>
-          <ul className="hero-card-meta">
-            <li>Formatos: .txt, .md, .docx</li>
-            <li>Chunks solapados para mejor búsqueda</li>
-            <li>Contexto inyectado en /tarea/plan-sprint</li>
-          </ul>
+        <div className="hero-actions">
+          <button
+            className="btn btn-primary hero-create"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <CloudUploadIcon fontSize="small" />
+            Subir Documento
+          </button>
         </div>
       </section>
 
-      <section className="rag-grid">
+      <div className="info-banner">
+        <div className="info-banner-icon">
+          <AutoAwesomeIcon />
+        </div>
+        <div className="info-banner-content">
+          <p className="info-banner-title">Tu RAG está activo</p>
+          <p className="info-banner-text">
+            Cada archivo se trocea y se indexa con embeddings de OpenAI para enriquecer las respuestas del generador.
+          </p>
+        </div>
+        <ul className="info-banner-meta">
+          <li>✓ Formatos: .txt, .md, .docx</li>
+          <li>✓ Chunks solapados para mejor búsqueda</li>
+          <li>✓ Contexto inyectado en /tarea/plan-sprint</li>
+        </ul>
+      </div>
+
+      <div className="bottom-chat-panel">
+        <div className="bottom-chat-header">
+          <div className="card-icon-wrapper">
+            <QuestionAnswerIcon />
+          </div>
+          <div>
+            <h2 className="card-title">Preguntar con contexto</h2>
+            <p className="card-subtitle">
+              Envía una pregunta al modelo usando los documentos cargados como contexto. Ideal para validar
+              respuestas antes de crear tareas con IA.
+            </p>
+          </div>
+        </div>
+
+        <div className="chat-form">
+          <textarea
+            ref={chatInputRef}
+            className="chat-textarea"
+            placeholder="Ej. ¿Qué tareas faltan en el sprint actual?"
+            value={chatQuestion}
+            onChange={(e) => handleChatChange(e.target.value)}
+            rows={2}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={handleChatWithContext}
+            disabled={!chatQuestion.trim() || chatLoading}
+          >
+            {chatLoading ? 'Consultando...' : 'Preguntar'}
+          </button>
+        </div>
+
+        <div className="context-preview">
+          {chatLoading && <p className="muted">Consultando el modelo con el contexto...</p>}
+          {!chatLoading && chatError && <p className="error-text">{chatError}</p>}
+          {!chatLoading && chatAnswer && <pre className="context-block">{chatAnswer}</pre>}
+          {!chatLoading && !chatError && !chatAnswer && (
+            <p className="muted">
+              Envía tu primera pregunta para obtener una respuesta con contexto.
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className="content-grid">
         <div
-          className={`upload-card ${dragActive ? 'drag-active' : ''}`}
+          className={`content-card upload-card ${dragActive ? 'drag-active' : ''}`}
           onDragEnter={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -137,13 +224,14 @@ const RagUpload: React.FC = () => {
           }}
           onDrop={handleDrop}
         >
-          <div className="upload-header">
+          <div className="card-header">
             <div>
-              <p className="eyebrow">Carga de conocimiento</p>
-              <h2>Sube archivos para entrenar el contexto</h2>
-              <p className="upload-hint">Arrastra el archivo o haz clic para explorar</p>
+              <div className="card-icon-wrapper">
+                <CloudUploadIcon />
+              </div>
+              <h2 className="card-title">Carga de conocimiento</h2>
+              <p className="card-subtitle">Sube archivos para entrenar el contexto. Arrastra o haz clic para explorar</p>
             </div>
-            <CloudUploadIcon className="upload-icon" />
           </div>
 
           <div
@@ -197,16 +285,17 @@ const RagUpload: React.FC = () => {
           </div>
         </div>
 
-        <div className="context-card">
-          <div className="context-header">
+        <div className="content-card context-card">
+          <div className="card-header">
             <div>
-              <p className="eyebrow">Probar contexto</p>
-              <h2>Pregunta algo antes de generar</h2>
-              <p className="upload-hint">
+              <div className="card-icon-wrapper">
+                <SearchIcon />
+              </div>
+              <h2 className="card-title">Probar contexto</h2>
+              <p className="card-subtitle">
                 Consulta qué fragmentos devolvería el RAG con tu pregunta y verifícalo antes de generar tareas.
               </p>
             </div>
-            <SearchIcon className="upload-icon" />
           </div>
 
           <div className="context-form">
@@ -237,7 +326,7 @@ const RagUpload: React.FC = () => {
             )}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

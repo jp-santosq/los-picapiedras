@@ -1,5 +1,6 @@
 package com.springboot.MyTodoList.controller;
 
+import com.springboot.MyTodoList.service.RagChatService;
 import com.springboot.MyTodoList.service.RagService;
 import java.io.IOException;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,9 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class RagController {
 
     private final RagService ragService;
+    private final RagChatService ragChatService;
 
-    public RagController(RagService ragService) {
+    public RagController(RagService ragService, RagChatService ragChatService) {
         this.ragService = ragService;
+        this.ragChatService = ragChatService;
     }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -43,5 +47,15 @@ public class RagController {
     public ResponseEntity<?> previewContext(@RequestParam("q") String query) {
         String context = ragService.buildContextForPrompt(query, 3);
         return ResponseEntity.ok(Map.of("context", context));
+    }
+
+    @PostMapping("/chat")
+    public ResponseEntity<?> chatWithContext(@RequestBody Map<String, String> payload) {
+        String question = payload != null ? payload.get("question") : null;
+        if (question == null || question.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("La pregunta no puede estar vacía.");
+        }
+        String answer = ragChatService.chatWithContext(question);
+        return ResponseEntity.ok(Map.of("answer", answer));
     }
 }
