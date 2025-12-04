@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSprints } from '../../context/SprintContext.tsx';
+import { useAuth } from '../../context/AuthContext.tsx';
 import '../../styles/components/modal.css';
 
 interface CreateSprintModalProps {
@@ -16,30 +17,33 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
   proyectoId
 }) => {
   const { addSprint } = useSprints();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     fechaInicio: '',
     fechaFinEstimada: '',
-    proyectoId: proyectoId || 0
+    proyectoId: proyectoId || 1
   });
+
+  // Actualizar el proyectoId cuando cambie
+  useEffect(() => {
+    if (proyectoId) {
+      setFormData(prev => ({
+        ...prev,
+        proyectoId: proyectoId
+      }));
+    }
+  }, [proyectoId]);
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'proyectoId') {
-      setFormData(prev => ({
-        ...prev,
-        proyectoId: parseInt(value) || 0
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const validateForm = (): boolean => {
@@ -49,10 +53,6 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
     }
     if (!formData.fechaFinEstimada) {
       setError('La fecha de fin estimada es requerida');
-      return false;
-    }
-    if (!formData.proyectoId || formData.proyectoId === 0) {
-      setError('Debe seleccionar un proyecto');
       return false;
     }
 
@@ -87,7 +87,7 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
       setFormData({
         fechaInicio: '',
         fechaFinEstimada: '',
-        proyectoId: proyectoId || 0
+        proyectoId: proyectoId || 1
       });
       
       onSprintCreated();
@@ -104,7 +104,7 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
     setFormData({
       fechaInicio: '',
       fechaFinEstimada: '',
-      proyectoId: proyectoId || 0
+      proyectoId: proyectoId || 1
     });
     onClose();
   };
@@ -121,7 +121,7 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit} className="modal-form" id="create-sprint-form">
           {error && (
             <div className="alert alert-error">
               {error}
@@ -130,21 +130,15 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
 
           <div className="form-group">
             <label htmlFor="proyectoId">
-              Proyecto <span className="required">*</span>
+              Proyecto
             </label>
-            <input
-              type="number"
-              id="proyectoId"
-              name="proyectoId"
-              value={formData.proyectoId || ''}
-              onChange={handleChange}
-              required
-              className="form-input"
-              placeholder="ID del proyecto"
-              disabled={!!proyectoId}
-            />
-            <small className="form-help">
-              Ingresa el ID del proyecto al que pertenece este sprint
+            <div className="assigned-user">
+              <span className="user-badge">
+                📁 Proyecto #{formData.proyectoId}
+              </span>
+            </div>
+            <small className="form-hint">
+              Este sprint será asignado al proyecto actual
             </small>
           </div>
 
@@ -178,25 +172,26 @@ const CreateSprintModal: React.FC<CreateSprintModalProps> = ({
               min={formData.fechaInicio}
             />
           </div>
-
-          <div className="modal-footer">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="btn btn-secondary"
-              disabled={loading}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? 'Creando...' : 'Crear Sprint'}
-            </button>
-          </div>
         </form>
+
+        <div className="modal-footer">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="btn btn-secondary"
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            form="create-sprint-form"
+            className="btn btn-primary"
+            disabled={loading}
+          >
+            {loading ? 'Creando...' : 'Crear Sprint'}
+          </button>
+        </div>
       </div>
     </div>
   );
