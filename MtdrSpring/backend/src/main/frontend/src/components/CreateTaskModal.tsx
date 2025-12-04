@@ -206,7 +206,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit} className="modal-form" id="create-task-form">
           {error && (
             <div className="alert alert-error">
               {error}
@@ -362,25 +362,26 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               <option value={TaskStatus.DONE}>DONE</option>
             </select>
           </div>
-
-          <div className="modal-footer">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="btn btn-secondary"
-              disabled={loading}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading || !user || (isAdmin && formData.responsibleId === 0)}
-            >
-              {loading ? 'Creando...' : 'Crear Tarea'}
-            </button>
-          </div>
         </form>
+
+        <div className="modal-footer">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="btn btn-secondary"
+            disabled={loading}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            form="create-task-form"
+            className="btn btn-primary"
+            disabled={loading || !user || (isAdmin && formData.responsibleId === 0)}
+          >
+            {loading ? 'Creando...' : 'Crear Tarea'}
+          </button>
+        </div>
       </div>
     </div>
   );
