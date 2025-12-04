@@ -1,14 +1,15 @@
 package com.springboot.MyTodoList.service;
 
-import com.springboot.MyTodoList.dto.AuthRequestDTO;
-import com.springboot.MyTodoList.dto.AuthResponseDTO;
-import com.springboot.MyTodoList.model.Usuario;
-import com.springboot.MyTodoList.security.JwtService;
-import com.springboot.MyTodoList.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.springboot.MyTodoList.dto.AuthRequestDTO;
+import com.springboot.MyTodoList.dto.AuthResponseDTO;
+import com.springboot.MyTodoList.model.Usuario;
+import com.springboot.MyTodoList.repository.UsuarioRepository;
+import com.springboot.MyTodoList.security.JwtService;
 
 @Service
 public class AuthenticationService {
@@ -37,9 +38,23 @@ public class AuthenticationService {
                 if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
                     throw new BadCredentialsException("Usuario o contraseña incorrectos");
                 }
+                
+                
+                // Usuario usuario = usuarioRepository.findByCorreo(request.getCorreo())
+                // .orElseThrow(() -> new BadCredentialsException("Usuario o contraseña incorrectos"));
 
-                String token = jwtService.generateToken(usuario.getCorreo());
-                return new AuthResponseDTO(token, usuario.getId(), usuario.getRol(), usuario.getNombreUsuario(), usuario.getCorreo());
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+            throw new BadCredentialsException("Usuario o contraseña incorrectos");
+        }
+
+        String token = jwtService.generateToken(usuario.getCorreo());
+        return new AuthResponseDTO(
+            token, 
+            usuario.getId(), 
+            usuario.getRol(), 
+            usuario.getNombreUsuario(), 
+            usuario.getCorreo()
+        );
     }
 
 }

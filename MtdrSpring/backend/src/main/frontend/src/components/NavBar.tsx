@@ -22,6 +22,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useAuth } from "../context/AuthContext.tsx";
 import { ROL } from "./enums.tsx";
+import { useNavigate } from "react-router-dom";
 import Profile from "../pages/Profile.tsx";
 
 function NavBar() {
@@ -47,11 +48,13 @@ function NavBar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
     handleClose();
+    navigate("/")
   };
 
   return (
@@ -85,7 +88,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/sprints" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/sprints" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <AirlineStopsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -93,7 +96,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/tasks" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/tasks" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <TaskIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -101,7 +104,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/team" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/team" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <GroupsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -119,7 +122,7 @@ function NavBar() {
                 </ListItem>
               )}
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/knowledge" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/knowledge" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <UploadFileIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -127,7 +130,7 @@ function NavBar() {
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/kpis" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/kpis" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <QueryStatsIcon className="drawer-icon" />
                   </ListItemIcon>
@@ -138,7 +141,7 @@ function NavBar() {
             <Divider />
             <List>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to="/app/profile" onClick={handleToggleDrawer(false)}>
+                <ListItemButton component={Link} to="/profile" onClick={handleToggleDrawer(false)}>
                   <ListItemIcon>
                     <AccountBoxIcon className="drawer-icon" />
                   </ListItemIcon>

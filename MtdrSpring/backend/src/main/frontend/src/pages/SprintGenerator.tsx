@@ -280,7 +280,7 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
         <div className="modal-content modal-extra-large modal-tasks-review" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <h2>📋 Revisa las Tareas Sugeridas</h2>
-            <button className="modal-close-btn" onClick={handleClose}>×</button>
+            <button className="modal-close-btn" onClick={handleClose}>x</button>
           </div>
 
           <div className="modal-body">
