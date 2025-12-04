@@ -1,0 +1,6 @@
+/* Tailwind CSS specifically scoped for Landing Page */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components'; 
+@import 'tailwindcss/utilities';
+
+/* Scope all Tailwind classes to .stone-flow-landing */
