@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/components/navbar.css";
 import oracle from "../images/Oracle-Logo.png";
 import { useState } from "react";
@@ -29,6 +29,7 @@ function NavBar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { logout, user } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const handleToggleDrawer = (value: boolean) => () => setDrawerOpen(value);
   const handleClose = () => setOpen(false);
@@ -49,7 +50,7 @@ function NavBar() {
 
   const handleLogout = () => {
     logout();
-    window.location.reload();
+    navigate("/login", { replace: true });
     handleClose();
   };
 
