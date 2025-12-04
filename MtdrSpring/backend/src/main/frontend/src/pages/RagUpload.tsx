@@ -3,6 +3,7 @@ import axios from 'axios';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SearchIcon from '@mui/icons-material/Search';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import '../styles/components/rag.css';
@@ -17,6 +18,7 @@ type UploadState = 'idle' | 'uploading' | 'success' | 'error';
 
 const RagUpload: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [uploadState, setUploadState] = useState<UploadState>('idle');
@@ -25,6 +27,10 @@ const RagUpload: React.FC = () => {
   const [contextQuery, setContextQuery] = useState('');
   const [contextPreview, setContextPreview] = useState('');
   const [contextLoading, setContextLoading] = useState(false);
+  const [chatQuestion, setChatQuestion] = useState('');
+  const [chatAnswer, setChatAnswer] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState('');
 
   const handleFile = (file: File) => {
     setSelectedFile(file);
@@ -83,6 +89,32 @@ const RagUpload: React.FC = () => {
     }
   };
 
+  const handleChatWithContext = async () => {
+    if (!chatQuestion.trim()) return;
+    setChatLoading(true);
+    setChatError('');
+    setChatAnswer('');
+    try {
+      const response = await axios.post<{ answer: string }>('/rag/chat', { question: chatQuestion });
+      setChatAnswer(response.data.answer || 'Sin respuesta del modelo.');
+    } catch (error: any) {
+      console.error('No se pudo obtener respuesta del chat', error);
+      const message =
+        error?.response?.data || 'Ocurrió un problema al consultar el chat con contexto.';
+      setChatError(typeof message === 'string' ? message : 'No se pudo obtener respuesta.');
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const handleChatChange = (value: string) => {
+    setChatQuestion(value);
+    if (chatInputRef.current) {
+      chatInputRef.current.style.height = 'auto';
+      chatInputRef.current.style.height = `${chatInputRef.current.scrollHeight}px`;
+    }
+  };
+
   const statusIcon = () => {
     if (uploadState === 'success') return <CheckCircleIcon className="status-icon success" />;
     if (uploadState === 'error') return <WarningAmberIcon className="status-icon error" />;
@@ -127,6 +159,50 @@ const RagUpload: React.FC = () => {
           <li>✓ Chunks solapados para mejor búsqueda</li>
           <li>✓ Contexto inyectado en /tarea/plan-sprint</li>
         </ul>
+      </div>
+
+      <div className="bottom-chat-panel">
+        <div className="bottom-chat-header">
+          <div className="card-icon-wrapper">
+            <QuestionAnswerIcon />
+          </div>
+          <div>
+            <h2 className="card-title">Preguntar con contexto</h2>
+            <p className="card-subtitle">
+              Envía una pregunta al modelo usando los documentos cargados como contexto. Ideal para validar
+              respuestas antes de crear tareas con IA.
+            </p>
+          </div>
+        </div>
+
+        <div className="chat-form">
+          <textarea
+            ref={chatInputRef}
+            className="chat-textarea"
+            placeholder="Ej. ¿Qué tareas faltan en el sprint actual?"
+            value={chatQuestion}
+            onChange={(e) => handleChatChange(e.target.value)}
+            rows={2}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={handleChatWithContext}
+            disabled={!chatQuestion.trim() || chatLoading}
+          >
+            {chatLoading ? 'Consultando...' : 'Preguntar'}
+          </button>
+        </div>
+
+        <div className="context-preview">
+          {chatLoading && <p className="muted">Consultando el modelo con el contexto...</p>}
+          {!chatLoading && chatError && <p className="error-text">{chatError}</p>}
+          {!chatLoading && chatAnswer && <pre className="context-block">{chatAnswer}</pre>}
+          {!chatLoading && !chatError && !chatAnswer && (
+            <p className="muted">
+              Envía tu primera pregunta para obtener una respuesta con contexto.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="content-grid">
