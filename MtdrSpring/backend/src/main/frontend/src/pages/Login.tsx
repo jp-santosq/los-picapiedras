@@ -8,12 +8,14 @@ import {
   Button,
   Link
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.tsx";
 import oracleName from "../images/oracleName.png";
 import oracleLogo from "../images/oracleLogo.png";
 
 function Login() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,13 +28,21 @@ function Login() {
       setError(true);
     } else {
       setError(false);
+      // Redirigir a /app después del login exitoso
+      navigate('/app');
     }
   };
 
   const handleLoginKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       const ok = await login(mail, password);
-      setError(!ok);
+      if (!ok) {
+        setError(true);
+      } else {
+        setError(false);
+        // Redirigir a /app después del login exitoso
+        navigate('/app');
+      }
     }
   };
 
