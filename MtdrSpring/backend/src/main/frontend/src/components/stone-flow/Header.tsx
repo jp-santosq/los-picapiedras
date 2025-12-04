@@ -21,12 +21,19 @@ const Header = () => {
           </nav>
           <div className="flex items-center gap-3">
             <Link to="/login">
-              <Button variant="ghost" size="sm">
+              <Button
+                size="sm"
+                variant="outline"
+                className="landing-cta landing-cta-secondary landing-cta-sm"
+              >
                 Iniciar Sesión
               </Button>
             </Link>
             <Link to="/app">
-              <Button size="sm" className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-opacity">
+              <Button
+                size="sm"
+                className="landing-cta landing-cta-primary landing-cta-sm"
+              >
                 Ir a la App
               </Button>
             </Link>
