@@ -1,23 +1,36 @@
 /* Task Assignment Board Modal */
 .modal-board {
-  max-width: 95vw;
-  width: 1600px;
-  height: 90vh;
+  max-width: 98vw;
+  width: auto;
+  min-width: 1200px;
+  height: 95vh;
   display: flex;
   flex-direction: column;
 }
 
+@media (max-width: 1600px) {
+  .modal-board {
+    width: 95vw;
+  }
+}
+
+@media (min-width: 1601px) {
+  .modal-board {
+    width: 90vw;
+  }
+}
+
 .board-subtitle {
   color: #666;
-  font-size: 0.95rem;
-  margin-top: 5px;
+  font-size: 0.85rem;
+  margin-top: 3px;
   font-weight: normal;
 }
 
 .board-modal-body {
   flex: 1;
   overflow: hidden;
-  padding: 20px;
+  padding: 15px;
 }
 
 /* Board Container */
@@ -28,14 +41,19 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 10px;
+  padding-right: 10px;
+  align-items: flex-start;
 }
 
 /* Board Columns */
 .board-column {
-  min-width: 320px;
-  max-width: 350px;
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  height: 100%;
+  flex-shrink: 0;
   background: #f8f9fa;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -58,64 +76,75 @@
 
 /* Column Header */
 .column-header {
-  padding: 20px;
+  padding: 12px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
 }
 
 .column-header h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #333;
   font-weight: 600;
 }
 
 .member-header {
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  width: 100%;
 }
 
 .member-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
 }
 
 .member-avatar {
-  width: 45px;
-  height: 45px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 
 .member-info h3 {
-  font-size: 1rem;
+  font-size: 0.95rem;
   margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .member-email {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-count {
   background: #667eea;
   color: white;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .unassigned-column .task-count {
@@ -127,22 +156,24 @@
 .tasks-container {
   flex: 1;
   overflow-y: auto;
-  padding: 15px;
+  overflow-x: hidden;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 200px;
+  gap: 10px;
+  min-height: 0;
 }
 
 /* Task Cards */
 .task-card {
   background: white;
-  border-radius: 10px;
-  padding: 15px;
+  border-radius: 8px;
+  padding: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: grab;
   transition: all 0.2s ease;
   border-left: 4px solid #667eea;
+  flex-shrink: 0;
 }
 
 .task-card:hover {
@@ -163,14 +194,14 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .task-card-title {
   font-weight: 600;
   color: #333;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.3;
   flex: 1;
 }
@@ -186,12 +217,13 @@
 }
 
 .task-card-desc {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #666;
-  margin: 8px 0;
-  line-height: 1.4;
+  margin: 6px 0;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -200,13 +232,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid #f0f0f0;
 }
 
 .task-card-date {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #999;
 }
 
@@ -224,14 +256,15 @@
 
 /* Column Footer */
 .column-footer {
-  padding: 15px 20px;
-  border-top: 2px solid #f0f0f0;
+  padding: 10px 15px;
+  border-top: 1px solid #f0f0f0;
   background: #f8f9fa;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 10px 10px;
+  flex-shrink: 0;
 }
 
 .total-points {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #667eea;
 }
@@ -241,24 +274,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 30px;
-  border-top: 2px solid #f0f0f0;
+  padding: 12px 20px;
+  border-top: 1px solid #e0e0e0;
   background: #f8f9fa;
+  flex-shrink: 0;
 }
 
 .footer-info {
   display: flex;
-  gap: 30px;
+  gap: 25px;
 }
 
 .footer-info span {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #666;
 }
 
 .footer-info strong {
   color: #667eea;
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-left: 5px;
 }
 
@@ -268,8 +302,8 @@
 }
 
 .btn-confirm {
-  padding: 12px 30px;
-  font-size: 1rem;
+  padding: 10px 24px;
+  font-size: 0.95rem;
 }
 
 .btn-confirm:disabled {
@@ -280,25 +314,26 @@
 /* Scrollbar Styling */
 .tasks-container::-webkit-scrollbar,
 .board-container::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 .tasks-container::-webkit-scrollbar-track,
 .board-container::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
+  margin: 4px;
 }
 
 .tasks-container::-webkit-scrollbar-thumb,
 .board-container::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #667eea;
   border-radius: 10px;
 }
 
 .tasks-container::-webkit-scrollbar-thumb:hover,
 .board-container::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: #5568d3;
 }
 
 /* Animations */
@@ -320,18 +355,25 @@
 /* Responsive */
 @media (max-width: 1200px) {
   .modal-board {
+    min-width: 95vw;
     width: 95vw;
     height: 85vh;
   }
 
   .board-column {
-    min-width: 280px;
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
   }
 }
 
 @media (max-width: 768px) {
   .modal-board {
-    height: 80vh;
+    height: 85vh;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    border-radius: 0;
   }
 
   .board-modal-body {
@@ -343,7 +385,9 @@
   }
 
   .board-column {
-    min-width: 250px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
   }
 
   .column-header {

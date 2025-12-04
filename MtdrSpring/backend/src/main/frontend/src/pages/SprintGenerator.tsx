@@ -277,7 +277,7 @@ const TasksReviewModal: React.FC<TasksReviewModalProps> = ({ isOpen, onClose, on
   return (
     <>
       <div className="modal-overlay" onClick={handleClose}>
-        <div className="modal-content modal-large modal-tasks-review" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-content modal-extra-large modal-tasks-review" onClick={(e) => e.stopPropagation()}>
           <div className="modal-header">
             <h2>📋 Revisa las Tareas Sugeridas</h2>
             <button className="modal-close-btn" onClick={handleClose}>x</button>
@@ -515,7 +515,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, onTaskUp
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>✏️ Editar Tarea</h2>
           <button className="modal-close-btn" onClick={handleClose}>×</button>
