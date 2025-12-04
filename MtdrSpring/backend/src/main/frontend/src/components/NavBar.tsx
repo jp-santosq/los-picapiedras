@@ -111,7 +111,7 @@ function NavBar() {
               </ListItem>
               {(user?.rol === ROL.ADMINISTRADOR || user?.rol === ROL.SUPERADMIN) && (
                 <ListItem disablePadding>
-                  <ListItemButton component={Link} to="/app/sprintgenerator" onClick={handleToggleDrawer(false)}>
+                  <ListItemButton component={Link} to="/sprint" onClick={handleToggleDrawer(false)}>
                     <ListItemIcon>
                       <AutoAwesomeIcon className="drawer-icon" />
                     </ListItemIcon>
