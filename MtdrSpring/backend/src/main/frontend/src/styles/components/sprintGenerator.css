@@ -226,7 +226,7 @@
 
 /* Sprint Create Modal - Mantener estilos específicos del modal */
 .modal-sprint-create {
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .sprint-info-box {
@@ -290,7 +290,7 @@
 
 /* Upload Modal */
 .modal-upload {
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .upload-instruction {
@@ -414,7 +414,7 @@
 
 /* Tasks Review Modal */
 .modal-tasks-review {
-  max-width: 1200px;
+  max-width: 1400px !important;
   width: 95%;
 }
 
@@ -448,7 +448,7 @@
 
 /* Tasks Table */
 .tasks-table-container {
-  max-height: 500px;
+  max-height: 600px;
   overflow-y: auto;
   margin-bottom: 20px;
   border: 1px solid #e2e6f0;
@@ -604,11 +604,22 @@
 
 
 /* Responsive */
+@media (max-width: 1440px) {
+  .modal-tasks-review {
+    max-width: 95vw !important;
+  }
+}
+
 @media (max-width: 768px) {
   .sprint-generator-page .page-hero {
     flex-direction: column;
     text-align: center;
     padding: 24px;
+  }
+
+  .modal-tasks-review {
+    max-width: 100% !important;
+    width: 100%;
   }
 
   .sprint-generator-page .page-title {

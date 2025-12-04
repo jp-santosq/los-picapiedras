@@ -116,7 +116,7 @@ const AddTaskToListModal: React.FC<AddTaskToListModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>➕ Agregar Nueva Tarea</h2>
           <button className="modal-close-btn" onClick={handleClose}>×</button>
