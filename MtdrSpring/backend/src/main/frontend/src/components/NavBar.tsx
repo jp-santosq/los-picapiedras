@@ -22,7 +22,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useAuth } from "../context/AuthContext.tsx";
 import { ROL } from "./enums.tsx";
-import { useNavigate } from "react-router-dom";
 import Profile from "../pages/Profile.tsx";
 
 function NavBar() {
@@ -48,7 +47,6 @@ function NavBar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
-  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
